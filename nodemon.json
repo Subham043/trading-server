@@ -1,0 +1,7 @@
+{
+  "watch": ["./*", "./src/**/*"],
+  "ignore": ["src/**/*.test.ts", "node_modules", "migrations", "build", ".vscode"],
+  "ext": "ts,mjs,js,json,graphql,env",
+  "exec": "rm -rf build && clear && npm run build && npm run start",
+  "legacyWatch": true
+}
