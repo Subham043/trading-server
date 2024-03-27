@@ -20,6 +20,7 @@ import { PaginationType } from "../../@types/pagination.type";
 import { logger } from "../../utils/logger";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
+import { UpdateUserBody } from "./schemas/update.schema";
 
 /**
  * Create a new user with the provided user information.
@@ -72,7 +73,7 @@ export async function create(user: CreateUserBody): Promise<UserType> {
  * @return {Promise<UserType>} the updated user information
  */
 export async function update(
-  user: CreateUserBody,
+  user: UpdateUserBody,
   param: GetIdParam
 ): Promise<UserType> {
   const app = await fastifyApp;
