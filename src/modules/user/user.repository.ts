@@ -37,7 +37,7 @@ export async function createUser(
  * @return {Promise<UserType>} the updated user information
  */
 export async function updateUser(
-  data: UpdateUserBody,
+  data: Omit<UpdateUserBody, "confirm_password">,
   id: number
 ): Promise<UserType> {
   const result = await db
