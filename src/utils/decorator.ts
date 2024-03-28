@@ -12,6 +12,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { CustomUnauthorizedError } from "./exceptions";
 import { AuthType } from "../@types/user.type";
 import { getById } from "../modules/user/user.repository";
+import { ZodError } from "zod";
 
 export type PreHandlerHookDecoratorType = preHandlerHookHandler<
   RawServerDefault,
@@ -31,6 +32,14 @@ export const ServerErrorHandler = (
   reply: FastifyReply
 ) => {
   request.server.log.error(error);
+  if (error instanceof ZodError) {
+    return reply.status(422).type("application/json").send({
+      statusCode: 422,
+      success: false,
+      message: "Bad Request",
+      formErrors: error.formErrors.fieldErrors,
+    });
+  }
   if (error.validation && error.statusCode === 400) {
     const result = {};
     error.validation.forEach((element) => {
@@ -50,7 +59,12 @@ export const ServerErrorHandler = (
   return reply
     .status(error.statusCode || 500)
     .type("application/json")
-    .send({ ...error, success: false });
+    .send({
+      ...error,
+      message: error.message || "Internal Server Error",
+      statusCode: error.statusCode || 500,
+      success: false,
+    });
 };
 
 export const verifyJwtDecorator = async (

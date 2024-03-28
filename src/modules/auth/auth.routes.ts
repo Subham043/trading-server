@@ -1,7 +1,7 @@
-import { FastifyInstance } from 'fastify';
-import { loginJsonSchema } from './schemas/login.schema';
-import { login } from './auth.controller';
+import { FastifyInstance } from "fastify";
+import { loginBodySchema } from "./schemas/login.schema";
+import { login } from "./auth.controller";
 
 export async function authRoutes(app: FastifyInstance) {
-  app.post('/login', { schema: loginJsonSchema }, login);
+  app.post("/login", { schema: { body: loginBodySchema } }, login);
 }

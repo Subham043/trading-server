@@ -14,6 +14,10 @@ import { userRoutes } from "../modules/user/user.routes";
 import { mailOptions } from "../constants/mailOptions";
 import { FastifyMailType } from "../@types/mail.type";
 import { authRoutes } from "../modules/auth/auth.routes";
+import {
+  serializerCompiler,
+  validatorCompiler,
+} from "fastify-type-provider-zod";
 import env from "../config/env";
 import {
   PreHandlerHookDecoratorType,
@@ -46,6 +50,9 @@ export async function buildServer() {
     },
   });
 
+  server.setValidatorCompiler(validatorCompiler);
+  server.setSerializerCompiler(serializerCompiler);
+
   server.setErrorHandler((error, request, reply) =>
     ServerErrorHandler(error, request, reply)
   );
@@ -59,7 +66,6 @@ export async function buildServer() {
   await server.register(cookie, {
     secret: env.JWT_KEY,
   });
-
   await server
     .decorate(
       "verifyJwt",

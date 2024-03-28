@@ -1,7 +1,6 @@
 import { z } from "zod";
-import zodToJsonSchema from "zod-to-json-schema";
 
-const updateProfileBodySchema = z.object({
+export const updateProfileBodySchema = z.object({
   name: z
     .string({
       errorMap: () => ({ message: "Name must be a string" }),
@@ -20,10 +19,3 @@ const updateProfileBodySchema = z.object({
 });
 
 export type UpdateProfileBody = z.infer<typeof updateProfileBodySchema>;
-
-export const updateProfileJsonSchema = {
-  body: zodToJsonSchema(updateProfileBodySchema, {
-    name: "updateProfileBodySchema",
-    errorMessages: true,
-  }),
-};

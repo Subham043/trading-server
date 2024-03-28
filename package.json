@@ -35,7 +35,7 @@
     "fastify": "^4.26.2",
     "fastify-bcrypt": "^1.0.1",
     "fastify-mailer": "^2.3.1",
-    "fastify-zod": "^1.4.0",
+    "fastify-type-provider-zod": "^1.1.9",
     "i": "^0.3.7",
     "nodemailer": "^6.9.12",
     "nodemon": "^3.1.0",
@@ -51,7 +51,6 @@
     "@types/uuid": "^9.0.8",
     "fastify-tsconfig": "^2.0.0",
     "pino-pretty": "^10.3.1",
-    "typescript": "^5.4.2",
-    "zod-to-json-schema": "^3.22.4"
+    "typescript": "^5.4.2"
   }
 }

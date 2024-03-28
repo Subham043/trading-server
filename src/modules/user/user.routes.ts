@@ -6,35 +6,54 @@ import {
   removeUser,
   updateUser,
 } from "./user.controller";
-import { createUserJsonSchema } from "./schemas/create.schema";
-import { updateUserJsonSchema } from "./schemas/update.schema";
-import { getPaginationQueryJsonSchema } from "../../common/schemas/pagination_query.schema";
-import { getIdJsonSchema } from "../../common/schemas/id_param.schema";
+import { updateUserBodySchema } from "./schemas/update.schema";
+import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
+import { getIdParamSchema } from "../../common/schemas/id_param.schema";
+import { createUserBodySchema } from "./schemas/create.schema";
 
 export async function userRoutes(app: FastifyInstance) {
   app.get(
     "/",
-    { schema: getPaginationQueryJsonSchema, preHandler: app.verifyJwt },
+    {
+      schema: { querystring: getPaginationQuerySchema },
+      preHandler: app.verifyJwt,
+    },
     listUsers
   );
   app.get(
     "/:id",
-    { schema: getIdJsonSchema, preHandler: app.verifyJwt },
+    {
+      schema: {
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
     getUser
   );
   app.post(
     "/",
-    { schema: createUserJsonSchema, preHandler: app.verifyJwt },
+    {
+      schema: { body: createUserBodySchema },
+      preHandler: app.verifyJwt,
+    },
     createUser
   );
   app.put(
     "/:id",
-    { schema: updateUserJsonSchema, preHandler: app.verifyJwt },
+    {
+      schema: { body: updateUserBodySchema, params: getIdParamSchema },
+      preHandler: app.verifyJwt,
+    },
     updateUser
   );
   app.delete(
     "/:id",
-    { schema: getIdJsonSchema, preHandler: app.verifyJwt },
+    {
+      schema: {
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
     removeUser
   );
 }

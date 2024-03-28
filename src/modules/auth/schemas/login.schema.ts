@@ -1,7 +1,6 @@
 import { z } from "zod";
-import zodToJsonSchema from "zod-to-json-schema";
 
-const loginBodySchema = z.object({
+export const loginBodySchema = z.object({
   email: z
     .string({
       errorMap: () => ({ message: "Email must be a string" }),
@@ -20,10 +19,3 @@ const loginBodySchema = z.object({
 });
 
 export type LoginBody = z.infer<typeof loginBodySchema>;
-
-export const loginJsonSchema = {
-  body: zodToJsonSchema(loginBodySchema, {
-    name: "loginBodySchema",
-    errorMessages: true,
-  }),
-};

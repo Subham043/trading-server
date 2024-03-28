@@ -1,6 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { create, destroy, findById, list, update } from "./user.services";
-import { CreateUserBody } from "./schemas/create.schema";
+import {
+  CreateUserBody,
+  createUserUniqueEmailSchema,
+} from "./schemas/create.schema";
 import { UpdateUserBody } from "./schemas/update.schema";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
@@ -55,6 +58,7 @@ export async function createUser(
   }>,
   reply: FastifyReply
 ): Promise<void> {
+  await createUserUniqueEmailSchema.parseAsync(request.body.email);
   const result = await create(request.body);
   return reply.code(201).type("application/json").send({
     code: 201,

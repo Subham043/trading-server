@@ -1,8 +1,6 @@
 import { z } from "zod";
-import zodToJsonSchema from "zod-to-json-schema";
-import { getIdJsonSchema } from "../../../common/schemas/id_param.schema";
 
-const updateUserBodySchema = z.object({
+export const updateUserBodySchema = z.object({
   name: z
     .string({
       errorMap: () => ({ message: "Name must be a string" }),
@@ -28,11 +26,3 @@ const updateUserBodySchema = z.object({
 });
 
 export type UpdateUserBody = z.infer<typeof updateUserBodySchema>;
-
-export const updateUserJsonSchema = {
-  body: zodToJsonSchema(updateUserBodySchema, {
-    name: "updateUserBodySchema",
-    errorMessages: true,
-  }),
-  ...getIdJsonSchema,
-};
