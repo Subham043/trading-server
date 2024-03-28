@@ -13,6 +13,7 @@ import { UnauthorizedError } from "./exceptions";
 import { AuthType } from "../@types/user.type";
 import { getById } from "../modules/user/user.repository";
 import { ZodError } from "zod";
+import env from "../config/env";
 
 export type PreHandlerHookDecoratorType = preHandlerHookHandler<
   RawServerDefault,
@@ -58,7 +59,7 @@ export const verifyJwtDecorator = async (
 ) => {
   try {
     const authHeader = request.headers.authorization ?? undefined;
-    const authCookie = request.cookies.access_token ?? undefined;
+    const authCookie = request.cookies[env.APP_NAME + "_Auth"] ?? undefined;
     if (authHeader || authCookie) {
       const token =
         authCookie || (authHeader ? authHeader.replace("Bearer ", "") : "");

@@ -5,6 +5,7 @@ const env = zennv({
   dotenv: true,
   schema: z.object({
     NODE_ENV: z.string().default("development"),
+    APP_NAME: z.string().default("trading"),
     CLOSE_GRACE_DELAY: z.number().default(500),
     API_PORT: z.number().default(8000),
     API_HOST: z.string().default("0.0.0.0"),

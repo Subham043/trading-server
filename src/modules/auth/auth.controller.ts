@@ -19,7 +19,7 @@ export async function login(
   reply
     .code(200)
     .type("application/json")
-    .setCookie("access_token", result.access_token, {
+    .setCookie(env.APP_NAME + "_Auth", result.access_token, {
       domain: env.NODE_ENV === "production" ? env.MAIN_URL : "",
       secure: env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -62,4 +62,24 @@ export async function resetPassword(
     message: "Password Reset Successful",
     data: result,
   });
+}
+
+export async function logout(
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> {
+  reply
+    .code(200)
+    .type("application/json")
+    .setCookie(env.APP_NAME + "_Auth", "", {
+      domain: env.NODE_ENV === "production" ? env.MAIN_URL : "",
+      secure: env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      path: "/",
+    })
+    .send({
+      code: 200,
+      success: true,
+      message: "Logged Out Successfully",
+    });
 }
