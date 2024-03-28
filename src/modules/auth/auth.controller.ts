@@ -1,7 +1,13 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { LoginBody } from "./schemas/login.schema";
-import { signin } from "./auth.services";
+import { forgot_password, reset_password, signin } from "./auth.services";
 import env from "../../config/env";
+import {
+  ForgotPasswordBody,
+  emailExistSchema,
+} from "./schemas/forgot_password.schema";
+import { ResetPasswordBody } from "./schemas/reset_password.schema";
+import { GetKeyParam } from "./schemas/key_param.schema";
 
 export async function login(
   request: FastifyRequest<{
@@ -25,4 +31,35 @@ export async function login(
       message: "Login Successful",
       data: result,
     });
+}
+
+export async function forgotPassword(
+  request: FastifyRequest<{
+    Body: ForgotPasswordBody;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  await emailExistSchema.parseAsync(request.body.email);
+  await forgot_password(request.body);
+  reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "We have sent a password reset link to your email",
+  });
+}
+
+export async function resetPassword(
+  request: FastifyRequest<{
+    Body: ResetPasswordBody;
+    Params: GetKeyParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await reset_password(request.body, request.params.key);
+  reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Password Reset Successful",
+    data: result,
+  });
 }
