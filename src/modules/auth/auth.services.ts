@@ -1,6 +1,6 @@
 import { fastifyApp } from "../..";
 import { AuthType } from "../../@types/user.type";
-import { CustomInvalidRequestError } from "../../utils/exceptions";
+import { InvalidRequestError } from "../../utils/exceptions";
 import { getByEmail } from "./auth.repository";
 import { LoginBody } from "./schemas/login.schema";
 
@@ -10,14 +10,14 @@ export async function signin(user: LoginBody): Promise<AuthType> {
 
   const userByEmail = await getByEmail(email);
   if (!userByEmail) {
-    throw new CustomInvalidRequestError("Invalid credentials");
+    throw new InvalidRequestError("Invalid credentials");
   }
   const isPasswordValid = await app.bcrypt.compare(
     password,
     userByEmail.password
   );
   if (!isPasswordValid) {
-    throw new CustomInvalidRequestError("Invalid credentials");
+    throw new InvalidRequestError("Invalid credentials");
   }
 
   const data = {

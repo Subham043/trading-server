@@ -9,7 +9,7 @@ import {
   preHandlerHookHandler,
 } from "fastify";
 import { IncomingMessage, ServerResponse } from "http";
-import { CustomUnauthorizedError } from "./exceptions";
+import { UnauthorizedError } from "./exceptions";
 import { AuthType } from "../@types/user.type";
 import { getById } from "../modules/user/user.repository";
 import { ZodError } from "zod";
@@ -38,22 +38,6 @@ export const ServerErrorHandler = (
       success: false,
       message: "Bad Request",
       formErrors: error.formErrors.fieldErrors,
-    });
-  }
-  if (error.validation && error.statusCode === 400) {
-    const result = {};
-    error.validation.forEach((element) => {
-      result[
-        (element.params.missingProperty as string) ||
-          (element.params.format as string) ||
-          (element.instancePath.replace("/", "") as string)
-      ] = element.message;
-    });
-    return reply.status(422).type("application/json").send({
-      statusCode: 422,
-      success: false,
-      message: "Bad Request",
-      errors: result,
     });
   }
   return reply
@@ -91,14 +75,14 @@ export const verifyJwtDecorator = async (
           return;
           // done(); // pass an error if the authentication fails
         }
-        throw new CustomUnauthorizedError();
+        throw new UnauthorizedError();
       } else {
-        throw new CustomUnauthorizedError();
+        throw new UnauthorizedError();
       }
     } else {
-      throw new CustomUnauthorizedError();
+      throw new UnauthorizedError();
     }
   } catch (err) {
-    throw new CustomUnauthorizedError();
+    throw new UnauthorizedError();
   }
 };

@@ -4,7 +4,10 @@ import {
   CreateUserBody,
   createUserUniqueEmailSchema,
 } from "./schemas/create.schema";
-import { UpdateUserBody } from "./schemas/update.schema";
+import {
+  UpdateUserBody,
+  updateUserUniqueEmailSchema,
+} from "./schemas/update.schema";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 
@@ -82,6 +85,10 @@ export async function updateUser(
   }>,
   reply: FastifyReply
 ): Promise<void> {
+  await updateUserUniqueEmailSchema.parseAsync({
+    id: request.params.id,
+    email: request.body.email,
+  });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({
     code: 200,

@@ -1,17 +1,13 @@
 import {
   count,
   createUser,
-  getByEmail,
   getById,
   paginate,
   remove,
   updateUser,
 } from "./user.repository";
 import { v4 as uuidv4 } from "uuid";
-import {
-  CustomInputValidationError,
-  CustomNotFoundError,
-} from "../../utils/exceptions";
+import { NotFoundError } from "../../utils/exceptions";
 import { fastifyApp } from "../../index";
 import { CreateUserBody } from "./schemas/create.schema";
 import { UserType } from "../../@types/user.type";
@@ -38,13 +34,6 @@ export async function create(user: CreateUserBody): Promise<UserType> {
     password: hashedPassword,
     key: uuidv4(),
   };
-
-  const userByEmail = await getByEmail(email);
-  if (userByEmail) {
-    throw new CustomInputValidationError({
-      email: "Email is taken",
-    });
-  }
 
   const userData = await createUser(data);
   app.mailer.sendMail(
@@ -86,13 +75,6 @@ export async function update(
     key: uuidv4(),
   };
 
-  const userByEmail = await getByEmail(email);
-  if (userByEmail && userByEmail.id !== param.id) {
-    throw new CustomInputValidationError({
-      email: "Email is taken",
-    });
-  }
-
   return await updateUser(data, param.id);
 }
 
@@ -107,7 +89,7 @@ export async function findById(params: GetIdParam): Promise<UserType> {
 
   const user = await getById(id);
   if (!user) {
-    throw new CustomNotFoundError();
+    throw new NotFoundError();
   }
   return user;
 }

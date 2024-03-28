@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { UpdateProfileBody } from "./schemas/profile.schema";
 import { update } from "./account.services";
+import { updateUserUniqueEmailSchema } from "../user/schemas/update.schema";
 
 export async function getProfile(
   request: FastifyRequest,
@@ -20,6 +21,10 @@ export async function updateProfile(
   }>,
   reply: FastifyReply
 ): Promise<void> {
+  await updateUserUniqueEmailSchema.parseAsync({
+    id: request.authenticatedUser!.id,
+    email: request.body.email,
+  });
   const result = await update(request.body, request.authenticatedUser!.id);
   return reply.code(200).type("application/json").send({
     code: 200,
