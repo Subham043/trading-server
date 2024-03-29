@@ -1,8 +1,8 @@
-import { FastifyMailOptionsType } from '../@types/mail.type';
-import env from '../config/env';
+import { FastifyMailOptionsType } from "../@types/mail.type";
+import env from "../config/env";
 
 export const mailOptions: FastifyMailOptionsType = {
-  defaults: { from: 'John Doe <no-reply@aaaedu.in>' },
+  defaults: { from: env.APP_NAME + " <no-reply@aaaedu.in>" },
   transport: {
     host: env.MAIL_HOST,
     port: env.MAIL_PORT,

@@ -10,7 +10,7 @@ const env = zennv({
     API_PORT: z.number().default(8000),
     API_HOST: z.string().default("0.0.0.0"),
     MAIN_URL: z.string().default("http://localhost:8000"),
-    CLIENT_URL: z.string().default("http://localhost:3000"),
+    CLIENT_URL: z.string().default("http://localhost:5173"),
     DATABASE_HOST: z.string().default("localhost"),
     DATABASE_PORT: z.number().default(5432),
     DATABASE_NAME: z.string(),

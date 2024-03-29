@@ -17,6 +17,7 @@ import { logger } from "../../utils/logger";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { UpdateUserBody } from "./schemas/update.schema";
+import env from "../../config/env";
 
 /**
  * Create a new user with the provided user information.
@@ -39,8 +40,17 @@ export async function create(user: CreateUserBody): Promise<UserType> {
   app.mailer.sendMail(
     {
       to: userData.email,
-      subject: "example",
-      text: "hello world !",
+      subject: `Welcome to ${env.APP_NAME}`,
+      html: `
+        <strong>Hi,</strong>
+        <h3>Welcome to ${env.APP_NAME}</h3>
+        <p>Your account has been created successfully</p>
+        <p>This is your login credential</p>
+        <p><b>Email</b>: ${userData.email}</p>
+        <p><b>Password</b>: ${password}</p>
+        <p>Click the link below to login to your account</p>
+        <a href="${env.CLIENT_URL}/login" target="_blank">Login</a>
+      `,
     },
     (errors, info) => {
       if (errors) {
@@ -69,7 +79,6 @@ export async function update(
   const data = {
     name,
     email,
-    key: uuidv4(),
   };
 
   return await updateUser(data, param.id);

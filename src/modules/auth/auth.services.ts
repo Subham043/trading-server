@@ -11,6 +11,8 @@ import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
 import { LoginBody } from "./schemas/login.schema";
 import { v4 as uuidv4 } from "uuid";
 import { ResetPasswordBody } from "./schemas/reset_password.schema";
+import { logger } from "../../utils/logger";
+import env from "../../config/env";
 
 export async function signin(user: LoginBody): Promise<AuthType> {
   const app = await fastifyApp;
@@ -45,10 +47,30 @@ export async function signin(user: LoginBody): Promise<AuthType> {
 }
 
 export async function forgot_password(user: ForgotPasswordBody): Promise<void> {
+  const app = await fastifyApp;
   const { email } = user;
   const key = uuidv4();
-  console.log(key);
   await forgotPassword({ email, key });
+  app.mailer.sendMail(
+    {
+      to: email,
+      subject: "Reset your password - " + env.APP_NAME,
+      html: `
+        <strong>Hi,</strong>
+        <h3>Reset your password</h3>
+        <p>Click the link below to reset your password</p>
+        <a href="${env.CLIENT_URL}/reset-password/${key}" target="_blank">Reset your password</a>
+      `,
+    },
+    (errors, info) => {
+      if (errors) {
+        logger.error(errors);
+      }
+      if (info) {
+        logger.info(info);
+      }
+    }
+  );
 }
 
 export async function reset_password(
