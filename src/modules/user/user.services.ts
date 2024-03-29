@@ -65,13 +65,10 @@ export async function update(
   user: UpdateUserBody,
   param: GetIdParam
 ): Promise<UserType> {
-  const app = await fastifyApp;
-  const { name, email, password } = user;
-  const hashedPassword = await app.bcrypt.hash(password);
+  const { name, email } = user;
   const data = {
     name,
     email,
-    password: hashedPassword,
     key: uuidv4(),
   };
 
@@ -109,8 +106,8 @@ export async function list(querystring: GetPaginationQuery): Promise<
     page: querystring.page,
     size: querystring.limit,
   });
-  const user = await paginate(limit, offset);
-  const userCount = await count();
+  const user = await paginate(limit, offset, querystring.search);
+  const userCount = await count(querystring.search);
   return {
     user,
     ...getPaginationKeys({

@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { desc, eq, like, or, sql } from "drizzle-orm";
 import { InferInsertModel } from "drizzle-orm";
 import db from "../../db";
 import { users } from "../../db/schema/user";
@@ -64,7 +64,8 @@ export async function updateUser(
  */
 export async function paginate(
   limit: number,
-  offset: number
+  offset: number,
+  search?: string
 ): Promise<UserType[]> {
   const data = await db
     .select({
@@ -76,6 +77,12 @@ export async function paginate(
       createdAt: users.createdAt,
     })
     .from(users)
+    .where(
+      search
+        ? or(like(users.name, `%${search}%`), like(users.email, `%${search}%`))
+        : undefined
+    )
+    .orderBy(desc(users.createdAt))
     .limit(limit)
     .offset(offset);
 
@@ -87,12 +94,17 @@ export async function paginate(
  *
  * @return {Promise<number>} The number of records.
  */
-export async function count(): Promise<number> {
+export async function count(search?: string): Promise<number> {
   const data = await db
     .select({
       count: sql<number>`cast(count(${users.id}) as int)`,
     })
-    .from(users);
+    .from(users)
+    .where(
+      search
+        ? or(like(users.name, `%${search}%`), like(users.email, `%${search}%`))
+        : undefined
+    );
 
   return data[0].count;
 }
