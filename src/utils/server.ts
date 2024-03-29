@@ -41,7 +41,7 @@ declare module "fastify" {
 export async function buildServer() {
   const server = await fastify({
     logger: logger,
-    disableRequestLogging: true,
+    disableRequestLogging: env.NODE_ENV !== "production",
     ajv: {
       customOptions: {
         allErrors: true,

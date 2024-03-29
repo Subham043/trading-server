@@ -24,6 +24,8 @@ export async function login(
       secure: env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7,
       path: "/",
+      httpOnly: true,
+      sameSite: "lax",
     })
     .send({
       code: 200,
@@ -76,6 +78,8 @@ export async function logout(
       secure: env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7,
       path: "/",
+      httpOnly: true,
+      sameSite: "lax",
     })
     .send({
       code: 200,
