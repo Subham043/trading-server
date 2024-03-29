@@ -12,7 +12,7 @@ import { corsOptions } from "../constants/corsOptions";
 import { helmetOptions } from "../constants/helmetOptions";
 import { userRoutes } from "../modules/user/user.routes";
 import { mailOptions } from "../constants/mailOptions";
-import { FastifyMailType } from "../@types/mail.type";
+import { FastifyMailer } from "../@types/mail.type";
 import { authRoutes } from "../modules/auth/auth.routes";
 import {
   serializerCompiler,
@@ -30,7 +30,8 @@ import { accountRoutes } from "../modules/account/account.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
-    mailer: FastifyMailType;
+    // mailer: FastifyMailType;
+    mailer: FastifyMailer;
     verifyJwt: PreHandlerHookDecoratorType;
   }
   interface FastifyRequest {

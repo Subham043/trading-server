@@ -1,3 +1,5 @@
+import { Transporter } from "nodemailer";
+
 export declare type FastifyMailOptionsType = {
   defaults: { from: string };
   transport: {
@@ -22,6 +24,11 @@ export declare type FastifyMailType = {
       text: string;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    callback: (errors: any, info: any) => void,
+    callback: (errors: any, info: any) => void
   ): void;
 };
+
+export interface FastifyMailerNamedInstance {
+  [namespace: string]: Transporter;
+}
+export type FastifyMailer = FastifyMailerNamedInstance & Transporter;
