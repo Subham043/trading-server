@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { InferInsertModel, and, eq } from "drizzle-orm";
 import { UserType } from "../../@types/user.type";
 import db from "../../db";
 import { users } from "../../db/schema/user";
 import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
+import { tokens } from "../../db/schema/token";
 
 export async function getByEmail(
   email: string
@@ -54,4 +55,39 @@ export async function resetPassword(
   id: number
 ): Promise<void> {
   await db.update(users).set(data).where(eq(users.id, id));
+}
+
+export async function insertToken(
+  data: InferInsertModel<typeof tokens>
+): Promise<void> {
+  await db.insert(tokens).values(data).onConflictDoNothing();
+}
+
+export async function getToken(data: {
+  token: string;
+  userId: number;
+}): Promise<{ id: number; token: string }[]> {
+  const result = await db
+    .select({
+      id: tokens.id,
+      token: tokens.token,
+    })
+    .from(tokens)
+    .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)));
+  return result;
+}
+
+export async function deleteToken(data: {
+  token: string;
+  userId: number;
+}): Promise<{ id: number; token: string; createdAt: Date | null }> {
+  const result = await db
+    .delete(tokens)
+    .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)))
+    .returning({
+      id: tokens.id,
+      token: tokens.token,
+      createdAt: tokens.createdAt,
+    });
+  return result[0];
 }

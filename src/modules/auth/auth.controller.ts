@@ -8,6 +8,7 @@ import {
 } from "./schemas/forgot_password.schema";
 import { ResetPasswordBody } from "./schemas/reset_password.schema";
 import { GetKeyParam } from "./schemas/key_param.schema";
+import { deleteToken } from "./auth.repository";
 
 export async function login(
   request: FastifyRequest<{
@@ -70,6 +71,10 @@ export async function logout(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> {
+  await deleteToken({
+    token: request.authenticatedUser!.access_token,
+    userId: request.authenticatedUser!.id,
+  });
   reply
     .code(200)
     .type("application/json")

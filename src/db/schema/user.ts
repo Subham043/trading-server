@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   pgTable,
   bigserial,
@@ -7,6 +8,7 @@ import {
   timestamp,
   pgEnum,
 } from "drizzle-orm/pg-core";
+import { tokens } from "./token";
 
 export const statusEnum = pgEnum("status", ["active", "blocked"]);
 export const roleEnum = pgEnum("role", ["user", "admin"]);
@@ -30,3 +32,7 @@ export const users = pgTable(
     };
   }
 );
+
+export const usersRelations = relations(users, ({ many }) => ({
+  tokens: many(tokens),
+}));

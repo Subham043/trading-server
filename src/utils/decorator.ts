@@ -14,6 +14,7 @@ import { AuthType } from "../@types/user.type";
 import { getById } from "../modules/user/user.repository";
 import { ZodError } from "zod";
 import env from "../config/env";
+import { deleteToken, getToken } from "../modules/auth/auth.repository";
 
 export type PreHandlerHookDecoratorType = preHandlerHookHandler<
   RawServerDefault,
@@ -66,16 +67,20 @@ export const verifyJwtDecorator = async (
       const user = request.server.jwt.verify<AuthType>(token);
       if (user) {
         const verifyUser = await getById(user.id);
-        if (verifyUser) {
-          request.user = { ...user, ...verifyUser };
-          request.authenticatedUser = {
-            ...user,
-            ...verifyUser,
-            access_token: token,
-          };
-          return;
+        if (verifyUser && verifyUser.status === "active") {
+          const getTokenData = await getToken({ token, userId: user.id });
+          if (getTokenData.length > 0) {
+            request.user = { ...user, ...verifyUser };
+            request.authenticatedUser = {
+              ...user,
+              ...verifyUser,
+              access_token: token,
+            };
+            return;
+          }
           // done(); // pass an error if the authentication fails
         }
+        await deleteToken({ token, userId: user.id });
         throw new UnauthorizedError();
       } else {
         throw new UnauthorizedError();

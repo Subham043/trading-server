@@ -5,6 +5,7 @@ import {
   forgotPassword,
   getByEmail,
   getByKey,
+  insertToken,
   resetPassword,
 } from "./auth.repository";
 import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
@@ -40,6 +41,7 @@ export async function signin(user: LoginBody): Promise<AuthType> {
   };
 
   const token = app.jwt.sign({ ...data }, { expiresIn: "7d" });
+  await insertToken({ token, userId: userByEmail.id });
   return {
     ...data,
     access_token: token,
