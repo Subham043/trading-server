@@ -8,6 +8,32 @@ import {
 } from "../../@types/name_change_master.type";
 import { companyMasters } from "../../db/schema/company_master";
 
+const NameChangeMasterSelect = {
+  id: nameChangeMasters.id,
+  NSE: nameChangeMasters.NSE,
+  BSE: nameChangeMasters.BSE,
+  newName: nameChangeMasters.newName,
+  previousName: nameChangeMasters.previousName,
+  dateNameChange: nameChangeMasters.dateNameChange,
+  oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
+  newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
+  dateSecurityChange: nameChangeMasters.dateSecurityChange,
+  createdAt: nameChangeMasters.createdAt,
+  companyId: nameChangeMasters.companyID,
+};
+
+const CompanyMasterSelect = {
+  companyId: companyMasters.id,
+  CIN: companyMasters.CIN,
+  ISIN: companyMasters.ISIN,
+  faceValue: companyMasters.faceValue,
+};
+
+const MasterSelect = {
+  ...NameChangeMasterSelect,
+  ...CompanyMasterSelect,
+};
+
 /**
  * Create a new companyMaster with the provided data.
  *
@@ -29,19 +55,7 @@ export async function createNameChangeMaster(
         : new Date(),
     })
     .onConflictDoNothing()
-    .returning({
-      id: nameChangeMasters.id,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      newName: nameChangeMasters.newName,
-      previousName: nameChangeMasters.previousName,
-      dateNameChange: nameChangeMasters.dateNameChange,
-      oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-      newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-      dateSecurityChange: nameChangeMasters.dateSecurityChange,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    });
+    .returning(NameChangeMasterSelect);
   return result[0];
 }
 
@@ -68,19 +82,7 @@ export async function updateNameChangeMaster(
         : new Date(),
     })
     .where(eq(nameChangeMasters.id, id))
-    .returning({
-      id: nameChangeMasters.id,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      newName: nameChangeMasters.newName,
-      previousName: nameChangeMasters.previousName,
-      dateNameChange: nameChangeMasters.dateNameChange,
-      oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-      newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-      dateSecurityChange: nameChangeMasters.dateSecurityChange,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    });
+    .returning(NameChangeMasterSelect);
   return result[0];
 }
 
@@ -98,19 +100,7 @@ export async function paginate(
   search?: string
 ): Promise<NameChangeMasterType[]> {
   const data = await db
-    .select({
-      id: nameChangeMasters.id,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      newName: nameChangeMasters.newName,
-      previousName: nameChangeMasters.previousName,
-      dateNameChange: nameChangeMasters.dateNameChange,
-      oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-      newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-      dateSecurityChange: nameChangeMasters.dateSecurityChange,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    })
+    .select(NameChangeMasterSelect)
     .from(nameChangeMasters)
     .where(
       search
@@ -122,9 +112,7 @@ export async function paginate(
               like(nameChangeMasters.newName, `%${search}%`),
               like(nameChangeMasters.previousName, `%${search}%`),
               like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.dateNameChange, `%${search}%`),
-              like(nameChangeMasters.dateSecurityChange, `%${search}%`)
+              like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
             )
           )
         : eq(nameChangeMasters.companyID, companyID)
@@ -160,9 +148,7 @@ export async function count(
               like(nameChangeMasters.newName, `%${search}%`),
               like(nameChangeMasters.previousName, `%${search}%`),
               like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.dateNameChange, `%${search}%`),
-              like(nameChangeMasters.dateSecurityChange, `%${search}%`)
+              like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
             )
           )
         : eq(nameChangeMasters.companyID, companyID)
@@ -181,19 +167,7 @@ export async function getById(
   id: number
 ): Promise<NameChangeMasterType | null> {
   const data = await db
-    .select({
-      id: nameChangeMasters.id,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      newName: nameChangeMasters.newName,
-      previousName: nameChangeMasters.previousName,
-      dateNameChange: nameChangeMasters.dateNameChange,
-      oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-      newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-      dateSecurityChange: nameChangeMasters.dateSecurityChange,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    })
+    .select(NameChangeMasterSelect)
     .from(nameChangeMasters)
     .where(eq(nameChangeMasters.id, id));
   if (data.length > 0) {
@@ -258,18 +232,7 @@ export async function remove(id: number): Promise<NameChangeMasterType> {
   const result = await db
     .delete(nameChangeMasters)
     .where(eq(nameChangeMasters.id, id))
-    .returning({
-      id: nameChangeMasters.id,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      newName: nameChangeMasters.newName,
-      previousName: nameChangeMasters.previousName,
-      dateNameChange: nameChangeMasters.dateNameChange,
-      oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-      newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-      dateSecurityChange: nameChangeMasters.dateSecurityChange,
-      createdAt: nameChangeMasters.createdAt,
-    });
+    .returning(NameChangeMasterSelect);
   return result[0];
 }
 
@@ -282,25 +245,11 @@ export async function paginateCompany(
     CIN?: string | null | undefined;
     ISIN?: string | null | undefined;
     faceValue?: number | null | undefined;
+    companyId?: number | null | undefined;
   })[]
 > {
   const data = await db
-    .select({
-      id: nameChangeMasters.id,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      newName: nameChangeMasters.newName,
-      previousName: nameChangeMasters.previousName,
-      dateNameChange: nameChangeMasters.dateNameChange,
-      oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-      newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-      dateSecurityChange: nameChangeMasters.dateSecurityChange,
-      companyId: nameChangeMasters.companyID,
-      CIN: companyMasters.CIN,
-      ISIN: companyMasters.ISIN,
-      faceValue: companyMasters.faceValue,
-      createdAt: nameChangeMasters.createdAt,
-    })
+    .select(MasterSelect)
     .from(nameChangeMasters)
     .leftJoin(
       companyMasters,
@@ -327,8 +276,9 @@ export async function paginateCompany(
               like(nameChangeMasters.previousName, `%${search}%`),
               like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
               like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.dateNameChange, `%${search}%`),
-              like(nameChangeMasters.dateSecurityChange, `%${search}%`)
+              like(companyMasters.ISIN, `%${search}%`),
+              like(companyMasters.CIN, `%${search}%`),
+              eq(companyMasters.faceValue, Number(search))
             )
           )
         : eq(
@@ -381,8 +331,9 @@ export async function countCompany(search?: string): Promise<number> {
               like(nameChangeMasters.previousName, `%${search}%`),
               like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
               like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.dateNameChange, `%${search}%`),
-              like(nameChangeMasters.dateSecurityChange, `%${search}%`)
+              like(companyMasters.ISIN, `%${search}%`),
+              like(companyMasters.CIN, `%${search}%`),
+              eq(companyMasters.faceValue, Number(search))
             )
           )
         : eq(
@@ -401,23 +352,16 @@ export async function countCompany(search?: string): Promise<number> {
   return data[0].count;
 }
 
-export async function getByCompanyId(
-  companyId: number
-): Promise<NameChangeMasterType> {
+export async function getByCompanyId(companyId: number): Promise<
+  NameChangeMasterType & {
+    CIN?: string | null | undefined;
+    ISIN?: string | null | undefined;
+    faceValue?: number | null | undefined;
+    companyId?: number | null | undefined;
+  }
+> {
   const data = await db
-    .select({
-      id: nameChangeMasters.id,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      newName: nameChangeMasters.newName,
-      previousName: nameChangeMasters.previousName,
-      dateNameChange: nameChangeMasters.dateNameChange,
-      oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-      newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-      dateSecurityChange: nameChangeMasters.dateSecurityChange,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    })
+    .select(MasterSelect)
     .from(nameChangeMasters)
     .leftJoin(
       companyMasters,

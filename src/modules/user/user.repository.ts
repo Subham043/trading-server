@@ -5,6 +5,14 @@ import { users } from "../../db/schema/user";
 import { UserType } from "../../@types/user.type";
 import { UpdateUserBody } from "./schemas/update.schema";
 
+const UserSelect = {
+  id: users.id,
+  name: users.name,
+  email: users.email,
+  status: users.status,
+  role: users.role,
+  createdAt: users.createdAt,
+};
 /**
  * Create a new user with the provided data.
  *
@@ -18,14 +26,7 @@ export async function createUser(
     .insert(users)
     .values(data)
     .onConflictDoNothing()
-    .returning({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      status: users.status,
-      role: users.role,
-      createdAt: users.createdAt,
-    });
+    .returning(UserSelect);
   return result[0];
 }
 
@@ -44,14 +45,7 @@ export async function updateUser(
     .update(users)
     .set(data)
     .where(eq(users.id, id))
-    .returning({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      status: users.status,
-      role: users.role,
-      createdAt: users.createdAt,
-    });
+    .returning(UserSelect);
   return result[0];
 }
 
@@ -68,14 +62,7 @@ export async function paginate(
   search?: string
 ): Promise<UserType[]> {
   const data = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      status: users.status,
-      role: users.role,
-      createdAt: users.createdAt,
-    })
+    .select(UserSelect)
     .from(users)
     .where(
       search
@@ -116,17 +103,7 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<UserType|null>} The user data if found, otherwise null
  */
 export async function getById(id: number): Promise<UserType | null> {
-  const data = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      status: users.status,
-      role: users.role,
-      createdAt: users.createdAt,
-    })
-    .from(users)
-    .where(eq(users.id, id));
+  const data = await db.select(UserSelect).from(users).where(eq(users.id, id));
   if (data.length > 0) {
     return data[0];
   }
@@ -141,14 +118,7 @@ export async function getById(id: number): Promise<UserType | null> {
  */
 export async function getByEmail(email: string): Promise<UserType | null> {
   const data = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      status: users.status,
-      role: users.role,
-      createdAt: users.createdAt,
-    })
+    .select(UserSelect)
     .from(users)
     .where(eq(users.email, email));
   if (data.length > 0) {
@@ -164,13 +134,9 @@ export async function getByEmail(email: string): Promise<UserType | null> {
  * @return {Promise<UserType>} a promise that resolves once the user is removed
  */
 export async function remove(id: number): Promise<UserType> {
-  const result = await db.delete(users).where(eq(users.id, id)).returning({
-    id: users.id,
-    name: users.name,
-    email: users.email,
-    status: users.status,
-    role: users.role,
-    createdAt: users.createdAt,
-  });
+  const result = await db
+    .delete(users)
+    .where(eq(users.id, id))
+    .returning(UserSelect);
   return result[0];
 }

@@ -8,6 +8,40 @@ import {
 } from "../../@types/company_master.type";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
 
+const CompanyMasterSelect = {
+  id: companyMasters.id,
+  ISIN: companyMasters.ISIN,
+  CIN: companyMasters.CIN,
+  faceValue: companyMasters.faceValue,
+  closingPriceNSE: companyMasters.closingPriceNSE,
+  closingPriceBSE: companyMasters.closingPriceBSE,
+  registeredOffice: companyMasters.registeredOffice,
+  city: companyMasters.city,
+  state: companyMasters.state,
+  pincode: companyMasters.pincode,
+  telephone: companyMasters.telephone,
+  fax: companyMasters.fax,
+  email: companyMasters.email,
+  website: companyMasters.website,
+  nameContactPerson: companyMasters.nameContactPerson,
+  designationContactPerson: companyMasters.designationContactPerson,
+  emailContactPerson: companyMasters.emailContactPerson,
+  phoneContactPerson: companyMasters.phoneContactPerson,
+  createdAt: companyMasters.createdAt,
+};
+
+const NameChangeMasterSelect = {
+  newName: nameChangeMasters.newName,
+  NSE: nameChangeMasters.NSE,
+  BSE: nameChangeMasters.BSE,
+  nameChangeMasterId: nameChangeMasters.id,
+};
+
+const MasterSelect = {
+  ...CompanyMasterSelect,
+  ...NameChangeMasterSelect,
+};
+
 /**
  * Create a new companyMaster with the provided data.
  *
@@ -24,27 +58,7 @@ export async function createCompanyMaster(
         .insert(companyMasters)
         .values(companyData)
         .onConflictDoNothing()
-        .returning({
-          id: companyMasters.id,
-          ISIN: companyMasters.ISIN,
-          CIN: companyMasters.CIN,
-          faceValue: companyMasters.faceValue,
-          closingPriceNSE: companyMasters.closingPriceNSE,
-          closingPriceBSE: companyMasters.closingPriceBSE,
-          registeredOffice: companyMasters.registeredOffice,
-          city: companyMasters.city,
-          state: companyMasters.state,
-          pincode: companyMasters.pincode,
-          telephone: companyMasters.telephone,
-          fax: companyMasters.fax,
-          email: companyMasters.email,
-          website: companyMasters.website,
-          nameContactPerson: companyMasters.nameContactPerson,
-          designationContactPerson: companyMasters.designationContactPerson,
-          emailContactPerson: companyMasters.emailContactPerson,
-          phoneContactPerson: companyMasters.phoneContactPerson,
-          createdAt: companyMasters.createdAt,
-        });
+        .returning(CompanyMasterSelect);
       const nameChangeResult = await tx
         .insert(nameChangeMasters)
         .values({
@@ -54,11 +68,7 @@ export async function createCompanyMaster(
           BSE: BSE,
         })
         .onConflictDoNothing()
-        .returning({
-          newName: nameChangeMasters.newName,
-          NSE: nameChangeMasters.NSE,
-          BSE: nameChangeMasters.BSE,
-        });
+        .returning(NameChangeMasterSelect);
       return { ...result[0], ...nameChangeResult[0] };
     } catch (error) {
       tx.rollback();
@@ -86,27 +96,7 @@ export async function updateCompanyMaster(
         .update(companyMasters)
         .set(companyData)
         .where(eq(companyMasters.id, id))
-        .returning({
-          id: companyMasters.id,
-          ISIN: companyMasters.ISIN,
-          CIN: companyMasters.CIN,
-          faceValue: companyMasters.faceValue,
-          closingPriceNSE: companyMasters.closingPriceNSE,
-          closingPriceBSE: companyMasters.closingPriceBSE,
-          registeredOffice: companyMasters.registeredOffice,
-          city: companyMasters.city,
-          state: companyMasters.state,
-          pincode: companyMasters.pincode,
-          telephone: companyMasters.telephone,
-          fax: companyMasters.fax,
-          email: companyMasters.email,
-          website: companyMasters.website,
-          nameContactPerson: companyMasters.nameContactPerson,
-          designationContactPerson: companyMasters.designationContactPerson,
-          emailContactPerson: companyMasters.emailContactPerson,
-          phoneContactPerson: companyMasters.phoneContactPerson,
-          createdAt: companyMasters.createdAt,
-        });
+        .returning(CompanyMasterSelect);
       const nameChangeResult = await tx
         .update(nameChangeMasters)
         .set({
@@ -130,11 +120,7 @@ export async function updateCompanyMaster(
             )
           )
         )
-        .returning({
-          newName: nameChangeMasters.newName,
-          NSE: nameChangeMasters.NSE,
-          BSE: nameChangeMasters.BSE,
-        });
+        .returning(NameChangeMasterSelect);
       return { ...result[0], ...nameChangeResult[0] };
     } catch (error) {
       tx.rollback();
@@ -157,30 +143,7 @@ export async function paginate(
   search?: string
 ): Promise<CompanyMasterType[]> {
   const data = await db
-    .select({
-      id: companyMasters.id,
-      ISIN: companyMasters.ISIN,
-      CIN: companyMasters.CIN,
-      faceValue: companyMasters.faceValue,
-      closingPriceNSE: companyMasters.closingPriceNSE,
-      closingPriceBSE: companyMasters.closingPriceBSE,
-      registeredOffice: companyMasters.registeredOffice,
-      city: companyMasters.city,
-      state: companyMasters.state,
-      pincode: companyMasters.pincode,
-      telephone: companyMasters.telephone,
-      fax: companyMasters.fax,
-      email: companyMasters.email,
-      website: companyMasters.website,
-      nameContactPerson: companyMasters.nameContactPerson,
-      designationContactPerson: companyMasters.designationContactPerson,
-      emailContactPerson: companyMasters.emailContactPerson,
-      phoneContactPerson: companyMasters.phoneContactPerson,
-      newName: nameChangeMasters.newName,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      createdAt: companyMasters.createdAt,
-    })
+    .select(MasterSelect)
     .from(companyMasters)
     .leftJoin(
       nameChangeMasters,
@@ -201,12 +164,15 @@ export async function paginate(
                 .limit(1)
             ),
             or(
+              eq(companyMasters.pincode, search),
+              like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.BSE, `%${search}%`),
+              like(nameChangeMasters.NSE, `%${search}%`),
               like(companyMasters.ISIN, `%${search}%`),
               like(companyMasters.CIN, `%${search}%`),
               like(companyMasters.registeredOffice, `%${search}%`),
               like(companyMasters.city, `%${search}%`),
               like(companyMasters.state, `%${search}%`),
-              like(companyMasters.pincode, `%${search}%`),
               like(companyMasters.email, `%${search}%`),
               like(companyMasters.website, `%${search}%`),
               like(companyMasters.nameContactPerson, `%${search}%`),
@@ -215,9 +181,9 @@ export async function paginate(
               like(companyMasters.phoneContactPerson, `%${search}%`),
               like(companyMasters.telephone, `%${search}%`),
               like(companyMasters.fax, `%${search}%`),
-              like(companyMasters.faceValue, `%${search}%`),
-              like(companyMasters.closingPriceNSE, `%${search}%`),
-              like(companyMasters.closingPriceBSE, `%${search}%`)
+              eq(companyMasters.faceValue, Number(search)),
+              eq(companyMasters.closingPriceNSE, Number(search)),
+              eq(companyMasters.closingPriceBSE, Number(search))
             )
           )
         : eq(
@@ -270,11 +236,14 @@ export async function count(search?: string): Promise<number> {
             ),
             or(
               like(companyMasters.ISIN, `%${search}%`),
+              like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.BSE, `%${search}%`),
+              like(nameChangeMasters.NSE, `%${search}%`),
               like(companyMasters.CIN, `%${search}%`),
               like(companyMasters.registeredOffice, `%${search}%`),
               like(companyMasters.city, `%${search}%`),
               like(companyMasters.state, `%${search}%`),
-              like(companyMasters.pincode, `%${search}%`),
+              eq(companyMasters.pincode, search),
               like(companyMasters.email, `%${search}%`),
               like(companyMasters.website, `%${search}%`),
               like(companyMasters.nameContactPerson, `%${search}%`),
@@ -283,9 +252,9 @@ export async function count(search?: string): Promise<number> {
               like(companyMasters.phoneContactPerson, `%${search}%`),
               like(companyMasters.telephone, `%${search}%`),
               like(companyMasters.fax, `%${search}%`),
-              like(companyMasters.faceValue, `%${search}%`),
-              like(companyMasters.closingPriceNSE, `%${search}%`),
-              like(companyMasters.closingPriceBSE, `%${search}%`)
+              eq(companyMasters.faceValue, Number(search)),
+              eq(companyMasters.closingPriceNSE, Number(search)),
+              eq(companyMasters.closingPriceBSE, Number(search))
             )
           )
         : eq(
@@ -312,31 +281,7 @@ export async function count(search?: string): Promise<number> {
  */
 export async function getById(id: number): Promise<CompanyMasterType | null> {
   const data = await db
-    .select({
-      id: companyMasters.id,
-      ISIN: companyMasters.ISIN,
-      CIN: companyMasters.CIN,
-      faceValue: companyMasters.faceValue,
-      closingPriceNSE: companyMasters.closingPriceNSE,
-      closingPriceBSE: companyMasters.closingPriceBSE,
-      registeredOffice: companyMasters.registeredOffice,
-      city: companyMasters.city,
-      state: companyMasters.state,
-      pincode: companyMasters.pincode,
-      telephone: companyMasters.telephone,
-      fax: companyMasters.fax,
-      email: companyMasters.email,
-      website: companyMasters.website,
-      nameContactPerson: companyMasters.nameContactPerson,
-      designationContactPerson: companyMasters.designationContactPerson,
-      emailContactPerson: companyMasters.emailContactPerson,
-      phoneContactPerson: companyMasters.phoneContactPerson,
-      newName: nameChangeMasters.newName,
-      NSE: nameChangeMasters.NSE,
-      BSE: nameChangeMasters.BSE,
-      nameChangeMasterId: nameChangeMasters.id,
-      createdAt: companyMasters.createdAt,
-    })
+    .select(MasterSelect)
     .from(companyMasters)
     .leftJoin(
       nameChangeMasters,
@@ -416,26 +361,6 @@ export async function remove(id: number): Promise<CompanyMasterType> {
   const result = await db
     .delete(companyMasters)
     .where(eq(companyMasters.id, id))
-    .returning({
-      id: companyMasters.id,
-      ISIN: companyMasters.ISIN,
-      CIN: companyMasters.CIN,
-      faceValue: companyMasters.faceValue,
-      closingPriceNSE: companyMasters.closingPriceNSE,
-      closingPriceBSE: companyMasters.closingPriceBSE,
-      registeredOffice: companyMasters.registeredOffice,
-      city: companyMasters.city,
-      state: companyMasters.state,
-      pincode: companyMasters.pincode,
-      telephone: companyMasters.telephone,
-      fax: companyMasters.fax,
-      email: companyMasters.email,
-      website: companyMasters.website,
-      nameContactPerson: companyMasters.nameContactPerson,
-      designationContactPerson: companyMasters.designationContactPerson,
-      emailContactPerson: companyMasters.emailContactPerson,
-      phoneContactPerson: companyMasters.phoneContactPerson,
-      createdAt: companyMasters.createdAt,
-    });
+    .returning(CompanyMasterSelect);
   return result[0];
 }

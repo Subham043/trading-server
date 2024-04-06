@@ -9,7 +9,7 @@ import {
   remove,
   updateNameChangeMaster,
 } from "./name_change_master.repository";
-import { NotFoundError } from "../../utils/exceptions";
+import { InvalidRequestError, NotFoundError } from "../../utils/exceptions";
 import {
   NameChangeMasterCreateType,
   NameChangeMasterType,
@@ -68,9 +68,14 @@ export async function findById(
   return nameChangeMaster;
 }
 
-export async function findByCompanyId(
-  params: GetCompanyIdParam
-): Promise<NameChangeMasterType> {
+export async function findByCompanyId(params: GetCompanyIdParam): Promise<
+  NameChangeMasterType & {
+    companyId?: number | null | undefined;
+    CIN?: string | null | undefined;
+    ISIN?: string | null | undefined;
+    faceValue?: number | null | undefined;
+  }
+> {
   const { companyId } = params;
   return await getByCompanyId(companyId);
 }
@@ -119,6 +124,7 @@ export async function listCompany(querystring: GetPaginationQuery): Promise<
       CIN?: string | null | undefined;
       ISIN?: string | null | undefined;
       faceValue?: number | null | undefined;
+      companyId?: number | null | undefined;
     })[];
   } & PaginationType
 > {
@@ -154,6 +160,15 @@ export async function destroy(
   const { id } = params;
 
   const nameChangeMaster = await findById(params);
+  const nameChangeMasterCount = await count(
+    nameChangeMaster.companyId ? nameChangeMaster.companyId : 0,
+    undefined
+  );
+  if (nameChangeMasterCount === 1) {
+    throw new InvalidRequestError(
+      "Company must have at least one name change master"
+    );
+  }
   await remove(id);
   return nameChangeMaster;
 }

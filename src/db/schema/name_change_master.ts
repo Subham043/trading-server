@@ -14,7 +14,7 @@ export const nameChangeMasters = pgTable("name_change_masters", {
   dateSecurityChange: timestamp("date_security_change").defaultNow(),
   companyID: bigserial("companyID", { mode: "number" })
     .notNull()
-    .references(() => companyMasters.id),
+    .references(() => companyMasters.id, { onDelete: "cascade" }),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow(),
 });

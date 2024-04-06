@@ -5,19 +5,27 @@ import { users } from "../../db/schema/user";
 import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
 import { tokens } from "../../db/schema/token";
 
+const AuthSelect = {
+  id: users.id,
+  name: users.name,
+  email: users.email,
+  status: users.status,
+  role: users.role,
+  password: users.password,
+  createdAt: users.createdAt,
+};
+
+const AuthTokenSelect = {
+  id: tokens.id,
+  token: tokens.token,
+  createdAt: tokens.createdAt,
+};
+
 export async function getByEmail(
   email: string
 ): Promise<(UserType & { password: string }) | null> {
   const data = await db
-    .select({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      status: users.status,
-      role: users.role,
-      password: users.password,
-      createdAt: users.createdAt,
-    })
+    .select(AuthSelect)
     .from(users)
     .where(eq(users.email, email));
   if (data.length > 0) {
@@ -68,10 +76,7 @@ export async function getToken(data: {
   userId: number;
 }): Promise<{ id: number; token: string }[]> {
   const result = await db
-    .select({
-      id: tokens.id,
-      token: tokens.token,
-    })
+    .select(AuthTokenSelect)
     .from(tokens)
     .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)));
   return result;
@@ -84,10 +89,6 @@ export async function deleteToken(data: {
   const result = await db
     .delete(tokens)
     .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)))
-    .returning({
-      id: tokens.id,
-      token: tokens.token,
-      createdAt: tokens.createdAt,
-    });
+    .returning(AuthTokenSelect);
   return result[0];
 }

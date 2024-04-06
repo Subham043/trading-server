@@ -21,11 +21,12 @@ export type CompanyMasterType = {
   emailContactPerson?: string | null | undefined;
   phoneContactPerson?: string | null | undefined;
   createdAt?: Date | null;
+  nameChangeMasterId?: number | null | undefined;
 };
 
 export type CompanyMasterCreateType = Omit<
   CompanyMasterType,
-  "id" | "createdAt"
+  "id" | "createdAt" | "nameChangeMasterId"
 >;
 
 export interface CompanyMasterUpdateType extends CompanyMasterCreateType {}

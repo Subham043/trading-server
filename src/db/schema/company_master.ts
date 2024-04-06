@@ -35,7 +35,7 @@ export const companyMasters = pgTable(
     phoneContactPerson: varchar("phone_contact_person", { length: 256 }),
     createdBy: bigserial("createdBy", { mode: "number" })
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAt: timestamp("updatedAt").defaultNow(),
   },
