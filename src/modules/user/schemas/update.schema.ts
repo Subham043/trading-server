@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getByEmail } from "../user.repository";
+import { getByEmail, getById } from "../user.repository";
 
 export const updateUserBodySchema = z.object({
   name: z
@@ -25,7 +25,18 @@ export const updateUserUniqueEmailSchema = z
       .number({
         errorMap: () => ({ message: "Id must be number" }),
       })
-      .positive({ message: "Id must be a positive number" }),
+      .positive({ message: "Id must be a positive number" })
+      .superRefine(async (id, ctx) => {
+        const user = await getById(id);
+        if (!user) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Id doesn't exist",
+            path: ["id"],
+          });
+          return false;
+        }
+      }),
     email: z
       .string({
         errorMap: () => ({ message: "Email must be a string" }),
