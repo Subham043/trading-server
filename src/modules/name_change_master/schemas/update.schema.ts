@@ -40,6 +40,27 @@ export const updateNameChangeMasterBodySchema = z.object({
     })
     .trim()
     .optional(),
+  previousRTA: z
+    .string({
+      errorMap: () => ({ message: "Previous RTA must be a string" }),
+    })
+    .trim()
+    .optional(),
+  newRTA: z
+    .string({
+      errorMap: () => ({ message: "New RTA must be a string" }),
+    })
+    .trim()
+    .optional(),
+  dateRTAChange: z
+    .string({
+      errorMap: () => ({ message: "Date of RTA Change must be a string" }),
+    })
+    .datetime({
+      message: "Date of RTA Change must be a valid date",
+    })
+    .trim()
+    .optional(),
   dateNameChange: z
     .string({
       errorMap: () => ({ message: "Date of Name Change must be a string" }),

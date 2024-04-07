@@ -8,6 +8,9 @@ export type NameChangeMasterType = {
   oldSecuritySymbol?: string | null;
   newSecuritySymbol?: string | null;
   dateSecurityChange?: Date | null;
+  previousRTA?: string | null;
+  newRTA?: string | null;
+  dateRTAChange?: Date | null;
   companyId?: number | null;
   createdAt?: Date | null;
 };

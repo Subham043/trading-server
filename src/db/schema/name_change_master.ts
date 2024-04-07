@@ -12,6 +12,9 @@ export const nameChangeMasters = pgTable("name_change_masters", {
   oldSecuritySymbol: varchar("old_security_symbol", { length: 256 }),
   newSecuritySymbol: varchar("new_security_symbol", { length: 256 }),
   dateSecurityChange: timestamp("date_security_change").defaultNow(),
+  previousRTA: varchar("previous_rta", { length: 256 }),
+  newRTA: varchar("new_rta", { length: 256 }),
+  dateRTAChange: timestamp("date_rta_change").defaultNow(),
   companyID: bigserial("companyID", { mode: "number" })
     .notNull()
     .references(() => companyMasters.id, { onDelete: "cascade" }),
