@@ -12,7 +12,8 @@ const NameChangeMasterSelect = {
   id: nameChangeMasters.id,
   NSE: nameChangeMasters.NSE,
   BSE: nameChangeMasters.BSE,
-  newName: nameChangeMasters.newName,
+  // newName: nameChangeMasters.newName,
+  currentName: nameChangeMasters.currentName,
   previousName: nameChangeMasters.previousName,
   dateNameChange: nameChangeMasters.dateNameChange,
   // newRTA: nameChangeMasters.newRTA,
@@ -118,7 +119,8 @@ export async function paginate(
             or(
               like(nameChangeMasters.NSE, `%${search}%`),
               like(nameChangeMasters.BSE, `%${search}%`),
-              like(nameChangeMasters.newName, `%${search}%`),
+              // like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
               like(nameChangeMasters.previousName, `%${search}%`)
               // like(nameChangeMasters.newRTA, `%${search}%`),
               // like(nameChangeMasters.previousRTA, `%${search}%`),
@@ -156,7 +158,8 @@ export async function count(
             or(
               like(nameChangeMasters.NSE, `%${search}%`),
               like(nameChangeMasters.BSE, `%${search}%`),
-              like(nameChangeMasters.newName, `%${search}%`),
+              // like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
               like(nameChangeMasters.previousName, `%${search}%`)
               // like(nameChangeMasters.newRTA, `%${search}%`),
               // like(nameChangeMasters.previousRTA, `%${search}%`),
@@ -285,7 +288,8 @@ export async function paginateCompany(
             or(
               like(nameChangeMasters.NSE, `%${search}%`),
               like(nameChangeMasters.BSE, `%${search}%`),
-              like(nameChangeMasters.newName, `%${search}%`),
+              // like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
               like(nameChangeMasters.previousName, `%${search}%`),
               // like(nameChangeMasters.newRTA, `%${search}%`),
               // like(nameChangeMasters.previousRTA, `%${search}%`),
@@ -342,7 +346,8 @@ export async function countCompany(search?: string): Promise<number> {
             or(
               like(nameChangeMasters.NSE, `%${search}%`),
               like(nameChangeMasters.BSE, `%${search}%`),
-              like(nameChangeMasters.newName, `%${search}%`),
+              // like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
               like(nameChangeMasters.previousName, `%${search}%`),
               // like(nameChangeMasters.newRTA, `%${search}%`),
               // like(nameChangeMasters.previousRTA, `%${search}%`),
@@ -407,7 +412,8 @@ export async function getByCompanyId(companyId: number): Promise<
     id: 0,
     NSE: undefined,
     BSE: undefined,
-    newName: undefined,
+    // newName: undefined,
+    currentName: undefined,
     previousName: undefined,
     dateNameChange: new Date(),
     // newRTA: undefined,

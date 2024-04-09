@@ -22,7 +22,7 @@ export const updateNameChangeMasterBodySchema = z.object({
     })
     .trim()
     .optional(),
-  newName: z
+  currentName: z
     .string({
       errorMap: () => ({ message: "New Name must be a string" }),
     })
