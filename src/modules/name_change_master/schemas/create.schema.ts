@@ -27,51 +27,51 @@ export const createNameChangeMasterBodySchema = z.object({
     })
     .trim()
     .optional(),
-  oldSecuritySymbol: z
-    .string({
-      errorMap: () => ({ message: "Old Security Symbol must be a string" }),
-    })
-    .trim()
-    .optional(),
-  newSecuritySymbol: z
-    .string({
-      errorMap: () => ({ message: "New Security Symbol must be a string" }),
-    })
-    .trim()
-    .optional(),
-  previousRTA: z
-    .string({
-      errorMap: () => ({ message: "Previous RTA must be a string" }),
-    })
-    .trim()
-    .optional(),
-  newRTA: z
-    .string({
-      errorMap: () => ({ message: "New RTA must be a string" }),
-    })
-    .trim()
-    .optional(),
-  dateRTAChange: z
-    .string({
-      errorMap: () => ({ message: "Date of RTA Change must be a string" }),
-    })
-    .datetime({
-      message: "Date of RTA Change must be a valid date",
-    })
-    .trim()
-    .optional(),
+  // oldSecuritySymbol: z
+  //   .string({
+  //     errorMap: () => ({ message: "Old Security Symbol must be a string" }),
+  //   })
+  //   .trim()
+  //   .optional(),
+  // newSecuritySymbol: z
+  //   .string({
+  //     errorMap: () => ({ message: "New Security Symbol must be a string" }),
+  //   })
+  //   .trim()
+  //   .optional(),
+  // previousRTA: z
+  //   .string({
+  //     errorMap: () => ({ message: "Previous RTA must be a string" }),
+  //   })
+  //   .trim()
+  //   .optional(),
+  // newRTA: z
+  //   .string({
+  //     errorMap: () => ({ message: "New RTA must be a string" }),
+  //   })
+  //   .trim()
+  //   .optional(),
+  // dateRTAChange: z
+  //   .string({
+  //     errorMap: () => ({ message: "Date of RTA Change must be a string" }),
+  //   })
+  //   .datetime({
+  //     message: "Date of RTA Change must be a valid date",
+  //   })
+  //   .trim()
+  //   .optional(),
+  // dateSecurityChange: z
+  //   .string({
+  //     errorMap: () => ({ message: "Date of Security Change must be a string" }),
+  //   })
+  //   .datetime({
+  //     message: "Date of Name Change must be a valid date",
+  //   })
+  //   .trim()
+  //   .optional(),
   dateNameChange: z
     .string({
       errorMap: () => ({ message: "Date of Name Change must be a string" }),
-    })
-    .datetime({
-      message: "Date of Name Change must be a valid date",
-    })
-    .trim()
-    .optional(),
-  dateSecurityChange: z
-    .string({
-      errorMap: () => ({ message: "Date of Security Change must be a string" }),
     })
     .datetime({
       message: "Date of Name Change must be a valid date",

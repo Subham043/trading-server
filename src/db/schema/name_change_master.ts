@@ -8,6 +8,7 @@ export const nameChangeMasters = pgTable("name_change_masters", {
   BSE: varchar("BSE", { length: 256 }),
   previousName: varchar("previous_name", { length: 256 }),
   newName: varchar("new_name", { length: 256 }),
+  currentName: varchar("current_name", { length: 256 }),
   dateNameChange: timestamp("date_name_change").defaultNow(),
   oldSecuritySymbol: varchar("old_security_symbol", { length: 256 }),
   newSecuritySymbol: varchar("new_security_symbol", { length: 256 }),

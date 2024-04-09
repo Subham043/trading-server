@@ -15,12 +15,12 @@ const NameChangeMasterSelect = {
   newName: nameChangeMasters.newName,
   previousName: nameChangeMasters.previousName,
   dateNameChange: nameChangeMasters.dateNameChange,
-  newRTA: nameChangeMasters.newRTA,
-  previousRTA: nameChangeMasters.previousRTA,
-  dateRTAChange: nameChangeMasters.dateRTAChange,
-  oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-  newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-  dateSecurityChange: nameChangeMasters.dateSecurityChange,
+  // newRTA: nameChangeMasters.newRTA,
+  // previousRTA: nameChangeMasters.previousRTA,
+  // dateRTAChange: nameChangeMasters.dateRTAChange,
+  // oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
+  // newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
+  // dateSecurityChange: nameChangeMasters.dateSecurityChange,
   createdAt: nameChangeMasters.createdAt,
   companyId: nameChangeMasters.companyID,
 };
@@ -53,12 +53,12 @@ export async function createNameChangeMaster(
       dateNameChange: data.dateNameChange
         ? new Date(data.dateNameChange)
         : new Date(),
-      dateSecurityChange: data.dateSecurityChange
-        ? new Date(data.dateSecurityChange)
-        : new Date(),
-      dateRTAChange: data.dateRTAChange
-        ? new Date(data.dateRTAChange)
-        : new Date(),
+      // dateSecurityChange: data.dateSecurityChange
+      //   ? new Date(data.dateSecurityChange)
+      //   : new Date(),
+      // dateRTAChange: data.dateRTAChange
+      //   ? new Date(data.dateRTAChange)
+      //   : new Date(),
     })
     .onConflictDoNothing()
     .returning(NameChangeMasterSelect);
@@ -83,12 +83,12 @@ export async function updateNameChangeMaster(
       dateNameChange: data.dateNameChange
         ? new Date(data.dateNameChange)
         : new Date(),
-      dateSecurityChange: data.dateSecurityChange
-        ? new Date(data.dateSecurityChange)
-        : new Date(),
-      dateRTAChange: data.dateRTAChange
-        ? new Date(data.dateRTAChange)
-        : new Date(),
+      // dateSecurityChange: data.dateSecurityChange
+      //   ? new Date(data.dateSecurityChange)
+      //   : new Date(),
+      // dateRTAChange: data.dateRTAChange
+      //   ? new Date(data.dateRTAChange)
+      //   : new Date(),
     })
     .where(eq(nameChangeMasters.id, id))
     .returning(NameChangeMasterSelect);
@@ -119,11 +119,11 @@ export async function paginate(
               like(nameChangeMasters.NSE, `%${search}%`),
               like(nameChangeMasters.BSE, `%${search}%`),
               like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.previousName, `%${search}%`),
-              like(nameChangeMasters.newRTA, `%${search}%`),
-              like(nameChangeMasters.previousRTA, `%${search}%`),
-              like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
+              like(nameChangeMasters.previousName, `%${search}%`)
+              // like(nameChangeMasters.newRTA, `%${search}%`),
+              // like(nameChangeMasters.previousRTA, `%${search}%`),
+              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
+              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
             )
           )
         : eq(nameChangeMasters.companyID, companyID)
@@ -157,11 +157,11 @@ export async function count(
               like(nameChangeMasters.NSE, `%${search}%`),
               like(nameChangeMasters.BSE, `%${search}%`),
               like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.previousName, `%${search}%`),
-              like(nameChangeMasters.newRTA, `%${search}%`),
-              like(nameChangeMasters.previousRTA, `%${search}%`),
-              like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
+              like(nameChangeMasters.previousName, `%${search}%`)
+              // like(nameChangeMasters.newRTA, `%${search}%`),
+              // like(nameChangeMasters.previousRTA, `%${search}%`),
+              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
+              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
             )
           )
         : eq(nameChangeMasters.companyID, companyID)
@@ -287,10 +287,10 @@ export async function paginateCompany(
               like(nameChangeMasters.BSE, `%${search}%`),
               like(nameChangeMasters.newName, `%${search}%`),
               like(nameChangeMasters.previousName, `%${search}%`),
-              like(nameChangeMasters.newRTA, `%${search}%`),
-              like(nameChangeMasters.previousRTA, `%${search}%`),
-              like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
+              // like(nameChangeMasters.newRTA, `%${search}%`),
+              // like(nameChangeMasters.previousRTA, `%${search}%`),
+              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
+              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
               like(companyMasters.ISIN, `%${search}%`),
               like(companyMasters.CIN, `%${search}%`),
               eq(companyMasters.faceValue, Number(search))
@@ -344,10 +344,10 @@ export async function countCompany(search?: string): Promise<number> {
               like(nameChangeMasters.BSE, `%${search}%`),
               like(nameChangeMasters.newName, `%${search}%`),
               like(nameChangeMasters.previousName, `%${search}%`),
-              like(nameChangeMasters.newRTA, `%${search}%`),
-              like(nameChangeMasters.previousRTA, `%${search}%`),
-              like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
+              // like(nameChangeMasters.newRTA, `%${search}%`),
+              // like(nameChangeMasters.previousRTA, `%${search}%`),
+              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
+              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
               like(companyMasters.ISIN, `%${search}%`),
               like(companyMasters.CIN, `%${search}%`),
               eq(companyMasters.faceValue, Number(search))
@@ -410,12 +410,12 @@ export async function getByCompanyId(companyId: number): Promise<
     newName: undefined,
     previousName: undefined,
     dateNameChange: new Date(),
-    newRTA: undefined,
-    previousRTA: undefined,
-    dateRTAChange: new Date(),
-    oldSecuritySymbol: undefined,
-    newSecuritySymbol: undefined,
-    dateSecurityChange: new Date(),
+    // newRTA: undefined,
+    // previousRTA: undefined,
+    // dateRTAChange: new Date(),
+    // oldSecuritySymbol: undefined,
+    // newSecuritySymbol: undefined,
+    // dateSecurityChange: new Date(),
     companyId: companyId,
     createdAt: new Date(),
   };

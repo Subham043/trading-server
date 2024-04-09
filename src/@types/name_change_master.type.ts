@@ -5,12 +5,12 @@ export type NameChangeMasterType = {
   previousName?: string | null;
   newName?: string | null;
   dateNameChange?: Date | null;
-  oldSecuritySymbol?: string | null;
-  newSecuritySymbol?: string | null;
-  dateSecurityChange?: Date | null;
-  previousRTA?: string | null;
-  newRTA?: string | null;
-  dateRTAChange?: Date | null;
+  // oldSecuritySymbol?: string | null;
+  // newSecuritySymbol?: string | null;
+  // dateSecurityChange?: Date | null;
+  // previousRTA?: string | null;
+  // newRTA?: string | null;
+  // dateRTAChange?: Date | null;
   companyId?: number | null;
   createdAt?: Date | null;
 };

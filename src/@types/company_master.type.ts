@@ -3,6 +3,7 @@ export type CompanyMasterType = {
   NSE?: string | null;
   BSE?: string | null;
   newName?: string | null;
+  currentName?: string | null;
   CIN?: string | null | undefined;
   ISIN?: string | null | undefined;
   faceValue?: number | null | undefined;

@@ -11,6 +11,11 @@ export const updateCompanyMasterBodySchema = z.object({
       errorMap: () => ({ message: "New Name must be a string" }),
     })
     .trim(),
+  currentName: z
+    .string({
+      errorMap: () => ({ message: "Current Name must be a string" }),
+    })
+    .trim(),
   NSE: z
     .string({
       errorMap: () => ({ message: "NSE must be a string" }),

@@ -32,6 +32,7 @@ const CompanyMasterSelect = {
 
 const NameChangeMasterSelect = {
   newName: nameChangeMasters.newName,
+  currentName: nameChangeMasters.currentName,
   NSE: nameChangeMasters.NSE,
   BSE: nameChangeMasters.BSE,
   nameChangeMasterId: nameChangeMasters.id,
@@ -51,7 +52,7 @@ const MasterSelect = {
 export async function createCompanyMaster(
   data: CompanyMasterCreateType & { createdBy: number }
 ): Promise<CompanyMasterType> {
-  const { newName, NSE, BSE, ...companyData } = data;
+  const { newName, currentName, NSE, BSE, ...companyData } = data;
   const resp = await db.transaction(async (tx) => {
     try {
       const result = await tx
@@ -64,6 +65,7 @@ export async function createCompanyMaster(
         .values({
           companyID: result[0].id,
           newName: newName,
+          currentName: currentName,
           NSE: NSE,
           BSE: BSE,
         })
@@ -89,7 +91,7 @@ export async function updateCompanyMaster(
   data: CompanyMasterUpdateType,
   id: number
 ): Promise<CompanyMasterType> {
-  const { newName, NSE, BSE, ...companyData } = data;
+  const { newName, currentName, NSE, BSE, ...companyData } = data;
   const resp = await db.transaction(async (tx) => {
     try {
       const result = await tx
@@ -101,6 +103,7 @@ export async function updateCompanyMaster(
         .update(nameChangeMasters)
         .set({
           newName: newName,
+          currentName: currentName,
           NSE: NSE,
           BSE: BSE,
         })
@@ -166,6 +169,7 @@ export async function paginate(
             or(
               eq(companyMasters.pincode, search),
               like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
               like(nameChangeMasters.BSE, `%${search}%`),
               like(nameChangeMasters.NSE, `%${search}%`),
               like(companyMasters.ISIN, `%${search}%`),
@@ -237,6 +241,7 @@ export async function count(search?: string): Promise<number> {
             or(
               like(companyMasters.ISIN, `%${search}%`),
               like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
               like(nameChangeMasters.BSE, `%${search}%`),
               like(nameChangeMasters.NSE, `%${search}%`),
               like(companyMasters.CIN, `%${search}%`),
