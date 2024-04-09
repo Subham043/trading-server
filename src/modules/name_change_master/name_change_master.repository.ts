@@ -128,7 +128,7 @@ export async function paginate(
           )
         : eq(nameChangeMasters.companyID, companyID)
     )
-    .orderBy(desc(nameChangeMasters.createdAt))
+    .orderBy(desc(nameChangeMasters.id))
     .limit(limit)
     .offset(offset);
 

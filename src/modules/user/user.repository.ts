@@ -69,9 +69,29 @@ export async function paginate(
         ? or(like(users.name, `%${search}%`), like(users.email, `%${search}%`))
         : undefined
     )
-    .orderBy(desc(users.createdAt))
+    .orderBy(desc(users.id))
     .limit(limit)
     .offset(offset);
+
+  return data;
+}
+
+/**
+ * Asynchronously get all the data from the database.
+ *
+ * @param {string} search - the number of items to skip before starting to return data
+ * @return {Promise<UserType[]>} the paginated user data as a promise
+ */
+export async function getAll(search?: string): Promise<UserType[]> {
+  const data = await db
+    .select(UserSelect)
+    .from(users)
+    .where(
+      search
+        ? or(like(users.name, `%${search}%`), like(users.email, `%${search}%`))
+        : undefined
+    )
+    .orderBy(desc(users.id));
 
   return data;
 }

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import {
   createUser,
+  exportUsers,
   getUser,
   listUsers,
   removeUser,
@@ -10,6 +11,7 @@ import { updateUserBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
 import { getIdParamSchema } from "../../common/schemas/id_param.schema";
 import { createUserBodySchema } from "./schemas/create.schema";
+import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
 
 export async function userRoutes(app: FastifyInstance) {
   app.get(
@@ -19,6 +21,14 @@ export async function userRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     listUsers
+  );
+  app.get(
+    "/export",
+    {
+      schema: { querystring: getSearchQuerySchema },
+      preHandler: app.verifyJwt,
+    },
+    exportUsers
   );
   app.get(
     "/:id",

@@ -1,5 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { create, destroy, findById, list, update } from "./user.services";
+import {
+  create,
+  destroy,
+  exportExcel,
+  findById,
+  list,
+  update,
+} from "./user.services";
 import {
   CreateUserBody,
   createUserUniqueEmailSchema,
@@ -10,6 +17,7 @@ import {
 } from "./schemas/update.schema";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
+import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 
 export async function listUsers(
   request: FastifyRequest<{
@@ -24,6 +32,18 @@ export async function listUsers(
     message: "Users Fetched",
     data: result,
   });
+}
+
+export async function exportUsers(
+  request: FastifyRequest<{
+    Querystring: GetSearchQuery;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await exportExcel(request.query);
+  reply
+    .header("Content-Disposition", 'attachment; filename="countries.xlsx"')
+    .send(result.file);
 }
 
 /**

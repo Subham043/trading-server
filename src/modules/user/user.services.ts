@@ -1,6 +1,7 @@
 import {
   count,
   createUser,
+  getAll,
   getById,
   paginate,
   remove,
@@ -18,6 +19,8 @@ import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { UpdateUserBody } from "./schemas/update.schema";
 import env from "../../config/env";
+import Excel from "exceljs";
+import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 
 /**
  * Create a new user with the provided user information.
@@ -124,6 +127,40 @@ export async function list(querystring: GetPaginationQuery): Promise<
       page: querystring.page,
       size: querystring.limit,
     }),
+  };
+}
+
+/**
+ * Export users by pagination.
+ *
+ * @param {GetSearchQuery} querystring - the parameters for finding the user
+ * @return {Promise<{user:UserType[]} & PaginationType>} the user found by ID
+ */
+export async function exportExcel(querystring: GetSearchQuery): Promise<{
+  file: Excel.Buffer;
+}> {
+  const users = await getAll(querystring.search);
+  const workbook = new Excel.Workbook();
+  const worksheet = workbook.addWorksheet("Users List");
+  const countriesColumns = [
+    { key: "id", header: "ID" },
+    { key: "name", header: "Name" },
+    { key: "email", header: "Email" },
+    { key: "status", header: "Status" },
+    { key: "role", header: "Role" },
+    { key: "createdAt", header: "Created At" },
+  ];
+
+  worksheet.columns = countriesColumns;
+  users.forEach((user) => {
+    worksheet.addRow(user);
+  });
+  // const exportPath = path.resolve(__dirname, "../../../static/countries.xlsx");
+  // await workbook.xlsx.writeFile(exportPath);
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  return {
+    file: buffer,
   };
 }
 
