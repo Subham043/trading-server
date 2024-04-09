@@ -26,17 +26,10 @@ import {
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { ExcelBuffer, generateExcel } from "../../utils/excel";
-
-const nameChangeMastersColumns = [
-  { key: "id", header: "ID" },
-  { key: "NSE", header: "NSE" },
-  { key: "BSE", header: "BSE" },
-  { key: "currentName", header: "New Name" },
-  { key: "previousName", header: "Previous Name" },
-  { key: "dateNameChange", header: "Date of Name Change" },
-  { key: "companyId", header: "Company Master Id" },
-  { key: "createdAt", header: "Created At" },
-];
+import {
+  ExcelNameChangeCompanyColumns,
+  ExcelNameChangeMastersColumns,
+} from "./name_change_master.model";
 
 /**
  * Create a new nameChangeMaster with the provided nameChangeMaster information.
@@ -149,7 +142,7 @@ export async function exportExcel(
 
   const buffer = await generateExcel<NameChangeMasterType>(
     "Name Change Masters",
-    nameChangeMastersColumns,
+    ExcelNameChangeMastersColumns,
     nameChangeMasters
   );
 
@@ -193,16 +186,9 @@ export async function exportExcelCompany(querystring: GetSearchQuery): Promise<{
 }> {
   const nameChangeMasters = await getAllCompany(querystring.search);
 
-  const nameChangeCompanyColumns = [
-    ...nameChangeMastersColumns,
-    { key: "CIN", header: "CIN" },
-    { key: "ISIN", header: "ISIN" },
-    { key: "faceValue", header: "Face Value" },
-  ];
-
   const buffer = await generateExcel<NameChangeMasterType>(
     "Name Change Masters",
-    nameChangeCompanyColumns,
+    ExcelNameChangeCompanyColumns,
     nameChangeMasters
   );
 

@@ -3,6 +3,25 @@ import { companyMasters } from "../../db/schema/company_master";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
 import db from "../../db";
 import { NameChangeMasterUpdateType } from "../../@types/name_change_master.type";
+import { WorksheetColumnsType } from "../../utils/excel";
+
+export const ExcelNameChangeMastersColumns: WorksheetColumnsType = [
+  { key: "id", header: "ID" },
+  { key: "NSE", header: "NSE" },
+  { key: "BSE", header: "BSE" },
+  { key: "currentName", header: "New Name" },
+  { key: "previousName", header: "Previous Name" },
+  { key: "dateNameChange", header: "Date of Name Change" },
+  { key: "companyId", header: "Company Master Id" },
+  { key: "createdAt", header: "Created At" },
+];
+
+export const ExcelNameChangeCompanyColumns: WorksheetColumnsType = [
+  ...ExcelNameChangeMastersColumns,
+  { key: "CIN", header: "CIN" },
+  { key: "ISIN", header: "ISIN" },
+  { key: "faceValue", header: "Face Value" },
+];
 
 export const NameChangeMasterSelect = {
   id: nameChangeMasters.id,

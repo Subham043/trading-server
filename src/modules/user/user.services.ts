@@ -21,6 +21,7 @@ import { UpdateUserBody } from "./schemas/update.schema";
 import env from "../../config/env";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { ExcelBuffer, generateExcel } from "../../utils/excel";
+import { ExcelUsersColumn } from "./user.model";
 
 /**
  * Create a new user with the provided user information.
@@ -141,16 +142,11 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
 }> {
   const users = await getAll(querystring.search);
 
-  const usersColumns = [
-    { key: "id", header: "ID" },
-    { key: "name", header: "Name" },
-    { key: "email", header: "Email" },
-    { key: "status", header: "Status" },
-    { key: "role", header: "Role" },
-    { key: "createdAt", header: "Created At" },
-  ];
-
-  const buffer = await generateExcel<UserType>("Users", usersColumns, users);
+  const buffer = await generateExcel<UserType>(
+    "Users",
+    ExcelUsersColumn,
+    users
+  );
 
   return {
     file: buffer,

@@ -2,6 +2,37 @@ import { desc, eq, ilike, or } from "drizzle-orm";
 import db from "../../db";
 import { companyMasters } from "../../db/schema/company_master";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
+import { WorksheetColumnsType } from "../../utils/excel";
+
+export const ExcelCompanyMastersColumns: WorksheetColumnsType = [
+  { key: "id", header: "ID" },
+  { key: "NSE", header: "NSE" },
+  { key: "BSE", header: "BSE" },
+  { key: "newName", header: "Name of the Company(as per certificate)" },
+  { key: "currentName", header: "Current Name of the Company" },
+  { key: "ISIN", header: "ISIN" },
+  { key: "CIN", header: "CIN" },
+  { key: "faceValue", header: "Face Value" },
+  { key: "closingPriceNSE", header: "Closing Price in NSE" },
+  { key: "closingPriceBSE", header: "Closing Price in BSE" },
+  { key: "registeredOffice", header: "Registered Office" },
+  { key: "city", header: "City" },
+  { key: "state", header: "State" },
+  { key: "pincode", header: "Pincode" },
+  { key: "telephone", header: "Telephone" },
+  { key: "fax", header: "Fax" },
+  { key: "email", header: "Email" },
+  { key: "website", header: "Website" },
+  { key: "nameContactPerson", header: "Name of Contact Person" },
+  { key: "emailContactPerson", header: "Email of Contact Person" },
+  { key: "phoneContactPerson", header: "Phone of Contact Person" },
+  {
+    key: "designationContactPerson",
+    header: "Designation of Contact Person",
+  },
+  { key: "nameChangeMasterId", header: "Name Change Master Id" },
+  { key: "createdAt", header: "Created At" },
+];
 
 export const CompanyMasterSelect = {
   id: companyMasters.id,
