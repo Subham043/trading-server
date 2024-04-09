@@ -138,6 +138,42 @@ export async function paginate(
 }
 
 /**
+ * Asynchronously get all the data from the database.
+ *
+ * @param {string} search - the maximum number of items to retrieve
+ * @return {Promise<NameChangeMasterType[]>} the paginated companyMaster data as a promise
+ */
+export async function getAll(
+  companyID: number,
+  search?: string
+): Promise<NameChangeMasterType[]> {
+  const data = await db
+    .select(NameChangeMasterSelect)
+    .from(nameChangeMasters)
+    .where(
+      search
+        ? and(
+            eq(nameChangeMasters.companyID, companyID),
+            or(
+              like(nameChangeMasters.NSE, `%${search}%`),
+              like(nameChangeMasters.BSE, `%${search}%`),
+              // like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
+              like(nameChangeMasters.previousName, `%${search}%`)
+              // like(nameChangeMasters.newRTA, `%${search}%`),
+              // like(nameChangeMasters.previousRTA, `%${search}%`),
+              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
+              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
+            )
+          )
+        : eq(nameChangeMasters.companyID, companyID)
+    )
+    .orderBy(desc(nameChangeMasters.id));
+
+  return data;
+}
+
+/**
  * Asynchronously counts the number of records.
  *
  * @return {Promise<number>} The number of records.
@@ -315,6 +351,67 @@ export async function paginateCompany(
     .orderBy(desc(companyMasters.createdAt))
     .limit(limit)
     .offset(offset);
+
+  return data;
+}
+
+export async function getAllCompany(search?: string): Promise<
+  (NameChangeMasterType & {
+    CIN?: string | null | undefined;
+    ISIN?: string | null | undefined;
+    faceValue?: number | null | undefined;
+    companyId?: number | null | undefined;
+  })[]
+> {
+  const data = await db
+    .select(MasterSelect)
+    .from(nameChangeMasters)
+    .leftJoin(
+      companyMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
+    )
+    .where(
+      search
+        ? and(
+            eq(
+              nameChangeMasters.id,
+              db
+                .select({
+                  id: nameChangeMasters.id,
+                })
+                .from(nameChangeMasters)
+                .where(eq(nameChangeMasters.companyID, companyMasters.id))
+                .orderBy(desc(nameChangeMasters.id))
+                .limit(1)
+            ),
+            or(
+              like(nameChangeMasters.NSE, `%${search}%`),
+              like(nameChangeMasters.BSE, `%${search}%`),
+              // like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
+              like(nameChangeMasters.previousName, `%${search}%`),
+              // like(nameChangeMasters.newRTA, `%${search}%`),
+              // like(nameChangeMasters.previousRTA, `%${search}%`),
+              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
+              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
+              like(companyMasters.ISIN, `%${search}%`),
+              like(companyMasters.CIN, `%${search}%`),
+              eq(companyMasters.faceValue, Number(search))
+            )
+          )
+        : eq(
+            nameChangeMasters.id,
+            db
+              .select({
+                id: nameChangeMasters.id,
+              })
+              .from(nameChangeMasters)
+              .where(eq(nameChangeMasters.companyID, companyMasters.id))
+              .orderBy(desc(nameChangeMasters.id))
+              .limit(1)
+          )
+    )
+    .orderBy(desc(companyMasters.createdAt));
 
   return data;
 }

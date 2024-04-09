@@ -1,6 +1,8 @@
 import { FastifyInstance } from "fastify";
 import {
   createNameChangeMaster,
+  exportNameChangeMaster,
+  exportNameChangeMasterWithCompany,
   getNameChangeMaster,
   getNameChangeMasterLatestByCompanyId,
   listNameChangeMaster,
@@ -16,6 +18,7 @@ import {
   getIdParamSchema,
 } from "../../common/schemas/id_param.schema";
 import { createNameChangeMasterBodySchema } from "./schemas/create.schema";
+import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
 
 export async function nameChangeMasterRoutes(app: FastifyInstance) {
   app.get(
@@ -27,6 +30,16 @@ export async function nameChangeMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     listNameChangeMasterWithCompany
+  );
+  app.get(
+    "/company/export",
+    {
+      schema: {
+        querystring: getSearchQuerySchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    exportNameChangeMasterWithCompany
   );
   app.get(
     "/company/:companyId",
@@ -48,6 +61,17 @@ export async function nameChangeMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     listNameChangeMaster
+  );
+  app.get(
+    "/list/export/:companyId",
+    {
+      schema: {
+        querystring: getSearchQuerySchema,
+        params: getCompanyIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    exportNameChangeMaster
   );
   app.get(
     "/view/:id",

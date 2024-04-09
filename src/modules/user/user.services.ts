@@ -134,7 +134,7 @@ export async function list(querystring: GetPaginationQuery): Promise<
  * Export users by pagination.
  *
  * @param {GetSearchQuery} querystring - the parameters for finding the user
- * @return {Promise<{user:UserType[]} & PaginationType>} the user found by ID
+ * @return {Promise<{file: Excel.Buffer}>} the user found by ID
  */
 export async function exportExcel(querystring: GetSearchQuery): Promise<{
   file: Excel.Buffer;

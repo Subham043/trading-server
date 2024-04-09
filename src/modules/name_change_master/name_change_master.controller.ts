@@ -2,6 +2,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   create,
   destroy,
+  exportExcel,
+  exportExcelCompany,
   findByCompanyId,
   findById,
   list,
@@ -20,6 +22,7 @@ import {
 } from "../../@types/name_change_master.type";
 import { createNameChangeMasterUniqueSchema } from "./schemas/create.schema";
 import { updateNameChangeMasterUniqueSchema } from "./schemas/update.schema";
+import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 
 export async function listNameChangeMaster(
   request: FastifyRequest<{
@@ -37,6 +40,22 @@ export async function listNameChangeMaster(
   });
 }
 
+export async function exportNameChangeMaster(
+  request: FastifyRequest<{
+    Querystring: GetSearchQuery;
+    Params: GetCompanyIdParam;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await exportExcel(request.query, request.params);
+  return reply
+    .header(
+      "Content-Disposition",
+      'attachment; filename="name_change_masters.xlsx"'
+    )
+    .send(result.file);
+}
+
 export async function listNameChangeMasterWithCompany(
   request: FastifyRequest<{
     Querystring: GetPaginationQuery;
@@ -50,6 +69,21 @@ export async function listNameChangeMasterWithCompany(
     message: "Name Change Masters Fetched",
     data: result,
   });
+}
+
+export async function exportNameChangeMasterWithCompany(
+  request: FastifyRequest<{
+    Querystring: GetSearchQuery;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await exportExcelCompany(request.query);
+  return reply
+    .header(
+      "Content-Disposition",
+      'attachment; filename="name_change_masters.xlsx"'
+    )
+    .send(result.file);
 }
 
 /**

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import {
   createCompanyMaster,
+  exportCompanyMasters,
   getCompanyMaster,
   listCompanyMasters,
   removeCompanyMaster,
@@ -10,6 +11,7 @@ import { updateCompanyMasterBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
 import { getIdParamSchema } from "../../common/schemas/id_param.schema";
 import { createCompanyMasterBodySchema } from "./schemas/create.schema";
+import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
 
 export async function companyMasterRoutes(app: FastifyInstance) {
   app.get(
@@ -19,6 +21,14 @@ export async function companyMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     listCompanyMasters
+  );
+  app.get(
+    "/export",
+    {
+      schema: { querystring: getSearchQuerySchema },
+      preHandler: app.verifyJwt,
+    },
+    exportCompanyMasters
   );
   app.get(
     "/:id",

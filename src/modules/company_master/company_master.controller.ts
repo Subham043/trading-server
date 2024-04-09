@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   create,
   destroy,
+  exportExcel,
   findById,
   list,
   update,
@@ -14,6 +15,7 @@ import {
   CompanyMasterCreateType,
   CompanyMasterUpdateType,
 } from "../../@types/company_master.type";
+import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 
 export async function listCompanyMasters(
   request: FastifyRequest<{
@@ -28,6 +30,21 @@ export async function listCompanyMasters(
     message: "Company Masters Fetched",
     data: result,
   });
+}
+
+export async function exportCompanyMasters(
+  request: FastifyRequest<{
+    Querystring: GetSearchQuery;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await exportExcel(request.query);
+  return reply
+    .header(
+      "Content-Disposition",
+      'attachment; filename="company_masters.xlsx"'
+    )
+    .send(result.file);
 }
 
 /**

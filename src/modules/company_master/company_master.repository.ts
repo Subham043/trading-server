@@ -210,6 +210,75 @@ export async function paginate(
 }
 
 /**
+ * Asynchronously get all the data from the database.
+ *
+ * @param {string} search - the maximum number of items to retrieve
+ * @return {Promise<CompanyMasterType[]>} the paginated companyMaster data as a promise
+ */
+export async function getAll(search?: string): Promise<CompanyMasterType[]> {
+  const data = await db
+    .select(MasterSelect)
+    .from(companyMasters)
+    .leftJoin(
+      nameChangeMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
+    )
+    .where(
+      search
+        ? and(
+            eq(
+              nameChangeMasters.id,
+              db
+                .select({
+                  id: nameChangeMasters.id,
+                })
+                .from(nameChangeMasters)
+                .where(eq(nameChangeMasters.companyID, companyMasters.id))
+                .orderBy(desc(nameChangeMasters.id))
+                .limit(1)
+            ),
+            or(
+              eq(companyMasters.pincode, search),
+              like(nameChangeMasters.newName, `%${search}%`),
+              like(nameChangeMasters.currentName, `%${search}%`),
+              like(nameChangeMasters.BSE, `%${search}%`),
+              like(nameChangeMasters.NSE, `%${search}%`),
+              like(companyMasters.ISIN, `%${search}%`),
+              like(companyMasters.CIN, `%${search}%`),
+              like(companyMasters.registeredOffice, `%${search}%`),
+              like(companyMasters.city, `%${search}%`),
+              like(companyMasters.state, `%${search}%`),
+              like(companyMasters.email, `%${search}%`),
+              like(companyMasters.website, `%${search}%`),
+              like(companyMasters.nameContactPerson, `%${search}%`),
+              like(companyMasters.designationContactPerson, `%${search}%`),
+              like(companyMasters.emailContactPerson, `%${search}%`),
+              like(companyMasters.phoneContactPerson, `%${search}%`),
+              like(companyMasters.telephone, `%${search}%`),
+              like(companyMasters.fax, `%${search}%`),
+              eq(companyMasters.faceValue, Number(search)),
+              eq(companyMasters.closingPriceNSE, Number(search)),
+              eq(companyMasters.closingPriceBSE, Number(search))
+            )
+          )
+        : eq(
+            nameChangeMasters.id,
+            db
+              .select({
+                id: nameChangeMasters.id,
+              })
+              .from(nameChangeMasters)
+              .where(eq(nameChangeMasters.companyID, companyMasters.id))
+              .orderBy(desc(nameChangeMasters.id))
+              .limit(1)
+          )
+    )
+    .orderBy(desc(companyMasters.createdAt));
+
+  return data;
+}
+
+/**
  * Asynchronously counts the number of records.
  *
  * @return {Promise<number>} The number of records.
