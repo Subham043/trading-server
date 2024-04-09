@@ -24,8 +24,19 @@ import {
   GetIdParam,
 } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
-import Excel from "exceljs";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import { ExcelBuffer, generateExcel } from "../../utils/excel";
+
+const nameChangeMastersColumns = [
+  { key: "id", header: "ID" },
+  { key: "NSE", header: "NSE" },
+  { key: "BSE", header: "BSE" },
+  { key: "currentName", header: "New Name" },
+  { key: "previousName", header: "Previous Name" },
+  { key: "dateNameChange", header: "Date of Name Change" },
+  { key: "companyId", header: "Company Master Id" },
+  { key: "createdAt", header: "Created At" },
+];
 
 /**
  * Create a new nameChangeMaster with the provided nameChangeMaster information.
@@ -126,33 +137,21 @@ export async function list(
  * Export nameChangeMaster by pagination.
  *
  * @param {GetSearchQuery} querystring - the parameters for finding the nameChangeMaster
- * @return {Promise<{file: Excel.Buffer}>} the nameChangeMaster found by ID
+ * @return {Promise<{file: ExcelBuffer}>} the nameChangeMaster found by ID
  */
 export async function exportExcel(
   querystring: GetSearchQuery,
   params: GetCompanyIdParam
 ): Promise<{
-  file: Excel.Buffer;
+  file: ExcelBuffer;
 }> {
   const nameChangeMasters = await getAll(params.companyId, querystring.search);
-  const workbook = new Excel.Workbook();
-  const worksheet = workbook.addWorksheet("Name Change Masters List");
-  const nameChangeMastersColumns = [
-    { key: "id", header: "ID" },
-    { key: "NSE", header: "NSE" },
-    { key: "BSE", header: "BSE" },
-    { key: "currentName", header: "New Name" },
-    { key: "previousName", header: "Previous Name" },
-    { key: "dateNameChange", header: "Date of Name Change" },
-    { key: "companyId", header: "Company Master Id" },
-    { key: "createdAt", header: "Created At" },
-  ];
 
-  worksheet.columns = nameChangeMastersColumns;
-  nameChangeMasters.forEach((nameChangeMaster) => {
-    worksheet.addRow(nameChangeMaster);
-  });
-  const buffer = await workbook.xlsx.writeBuffer();
+  const buffer = await generateExcel<NameChangeMasterType>(
+    "Name Change Masters",
+    nameChangeMastersColumns,
+    nameChangeMasters
+  );
 
   return {
     file: buffer,
@@ -190,30 +189,22 @@ export async function listCompany(querystring: GetPaginationQuery): Promise<
 }
 
 export async function exportExcelCompany(querystring: GetSearchQuery): Promise<{
-  file: Excel.Buffer;
+  file: ExcelBuffer;
 }> {
   const nameChangeMasters = await getAllCompany(querystring.search);
-  const workbook = new Excel.Workbook();
-  const worksheet = workbook.addWorksheet("Name Change Masters List");
-  const nameChangeMastersColumns = [
-    { key: "id", header: "ID" },
-    { key: "NSE", header: "NSE" },
-    { key: "BSE", header: "BSE" },
+
+  const nameChangeCompanyColumns = [
+    ...nameChangeMastersColumns,
     { key: "CIN", header: "CIN" },
     { key: "ISIN", header: "ISIN" },
     { key: "faceValue", header: "Face Value" },
-    { key: "currentName", header: "New Name" },
-    { key: "previousName", header: "Previous Name" },
-    { key: "dateNameChange", header: "Date of Name Change" },
-    { key: "companyId", header: "Company Master Id" },
-    { key: "createdAt", header: "Created At" },
   ];
 
-  worksheet.columns = nameChangeMastersColumns;
-  nameChangeMasters.forEach((nameChangeMaster) => {
-    worksheet.addRow(nameChangeMaster);
-  });
-  const buffer = await workbook.xlsx.writeBuffer();
+  const buffer = await generateExcel<NameChangeMasterType>(
+    "Name Change Masters",
+    nameChangeCompanyColumns,
+    nameChangeMasters
+  );
 
   return {
     file: buffer,

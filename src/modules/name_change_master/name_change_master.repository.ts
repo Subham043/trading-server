@@ -1,4 +1,4 @@
-import { and, desc, eq, like, or, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { InferInsertModel } from "drizzle-orm";
 import db from "../../db";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
@@ -7,36 +7,16 @@ import {
   NameChangeMasterUpdateType,
 } from "../../@types/name_change_master.type";
 import { companyMasters } from "../../db/schema/company_master";
-
-const NameChangeMasterSelect = {
-  id: nameChangeMasters.id,
-  NSE: nameChangeMasters.NSE,
-  BSE: nameChangeMasters.BSE,
-  // newName: nameChangeMasters.newName,
-  currentName: nameChangeMasters.currentName,
-  previousName: nameChangeMasters.previousName,
-  dateNameChange: nameChangeMasters.dateNameChange,
-  // newRTA: nameChangeMasters.newRTA,
-  // previousRTA: nameChangeMasters.previousRTA,
-  // dateRTAChange: nameChangeMasters.dateRTAChange,
-  // oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-  // newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-  // dateSecurityChange: nameChangeMasters.dateSecurityChange,
-  createdAt: nameChangeMasters.createdAt,
-  companyId: nameChangeMasters.companyID,
-};
-
-const CompanyMasterSelect = {
-  companyId: companyMasters.id,
-  CIN: companyMasters.CIN,
-  ISIN: companyMasters.ISIN,
-  faceValue: companyMasters.faceValue,
-};
-
-const MasterSelect = {
-  ...NameChangeMasterSelect,
-  ...CompanyMasterSelect,
-};
+import {
+  Descending_NameChangeMaster_ID,
+  NameChangeMasterSelect,
+  Search_Query,
+  Select_NSE_BSE_Query,
+  Select_Name_Change_Master_Query,
+  Select_Master_Query,
+  Select_Sub_Query,
+  transformData,
+} from "./name_change_master.model";
 
 /**
  * Create a new companyMaster with the provided data.
@@ -49,18 +29,7 @@ export async function createNameChangeMaster(
 ): Promise<NameChangeMasterType> {
   const result = await db
     .insert(nameChangeMasters)
-    .values({
-      ...data,
-      dateNameChange: data.dateNameChange
-        ? new Date(data.dateNameChange)
-        : new Date(),
-      // dateSecurityChange: data.dateSecurityChange
-      //   ? new Date(data.dateSecurityChange)
-      //   : new Date(),
-      // dateRTAChange: data.dateRTAChange
-      //   ? new Date(data.dateRTAChange)
-      //   : new Date(),
-    })
+    .values(transformData(data))
     .onConflictDoNothing()
     .returning(NameChangeMasterSelect);
   return result[0];
@@ -79,18 +48,7 @@ export async function updateNameChangeMaster(
 ): Promise<NameChangeMasterType> {
   const result = await db
     .update(nameChangeMasters)
-    .set({
-      ...data,
-      dateNameChange: data.dateNameChange
-        ? new Date(data.dateNameChange)
-        : new Date(),
-      // dateSecurityChange: data.dateSecurityChange
-      //   ? new Date(data.dateSecurityChange)
-      //   : new Date(),
-      // dateRTAChange: data.dateRTAChange
-      //   ? new Date(data.dateRTAChange)
-      //   : new Date(),
-    })
+    .set(transformData(data))
     .where(eq(nameChangeMasters.id, id))
     .returning(NameChangeMasterSelect);
   return result[0];
@@ -109,28 +67,12 @@ export async function paginate(
   companyID: number,
   search?: string
 ): Promise<NameChangeMasterType[]> {
-  const data = await db
-    .select(NameChangeMasterSelect)
-    .from(nameChangeMasters)
-    .where(
-      search
-        ? and(
-            eq(nameChangeMasters.companyID, companyID),
-            or(
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              // like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.previousName, `%${search}%`)
-              // like(nameChangeMasters.newRTA, `%${search}%`),
-              // like(nameChangeMasters.previousRTA, `%${search}%`),
-              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
-            )
-          )
-        : eq(nameChangeMasters.companyID, companyID)
-    )
-    .orderBy(desc(nameChangeMasters.id))
+  const data = await Select_Name_Change_Master_Query.where(
+    search
+      ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
+      : eq(nameChangeMasters.companyID, companyID)
+  )
+    .orderBy(Descending_NameChangeMaster_ID)
     .limit(limit)
     .offset(offset);
 
@@ -147,28 +89,11 @@ export async function getAll(
   companyID: number,
   search?: string
 ): Promise<NameChangeMasterType[]> {
-  const data = await db
-    .select(NameChangeMasterSelect)
-    .from(nameChangeMasters)
-    .where(
-      search
-        ? and(
-            eq(nameChangeMasters.companyID, companyID),
-            or(
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              // like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.previousName, `%${search}%`)
-              // like(nameChangeMasters.newRTA, `%${search}%`),
-              // like(nameChangeMasters.previousRTA, `%${search}%`),
-              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
-            )
-          )
-        : eq(nameChangeMasters.companyID, companyID)
-    )
-    .orderBy(desc(nameChangeMasters.id));
+  const data = await Select_Name_Change_Master_Query.where(
+    search
+      ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
+      : eq(nameChangeMasters.companyID, companyID)
+  ).orderBy(Descending_NameChangeMaster_ID);
 
   return data;
 }
@@ -189,20 +114,7 @@ export async function count(
     .from(nameChangeMasters)
     .where(
       search
-        ? and(
-            eq(nameChangeMasters.companyID, companyID),
-            or(
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              // like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.previousName, `%${search}%`)
-              // like(nameChangeMasters.newRTA, `%${search}%`),
-              // like(nameChangeMasters.previousRTA, `%${search}%`),
-              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`)
-            )
-          )
+        ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
         : eq(nameChangeMasters.companyID, companyID)
     );
 
@@ -218,10 +130,9 @@ export async function count(
 export async function getById(
   id: number
 ): Promise<NameChangeMasterType | null> {
-  const data = await db
-    .select(NameChangeMasterSelect)
-    .from(nameChangeMasters)
-    .where(eq(nameChangeMasters.id, id));
+  const data = await Select_Name_Change_Master_Query.where(
+    eq(nameChangeMasters.id, id)
+  );
   if (data.length > 0) {
     return data[0];
   }
@@ -237,14 +148,7 @@ export async function getById(
 export async function getByNSE(
   NSE: string
 ): Promise<NameChangeMasterType | null> {
-  const data = await db
-    .select({
-      id: nameChangeMasters.id,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    })
-    .from(nameChangeMasters)
-    .where(eq(nameChangeMasters.NSE, NSE));
+  const data = await Select_NSE_BSE_Query.where(eq(nameChangeMasters.NSE, NSE));
   if (data.length > 0) {
     return data[0];
   }
@@ -260,14 +164,7 @@ export async function getByNSE(
 export async function getByBSE(
   BSE: string
 ): Promise<NameChangeMasterType | null> {
-  const data = await db
-    .select({
-      id: nameChangeMasters.id,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    })
-    .from(nameChangeMasters)
-    .where(eq(nameChangeMasters.BSE, BSE));
+  const data = await Select_NSE_BSE_Query.where(eq(nameChangeMasters.BSE, BSE));
   if (data.length > 0) {
     return data[0];
   }
@@ -300,54 +197,14 @@ export async function paginateCompany(
     companyId?: number | null | undefined;
   })[]
 > {
-  const data = await db
-    .select(MasterSelect)
-    .from(nameChangeMasters)
-    .leftJoin(
-      companyMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      search
-        ? and(
-            eq(
-              nameChangeMasters.id,
-              db
-                .select({
-                  id: nameChangeMasters.id,
-                })
-                .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
-                .orderBy(desc(nameChangeMasters.id))
-                .limit(1)
-            ),
-            or(
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              // like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.previousName, `%${search}%`),
-              // like(nameChangeMasters.newRTA, `%${search}%`),
-              // like(nameChangeMasters.previousRTA, `%${search}%`),
-              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
-              like(companyMasters.ISIN, `%${search}%`),
-              like(companyMasters.CIN, `%${search}%`),
-              eq(companyMasters.faceValue, Number(search))
-            )
-          )
-        : eq(
-            nameChangeMasters.id,
-            db
-              .select({
-                id: nameChangeMasters.id,
-              })
-              .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
-              .orderBy(desc(nameChangeMasters.id))
-              .limit(1)
-          )
-    )
+  const data = await Select_Master_Query.where(
+    search
+      ? and(
+          eq(nameChangeMasters.id, Select_Sub_Query),
+          Search_Query(search, true)
+        )
+      : eq(nameChangeMasters.id, Select_Sub_Query)
+  )
     .orderBy(desc(companyMasters.createdAt))
     .limit(limit)
     .offset(offset);
@@ -363,55 +220,14 @@ export async function getAllCompany(search?: string): Promise<
     companyId?: number | null | undefined;
   })[]
 > {
-  const data = await db
-    .select(MasterSelect)
-    .from(nameChangeMasters)
-    .leftJoin(
-      companyMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      search
-        ? and(
-            eq(
-              nameChangeMasters.id,
-              db
-                .select({
-                  id: nameChangeMasters.id,
-                })
-                .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
-                .orderBy(desc(nameChangeMasters.id))
-                .limit(1)
-            ),
-            or(
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              // like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.previousName, `%${search}%`),
-              // like(nameChangeMasters.newRTA, `%${search}%`),
-              // like(nameChangeMasters.previousRTA, `%${search}%`),
-              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
-              like(companyMasters.ISIN, `%${search}%`),
-              like(companyMasters.CIN, `%${search}%`),
-              eq(companyMasters.faceValue, Number(search))
-            )
-          )
-        : eq(
-            nameChangeMasters.id,
-            db
-              .select({
-                id: nameChangeMasters.id,
-              })
-              .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
-              .orderBy(desc(nameChangeMasters.id))
-              .limit(1)
-          )
-    )
-    .orderBy(desc(companyMasters.createdAt));
+  const data = await Select_Master_Query.where(
+    search
+      ? and(
+          eq(nameChangeMasters.id, Select_Sub_Query),
+          Search_Query(search, true)
+        )
+      : eq(nameChangeMasters.id, Select_Sub_Query)
+  ).orderBy(desc(companyMasters.createdAt));
 
   return data;
 }
@@ -429,43 +245,10 @@ export async function countCompany(search?: string): Promise<number> {
     .where(
       search
         ? and(
-            eq(
-              nameChangeMasters.id,
-              db
-                .select({
-                  id: nameChangeMasters.id,
-                })
-                .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
-                .orderBy(desc(nameChangeMasters.id))
-                .limit(1)
-            ),
-            or(
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              // like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.previousName, `%${search}%`),
-              // like(nameChangeMasters.newRTA, `%${search}%`),
-              // like(nameChangeMasters.previousRTA, `%${search}%`),
-              // like(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-              // like(nameChangeMasters.newSecuritySymbol, `%${search}%`),
-              like(companyMasters.ISIN, `%${search}%`),
-              like(companyMasters.CIN, `%${search}%`),
-              eq(companyMasters.faceValue, Number(search))
-            )
+            eq(nameChangeMasters.id, Select_Sub_Query),
+            Search_Query(search, true)
           )
-        : eq(
-            nameChangeMasters.id,
-            db
-              .select({
-                id: nameChangeMasters.id,
-              })
-              .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
-              .orderBy(desc(nameChangeMasters.id))
-              .limit(1)
-          )
+        : eq(nameChangeMasters.id, Select_Sub_Query)
     );
 
   return data[0].count;
@@ -479,29 +262,12 @@ export async function getByCompanyId(companyId: number): Promise<
     companyId?: number | null | undefined;
   }
 > {
-  const data = await db
-    .select(MasterSelect)
-    .from(nameChangeMasters)
-    .leftJoin(
-      companyMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
+  const data = await Select_Master_Query.where(
+    and(
+      eq(nameChangeMasters.companyID, companyId),
+      eq(nameChangeMasters.id, Select_Sub_Query)
     )
-    .where(
-      and(
-        eq(nameChangeMasters.companyID, companyId),
-        eq(
-          nameChangeMasters.id,
-          db
-            .select({
-              id: nameChangeMasters.id,
-            })
-            .from(nameChangeMasters)
-            .where(eq(nameChangeMasters.companyID, companyMasters.id))
-            .orderBy(desc(nameChangeMasters.id))
-            .limit(1)
-        )
-      )
-    );
+  );
   if (data.length > 0) {
     return data[0];
   }

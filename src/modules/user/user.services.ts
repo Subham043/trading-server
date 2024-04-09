@@ -19,8 +19,8 @@ import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { UpdateUserBody } from "./schemas/update.schema";
 import env from "../../config/env";
-import Excel from "exceljs";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import { ExcelBuffer, generateExcel } from "../../utils/excel";
 
 /**
  * Create a new user with the provided user information.
@@ -134,15 +134,14 @@ export async function list(querystring: GetPaginationQuery): Promise<
  * Export users by pagination.
  *
  * @param {GetSearchQuery} querystring - the parameters for finding the user
- * @return {Promise<{file: Excel.Buffer}>} the user found by ID
+ * @return {Promise<{file: ExcelBuffer}>} the user found by ID
  */
 export async function exportExcel(querystring: GetSearchQuery): Promise<{
-  file: Excel.Buffer;
+  file: ExcelBuffer;
 }> {
   const users = await getAll(querystring.search);
-  const workbook = new Excel.Workbook();
-  const worksheet = workbook.addWorksheet("Users List");
-  const countriesColumns = [
+
+  const usersColumns = [
     { key: "id", header: "ID" },
     { key: "name", header: "Name" },
     { key: "email", header: "Email" },
@@ -151,13 +150,7 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
     { key: "createdAt", header: "Created At" },
   ];
 
-  worksheet.columns = countriesColumns;
-  users.forEach((user) => {
-    worksheet.addRow(user);
-  });
-  // const exportPath = path.resolve(__dirname, "../../../static/countries.xlsx");
-  // await workbook.xlsx.writeFile(exportPath);
-  const buffer = await workbook.xlsx.writeBuffer();
+  const buffer = await generateExcel<UserType>("Users", usersColumns, users);
 
   return {
     file: buffer,

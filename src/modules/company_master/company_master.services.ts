@@ -18,7 +18,7 @@ import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import Excel from "exceljs";
+import { ExcelBuffer, generateExcel } from "../../utils/excel";
 
 /**
  * Create a new companyMaster with the provided companyMaster information.
@@ -94,14 +94,13 @@ export async function list(querystring: GetPaginationQuery): Promise<
  * Export companyMaster by pagination.
  *
  * @param {GetSearchQuery} querystring - the parameters for finding the companyMaster
- * @return {Promise<{file: Excel.Buffer}>} the companyMaster found by ID
+ * @return {Promise<{file: ExcelBuffer}>} the companyMaster found by ID
  */
 export async function exportExcel(querystring: GetSearchQuery): Promise<{
-  file: Excel.Buffer;
+  file: ExcelBuffer;
 }> {
   const companyMasters = await getAll(querystring.search);
-  const workbook = new Excel.Workbook();
-  const worksheet = workbook.addWorksheet("Company Masters List");
+
   const companyMastersColumns = [
     { key: "id", header: "ID" },
     { key: "NSE", header: "NSE" },
@@ -132,11 +131,11 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
     { key: "createdAt", header: "Created At" },
   ];
 
-  worksheet.columns = companyMastersColumns;
-  companyMasters.forEach((companyMaster) => {
-    worksheet.addRow(companyMaster);
-  });
-  const buffer = await workbook.xlsx.writeBuffer();
+  const buffer = await generateExcel<CompanyMasterType>(
+    "Company Masters",
+    companyMastersColumns,
+    companyMasters
+  );
 
   return {
     file: buffer,

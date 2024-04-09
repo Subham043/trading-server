@@ -1,4 +1,4 @@
-import { and, desc, eq, like, or, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import db from "../../db";
 import { companyMasters } from "../../db/schema/company_master";
 import {
@@ -7,41 +7,15 @@ import {
   CompanyMasterCreateType,
 } from "../../@types/company_master.type";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
-
-const CompanyMasterSelect = {
-  id: companyMasters.id,
-  ISIN: companyMasters.ISIN,
-  CIN: companyMasters.CIN,
-  faceValue: companyMasters.faceValue,
-  closingPriceNSE: companyMasters.closingPriceNSE,
-  closingPriceBSE: companyMasters.closingPriceBSE,
-  registeredOffice: companyMasters.registeredOffice,
-  city: companyMasters.city,
-  state: companyMasters.state,
-  pincode: companyMasters.pincode,
-  telephone: companyMasters.telephone,
-  fax: companyMasters.fax,
-  email: companyMasters.email,
-  website: companyMasters.website,
-  nameContactPerson: companyMasters.nameContactPerson,
-  designationContactPerson: companyMasters.designationContactPerson,
-  emailContactPerson: companyMasters.emailContactPerson,
-  phoneContactPerson: companyMasters.phoneContactPerson,
-  createdAt: companyMasters.createdAt,
-};
-
-const NameChangeMasterSelect = {
-  newName: nameChangeMasters.newName,
-  currentName: nameChangeMasters.currentName,
-  NSE: nameChangeMasters.NSE,
-  BSE: nameChangeMasters.BSE,
-  nameChangeMasterId: nameChangeMasters.id,
-};
-
-const MasterSelect = {
-  ...CompanyMasterSelect,
-  ...NameChangeMasterSelect,
-};
+import {
+  CompanyMasterSelect,
+  Descending_CompanyMaster_CreatedAt,
+  Descending_NameChangeMaster_ID,
+  NameChangeMasterSelect,
+  Search_Query,
+  Select_Master_Query,
+  Select_Sub_Query,
+} from "./company_master.model";
 
 /**
  * Create a new companyMaster with the provided data.
@@ -118,7 +92,7 @@ export async function updateCompanyMaster(
                 })
                 .from(nameChangeMasters)
                 .where(eq(nameChangeMasters.companyID, id))
-                .orderBy(desc(nameChangeMasters.id))
+                .orderBy(Descending_NameChangeMaster_ID)
                 .limit(1)
             )
           )
@@ -145,64 +119,29 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<CompanyMasterType[]> {
-  const data = await db
-    .select(MasterSelect)
-    .from(companyMasters)
-    .leftJoin(
-      nameChangeMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      search
-        ? and(
-            eq(
-              nameChangeMasters.id,
-              db
-                .select({
-                  id: nameChangeMasters.id,
-                })
-                .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
-                .orderBy(desc(nameChangeMasters.id))
-                .limit(1)
-            ),
-            or(
-              eq(companyMasters.pincode, search),
-              like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(companyMasters.ISIN, `%${search}%`),
-              like(companyMasters.CIN, `%${search}%`),
-              like(companyMasters.registeredOffice, `%${search}%`),
-              like(companyMasters.city, `%${search}%`),
-              like(companyMasters.state, `%${search}%`),
-              like(companyMasters.email, `%${search}%`),
-              like(companyMasters.website, `%${search}%`),
-              like(companyMasters.nameContactPerson, `%${search}%`),
-              like(companyMasters.designationContactPerson, `%${search}%`),
-              like(companyMasters.emailContactPerson, `%${search}%`),
-              like(companyMasters.phoneContactPerson, `%${search}%`),
-              like(companyMasters.telephone, `%${search}%`),
-              like(companyMasters.fax, `%${search}%`),
-              eq(companyMasters.faceValue, Number(search)),
-              eq(companyMasters.closingPriceNSE, Number(search)),
-              eq(companyMasters.closingPriceBSE, Number(search))
-            )
-          )
-        : eq(
+  const data = await Select_Master_Query.where(
+    search
+      ? and(
+          eq(
             nameChangeMasters.id,
-            db
-              .select({
-                id: nameChangeMasters.id,
-              })
-              .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
-              .orderBy(desc(nameChangeMasters.id))
+            Select_Sub_Query.where(
+              eq(nameChangeMasters.companyID, companyMasters.id)
+            )
+              .orderBy(Descending_NameChangeMaster_ID)
               .limit(1)
+          ),
+          Search_Query(search)
+        )
+      : eq(
+          nameChangeMasters.id,
+          Select_Sub_Query.where(
+            eq(nameChangeMasters.companyID, companyMasters.id)
           )
-    )
-    .orderBy(desc(companyMasters.createdAt))
+            .orderBy(Descending_NameChangeMaster_ID)
+            .limit(1)
+        )
+  )
+    .orderBy(Descending_CompanyMaster_CreatedAt)
     .limit(limit)
     .offset(offset);
 
@@ -216,64 +155,28 @@ export async function paginate(
  * @return {Promise<CompanyMasterType[]>} the paginated companyMaster data as a promise
  */
 export async function getAll(search?: string): Promise<CompanyMasterType[]> {
-  const data = await db
-    .select(MasterSelect)
-    .from(companyMasters)
-    .leftJoin(
-      nameChangeMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      search
-        ? and(
-            eq(
-              nameChangeMasters.id,
-              db
-                .select({
-                  id: nameChangeMasters.id,
-                })
-                .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
-                .orderBy(desc(nameChangeMasters.id))
-                .limit(1)
-            ),
-            or(
-              eq(companyMasters.pincode, search),
-              like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(companyMasters.ISIN, `%${search}%`),
-              like(companyMasters.CIN, `%${search}%`),
-              like(companyMasters.registeredOffice, `%${search}%`),
-              like(companyMasters.city, `%${search}%`),
-              like(companyMasters.state, `%${search}%`),
-              like(companyMasters.email, `%${search}%`),
-              like(companyMasters.website, `%${search}%`),
-              like(companyMasters.nameContactPerson, `%${search}%`),
-              like(companyMasters.designationContactPerson, `%${search}%`),
-              like(companyMasters.emailContactPerson, `%${search}%`),
-              like(companyMasters.phoneContactPerson, `%${search}%`),
-              like(companyMasters.telephone, `%${search}%`),
-              like(companyMasters.fax, `%${search}%`),
-              eq(companyMasters.faceValue, Number(search)),
-              eq(companyMasters.closingPriceNSE, Number(search)),
-              eq(companyMasters.closingPriceBSE, Number(search))
-            )
-          )
-        : eq(
+  const data = await Select_Master_Query.where(
+    search
+      ? and(
+          eq(
             nameChangeMasters.id,
-            db
-              .select({
-                id: nameChangeMasters.id,
-              })
-              .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
-              .orderBy(desc(nameChangeMasters.id))
+            Select_Sub_Query.where(
+              eq(nameChangeMasters.companyID, companyMasters.id)
+            )
+              .orderBy(Descending_NameChangeMaster_ID)
               .limit(1)
+          ),
+          Search_Query(search)
+        )
+      : eq(
+          nameChangeMasters.id,
+          Select_Sub_Query.where(
+            eq(nameChangeMasters.companyID, companyMasters.id)
           )
-    )
-    .orderBy(desc(companyMasters.createdAt));
+            .orderBy(Descending_NameChangeMaster_ID)
+            .limit(1)
+        )
+  ).orderBy(Descending_CompanyMaster_CreatedAt);
 
   return data;
 }
@@ -298,48 +201,20 @@ export async function count(search?: string): Promise<number> {
         ? and(
             eq(
               nameChangeMasters.id,
-              db
-                .select({
-                  id: nameChangeMasters.id,
-                })
-                .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
-                .orderBy(desc(nameChangeMasters.id))
+              Select_Sub_Query.where(
+                eq(nameChangeMasters.companyID, companyMasters.id)
+              )
+                .orderBy(Descending_NameChangeMaster_ID)
                 .limit(1)
             ),
-            or(
-              like(companyMasters.ISIN, `%${search}%`),
-              like(nameChangeMasters.newName, `%${search}%`),
-              like(nameChangeMasters.currentName, `%${search}%`),
-              like(nameChangeMasters.BSE, `%${search}%`),
-              like(nameChangeMasters.NSE, `%${search}%`),
-              like(companyMasters.CIN, `%${search}%`),
-              like(companyMasters.registeredOffice, `%${search}%`),
-              like(companyMasters.city, `%${search}%`),
-              like(companyMasters.state, `%${search}%`),
-              eq(companyMasters.pincode, search),
-              like(companyMasters.email, `%${search}%`),
-              like(companyMasters.website, `%${search}%`),
-              like(companyMasters.nameContactPerson, `%${search}%`),
-              like(companyMasters.designationContactPerson, `%${search}%`),
-              like(companyMasters.emailContactPerson, `%${search}%`),
-              like(companyMasters.phoneContactPerson, `%${search}%`),
-              like(companyMasters.telephone, `%${search}%`),
-              like(companyMasters.fax, `%${search}%`),
-              eq(companyMasters.faceValue, Number(search)),
-              eq(companyMasters.closingPriceNSE, Number(search)),
-              eq(companyMasters.closingPriceBSE, Number(search))
-            )
+            Search_Query(search)
           )
         : eq(
             nameChangeMasters.id,
-            db
-              .select({
-                id: nameChangeMasters.id,
-              })
-              .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
-              .orderBy(desc(nameChangeMasters.id))
+            Select_Sub_Query.where(
+              eq(nameChangeMasters.companyID, companyMasters.id)
+            )
+              .orderBy(Descending_NameChangeMaster_ID)
               .limit(1)
           )
     );
@@ -354,29 +229,17 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<CompanyMasterType|null>} The companyMaster data if found, otherwise null
  */
 export async function getById(id: number): Promise<CompanyMasterType | null> {
-  const data = await db
-    .select(MasterSelect)
-    .from(companyMasters)
-    .leftJoin(
-      nameChangeMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      and(
-        eq(companyMasters.id, id),
-        eq(
-          nameChangeMasters.id,
-          db
-            .select({
-              id: nameChangeMasters.id,
-            })
-            .from(nameChangeMasters)
-            .where(eq(nameChangeMasters.companyID, id))
-            .orderBy(desc(nameChangeMasters.id))
-            .limit(1)
-        )
+  const data = await Select_Master_Query.where(
+    and(
+      eq(companyMasters.id, id),
+      eq(
+        nameChangeMasters.id,
+        Select_Sub_Query.where(eq(nameChangeMasters.companyID, id))
+          .orderBy(Descending_NameChangeMaster_ID)
+          .limit(1)
       )
-    );
+    )
+  );
   if (data.length > 0) {
     return data[0];
   }
