@@ -10,7 +10,11 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { NotFoundError } from "../../utils/exceptions";
 import { fastifyApp } from "../../index";
-import { CreateUserBody } from "./schemas/create.schema";
+import {
+  CreateUserBody,
+  createUserBodySchema,
+  createUserUniqueEmailSchema,
+} from "./schemas/create.schema";
 import { UserType } from "../../@types/user.type";
 import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
 import { PaginationType } from "../../@types/pagination.type";
@@ -20,8 +24,9 @@ import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema
 import { UpdateUserBody } from "./schemas/update.schema";
 import env from "../../config/env";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
+import { ExcelBuffer, generateExcel, readExcel } from "../../utils/excel";
 import { ExcelUsersColumn } from "./user.model";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 /**
  * Create a new user with the provided user information.
@@ -165,4 +170,32 @@ export async function destroy(params: GetIdParam): Promise<UserType> {
   const user = await findById(params);
   await remove(id);
   return user;
+}
+
+export async function importExcel(data: PostExcelBody): Promise<void> {
+  const app = await fastifyApp;
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(async function (row, rowNumber) {
+    if (rowNumber > 1) {
+      try {
+        const userData = {
+          name: row.getCell(1).value?.toString(),
+          email: row.getCell(2).value?.toString(),
+          password: row.getCell(3).value?.toString(),
+          confirm_password: row.getCell(4).value?.toString(),
+        };
+        await createUserBodySchema.parseAsync(userData);
+        await createUserUniqueEmailSchema.parseAsync(userData.email);
+        const hashedPassword = await app.bcrypt.hash(userData.password || "");
+        const validatedUserData = {
+          name: userData.name || "",
+          email: userData.email || "",
+          password: hashedPassword,
+          key: uuidv4(),
+        };
+        await createUser(validatedUserData);
+      } catch (error) {}
+    }
+  });
+  return;
 }

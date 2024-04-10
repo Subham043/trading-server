@@ -4,6 +4,7 @@ import {
   destroy,
   exportExcel,
   findById,
+  importExcel,
   list,
   update,
 } from "./user.services";
@@ -18,7 +19,6 @@ import {
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { readExcel } from "../../utils/excel";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 export async function listUsers(
@@ -54,8 +54,7 @@ export async function importUsers(
   }>,
   reply: FastifyReply
 ) {
-  const worksheet = await readExcel(request.body.file);
-  console.log(worksheet?.actualRowCount);
+  await importExcel(request.body);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
