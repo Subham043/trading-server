@@ -3,6 +3,7 @@ import {
   createUser,
   exportUsers,
   getUser,
+  importUsers,
   listUsers,
   removeUser,
   updateUser,
@@ -12,6 +13,7 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import { getIdParamSchema } from "../../common/schemas/id_param.schema";
 import { createUserBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
+import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function userRoutes(app: FastifyInstance) {
   app.get(
@@ -29,6 +31,14 @@ export async function userRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportUsers
+  );
+  app.post(
+    "/import",
+    {
+      schema: { body: postExcelBodySchema },
+      preHandler: app.verifyJwt,
+    },
+    importUsers
   );
   app.get(
     "/:id",
