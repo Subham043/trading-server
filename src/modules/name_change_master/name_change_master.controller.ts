@@ -6,6 +6,7 @@ import {
   exportExcelCompany,
   findByCompanyId,
   findById,
+  importExcel,
   list,
   listCompany,
   update,
@@ -23,6 +24,7 @@ import {
 import { createNameChangeMasterUniqueSchema } from "./schemas/create.schema";
 import { updateNameChangeMasterUniqueSchema } from "./schemas/update.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 export async function listNameChangeMaster(
   request: FastifyRequest<{
@@ -199,5 +201,19 @@ export async function removeNameChangeMaster(
     success: true,
     message: "Name Change Master Removed",
     data: result,
+  });
+}
+
+export async function importNameChangeMasters(
+  request: FastifyRequest<{
+    Body: PostExcelBody;
+  }>,
+  reply: FastifyReply
+) {
+  await importExcel(request.body);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Name Change Masters Imported",
   });
 }

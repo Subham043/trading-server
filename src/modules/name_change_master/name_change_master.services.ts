@@ -25,11 +25,16 @@ import {
 } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
+import { ExcelBuffer, generateExcel, readExcel } from "../../utils/excel";
 import {
   ExcelNameChangeCompanyColumns,
   ExcelNameChangeMastersColumns,
 } from "./name_change_master.model";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
+import {
+  createNameChangeMasterBodySchema,
+  createNameChangeMasterUniqueSchema,
+} from "./schemas/create.schema";
 
 /**
  * Create a new nameChangeMaster with the provided nameChangeMaster information.
@@ -220,4 +225,42 @@ export async function destroy(
   }
   await remove(id);
   return nameChangeMaster;
+}
+
+export async function importExcel(data: PostExcelBody): Promise<void> {
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(async function (row, rowNumber) {
+    if (rowNumber > 1) {
+      try {
+        const nameChangeMasterData = {
+          NSE: row.getCell(1).value?.toString(),
+          BSE: row.getCell(2).value?.toString(),
+          currentName: row.getCell(3).value?.toString(),
+          previousName: row.getCell(4).value?.toString(),
+          dateNameChange: (
+            row.getCell(5).value as Date | undefined
+          )?.toISOString(),
+          companyId: Number(row.getCell(6).value),
+        };
+        await createNameChangeMasterBodySchema.parseAsync(nameChangeMasterData);
+        await createNameChangeMasterUniqueSchema.parseAsync({
+          companyId: nameChangeMasterData.companyId,
+          NSE: nameChangeMasterData.NSE,
+          BSE: nameChangeMasterData.BSE,
+        });
+        const validatedNameChangeMasterData = {
+          NSE: nameChangeMasterData.NSE,
+          BSE: nameChangeMasterData.BSE,
+          currentName: nameChangeMasterData.currentName,
+          previousName: nameChangeMasterData.previousName,
+          dateNameChange: nameChangeMasterData.dateNameChange
+            ? new Date(nameChangeMasterData.dateNameChange)
+            : new Date(),
+          companyID: Number(nameChangeMasterData.companyId),
+        };
+        await createNameChangeMaster(validatedNameChangeMasterData);
+      } catch (error) {}
+    }
+  });
+  return;
 }

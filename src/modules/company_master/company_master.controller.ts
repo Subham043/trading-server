@@ -4,6 +4,7 @@ import {
   destroy,
   exportExcel,
   findById,
+  importExcel,
   list,
   update,
 } from "./company_master.services";
@@ -16,6 +17,7 @@ import {
   CompanyMasterUpdateType,
 } from "../../@types/company_master.type";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 export async function listCompanyMasters(
   request: FastifyRequest<{
@@ -146,5 +148,19 @@ export async function removeCompanyMaster(
     success: true,
     message: "Company Master Removed",
     data: result,
+  });
+}
+
+export async function importCompanyMasters(
+  request: FastifyRequest<{
+    Body: PostExcelBody;
+  }>,
+  reply: FastifyReply
+) {
+  await importExcel(request.body, request.authenticatedUser!.id);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Company Masters Imported",
   });
 }

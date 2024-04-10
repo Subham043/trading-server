@@ -5,6 +5,7 @@ import {
   exportNameChangeMasterWithCompany,
   getNameChangeMaster,
   getNameChangeMasterLatestByCompanyId,
+  importNameChangeMasters,
   listNameChangeMaster,
   listNameChangeMasterWithCompany,
   removeNameChangeMaster,
@@ -19,6 +20,7 @@ import {
 } from "../../common/schemas/id_param.schema";
 import { createNameChangeMasterBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
+import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function nameChangeMasterRoutes(app: FastifyInstance) {
   app.get(
@@ -30,6 +32,16 @@ export async function nameChangeMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     listNameChangeMasterWithCompany
+  );
+  app.post(
+    "/import",
+    {
+      schema: {
+        body: postExcelBodySchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    importNameChangeMasters
   );
   app.get(
     "/company/export",

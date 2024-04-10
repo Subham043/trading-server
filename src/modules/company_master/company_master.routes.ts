@@ -3,6 +3,7 @@ import {
   createCompanyMaster,
   exportCompanyMasters,
   getCompanyMaster,
+  importCompanyMasters,
   listCompanyMasters,
   removeCompanyMaster,
   updateCompanyMaster,
@@ -12,6 +13,7 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import { getIdParamSchema } from "../../common/schemas/id_param.schema";
 import { createCompanyMasterBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
+import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function companyMasterRoutes(app: FastifyInstance) {
   app.get(
@@ -29,6 +31,14 @@ export async function companyMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportCompanyMasters
+  );
+  app.post(
+    "/import",
+    {
+      schema: { body: postExcelBodySchema },
+      preHandler: app.verifyJwt,
+    },
+    importCompanyMasters
   );
   app.get(
     "/:id",
