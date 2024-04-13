@@ -4,6 +4,59 @@ import { companyMasters } from "../../db/schema/company_master";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
 import { WorksheetColumnsType } from "../../utils/excel";
 
+export type CompanyMasterExcelData = {
+  newName: string | undefined;
+  currentName: string | undefined;
+  NSE: string | undefined;
+  BSE: string | undefined;
+  ISIN: string | undefined;
+  CIN: string | undefined;
+  faceValue: number;
+  closingPriceNSE: number;
+  closingPriceBSE: number;
+  registeredOffice: string | undefined;
+  city: string | undefined;
+  state: string | undefined;
+  pincode: string | undefined;
+  telephone: string | undefined;
+  fax: string | undefined;
+  email: string | undefined;
+  website: string | undefined;
+  nameContactPerson: string | undefined;
+  emailContactPerson: string | undefined;
+  phoneContactPerson: string | undefined;
+  designationContactPerson: string | undefined;
+  createdBy: number;
+};
+
+export const ExcelFailedCompanyMasterColumn: WorksheetColumnsType = [
+  { key: "NSE", header: "NSE" },
+  { key: "BSE", header: "BSE" },
+  { key: "newName", header: "Name of the Company(as per certificate)" },
+  { key: "currentName", header: "Current Name of the Company" },
+  { key: "ISIN", header: "ISIN" },
+  { key: "CIN", header: "CIN" },
+  { key: "faceValue", header: "Face Value" },
+  { key: "closingPriceNSE", header: "Closing Price in NSE" },
+  { key: "closingPriceBSE", header: "Closing Price in BSE" },
+  { key: "registeredOffice", header: "Registered Office" },
+  { key: "city", header: "City" },
+  { key: "state", header: "State" },
+  { key: "pincode", header: "Pincode" },
+  { key: "telephone", header: "Telephone" },
+  { key: "fax", header: "Fax" },
+  { key: "email", header: "Email" },
+  { key: "website", header: "Website" },
+  { key: "nameContactPerson", header: "Name of Contact Person" },
+  { key: "emailContactPerson", header: "Email of Contact Person" },
+  { key: "phoneContactPerson", header: "Phone of Contact Person" },
+  {
+    key: "designationContactPerson",
+    header: "Designation of Contact Person",
+  },
+  { key: "error", header: "Error" },
+];
+
 export const ExcelCompanyMastersColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "NSE", header: "NSE" },

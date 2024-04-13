@@ -26,10 +26,17 @@ import {
 } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel, readExcel } from "../../utils/excel";
 import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  ExcelFailedNameChangeMasterColumn,
   ExcelNameChangeCompanyColumns,
   ExcelNameChangeMastersColumns,
+  NameChangeMasterExcelData,
 } from "./name_change_master.model";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 import {
@@ -233,44 +240,85 @@ export async function destroy(
   return nameChangeMaster;
 }
 
-export async function importExcel(data: PostExcelBody): Promise<void> {
+export async function importExcel(data: PostExcelBody): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const nameChangeMasterInsertData: NameChangeMasterExcelData[] = [];
+  const failedNameChangeMasterImport: (NameChangeMasterExcelData & {
+    error: string;
+  })[] = [];
   const worksheet = await readExcel(data.file);
   worksheet?.eachRow(async function (row, rowNumber) {
     if (rowNumber > 1) {
-      try {
-        const nameChangeMasterData = {
-          NSE: row.getCell(1).value?.toString(),
-          BSE: row.getCell(2).value?.toString(),
-          currentName: row.getCell(3).value?.toString(),
-          previousName: row.getCell(4).value?.toString(),
-          dateNameChange: (
-            row.getCell(5).value as Date | undefined
-          )?.toISOString(),
-          companyId: Number(row.getCell(6).value),
-        };
-        await createNameChangeMasterBodySchema.parseAsync(nameChangeMasterData);
-        await createNameChangeMasterUniqueSchema.parseAsync({
-          companyId: nameChangeMasterData.companyId,
-          NSE: nameChangeMasterData.NSE,
-          BSE: nameChangeMasterData.BSE,
-        });
-        const companyMaster = await getByCompanyMasterId(
-          nameChangeMasterData.companyId
-        );
-        const validatedNameChangeMasterData = {
-          NSE: nameChangeMasterData.NSE,
-          BSE: nameChangeMasterData.BSE,
-          newName: companyMaster?.newName,
-          currentName: nameChangeMasterData.currentName,
-          previousName: nameChangeMasterData.previousName,
-          dateNameChange: nameChangeMasterData.dateNameChange
-            ? new Date(nameChangeMasterData.dateNameChange)
-            : new Date(),
-          companyID: Number(nameChangeMasterData.companyId),
-        };
-        await createNameChangeMaster(validatedNameChangeMasterData);
-      } catch (error) {}
+      const nameChangeMasterData = {
+        NSE: row.getCell(1).value?.toString(),
+        BSE: row.getCell(2).value?.toString(),
+        currentName: row.getCell(3).value?.toString(),
+        previousName: row.getCell(4).value?.toString(),
+        dateNameChange: (
+          row.getCell(5).value as Date | undefined
+        )?.toISOString(),
+        companyId: Number(row.getCell(6).value),
+      };
+      nameChangeMasterInsertData.push(nameChangeMasterData);
     }
   });
-  return;
+  for (let i = 0; i < nameChangeMasterInsertData.length; i++) {
+    try {
+      await createNameChangeMasterBodySchema.parseAsync(
+        nameChangeMasterInsertData[i]
+      );
+      await createNameChangeMasterUniqueSchema.parseAsync({
+        companyId: nameChangeMasterInsertData[i].companyId,
+        NSE: nameChangeMasterInsertData[i].NSE,
+        BSE: nameChangeMasterInsertData[i].BSE,
+      });
+      const companyMaster = await getByCompanyMasterId(
+        nameChangeMasterInsertData[i].companyId
+      );
+      const validatedNameChangeMasterData = {
+        NSE: nameChangeMasterInsertData[i].NSE,
+        BSE: nameChangeMasterInsertData[i].BSE,
+        newName: companyMaster?.newName,
+        currentName: nameChangeMasterInsertData[i].currentName,
+        previousName: nameChangeMasterInsertData[i].previousName,
+        dateNameChange:
+          nameChangeMasterInsertData[i].dateNameChange !== undefined
+            ? new Date(nameChangeMasterInsertData[i].dateNameChange as string)
+            : new Date(),
+        companyID: Number(nameChangeMasterInsertData[i].companyId),
+      };
+      await createNameChangeMaster(validatedNameChangeMasterData);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedNameChangeMasterImport.push({
+        ...nameChangeMasterInsertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedNameChangeMasterImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<
+      NameChangeMasterExcelData & { error: string }
+    >(
+      "Failed Name Change Master Import",
+      ExcelFailedNameChangeMasterColumn,
+      failedNameChangeMasterImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

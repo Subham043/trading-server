@@ -1,5 +1,7 @@
 import { MultipartFile } from "@fastify/multipart";
 import Excel from "exceljs";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
 
 type WorksheetColumnType = {
   key: string;
@@ -13,6 +15,12 @@ type GenerateExcelType = <T = any>(
   worksheetColumns: WorksheetColumnsType,
   columns: T[]
 ) => Promise<Excel.Buffer>;
+
+type StoreExcelType = <T = any>(
+  key: string,
+  worksheetColumns: WorksheetColumnsType,
+  columns: T[]
+) => Promise<string>;
 
 type GenerateEmptyExcelType = (
   key: string,
@@ -46,9 +54,25 @@ export const generateExcel: GenerateExcelType = async (
   columns.forEach((column) => {
     worksheet.addRow(column);
   });
-  // const exportPath = path.resolve(__dirname, "../../../static/countries.xlsx");
-  // await workbook.xlsx.writeFile(exportPath);
   return await workbook.xlsx.writeBuffer();
+};
+
+export const storeExcel: StoreExcelType = async (
+  key,
+  worksheetColumns,
+  columns
+) => {
+  const { workbook, worksheet } = setup(key, worksheetColumns);
+  columns.forEach((column) => {
+    worksheet.addRow(column);
+  });
+  const fileName = `${uuidv4()}.xlsx`;
+  const exportPath = path.resolve(
+    __dirname,
+    "../../static/failed_excel/" + fileName
+  );
+  await workbook.xlsx.writeFile(exportPath);
+  return fileName;
 };
 
 export const generateEmptyExcel: GenerateEmptyExcelType = async (

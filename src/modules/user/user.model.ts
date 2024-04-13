@@ -3,6 +3,21 @@ import { users } from "../../db/schema/user";
 import db from "../../db";
 import { WorksheetColumnsType } from "../../utils/excel";
 
+export type UserExcelData = {
+  name: string | undefined;
+  email: string | undefined;
+  password: string | undefined;
+  confirm_password: string | undefined;
+};
+
+export const ExcelFailedUsersColumn: WorksheetColumnsType = [
+  { key: "name", header: "Name" },
+  { key: "email", header: "Email" },
+  { key: "password", header: "Password" },
+  { key: "confirm_password", header: "Confirm Password" },
+  { key: "error", header: "Error" },
+];
+
 export const ExcelUsersColumn: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "name", header: "Name" },

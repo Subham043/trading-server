@@ -210,10 +210,11 @@ export async function importNameChangeMasters(
   }>,
   reply: FastifyReply
 ) {
-  await importExcel(request.body);
+  const result = await importExcel(request.body);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
     message: "Name Change Masters Imported",
+    data: result,
   });
 }

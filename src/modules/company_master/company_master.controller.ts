@@ -157,10 +157,11 @@ export async function importCompanyMasters(
   }>,
   reply: FastifyReply
 ) {
-  await importExcel(request.body, request.authenticatedUser!.id);
+  const result = await importExcel(request.body, request.authenticatedUser!.id);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
     message: "Company Masters Imported",
+    data: result,
   });
 }

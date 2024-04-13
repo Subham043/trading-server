@@ -24,8 +24,17 @@ import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema
 import { UpdateUserBody } from "./schemas/update.schema";
 import env from "../../config/env";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel, readExcel } from "../../utils/excel";
-import { ExcelUsersColumn } from "./user.model";
+import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  ExcelFailedUsersColumn,
+  ExcelUsersColumn,
+  UserExcelData,
+} from "./user.model";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 /**
@@ -172,30 +181,66 @@ export async function destroy(params: GetIdParam): Promise<UserType> {
   return user;
 }
 
-export async function importExcel(data: PostExcelBody): Promise<void> {
+export async function importExcel(data: PostExcelBody): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const userInsertData: UserExcelData[] = [];
+  const failedUsersImport: (UserExcelData & { error: string })[] = [];
   const app = await fastifyApp;
   const worksheet = await readExcel(data.file);
-  worksheet?.eachRow(async function (row, rowNumber) {
+  worksheet?.eachRow(function (row, rowNumber) {
     if (rowNumber > 1) {
-      try {
-        const userData = {
-          name: row.getCell(1).value?.toString(),
-          email: row.getCell(2).value?.toString(),
-          password: row.getCell(3).value?.toString(),
-          confirm_password: row.getCell(4).value?.toString(),
-        };
-        await createUserBodySchema.parseAsync(userData);
-        await createUserUniqueEmailSchema.parseAsync(userData.email);
-        const hashedPassword = await app.bcrypt.hash(userData.password || "");
-        const validatedUserData = {
-          name: userData.name || "",
-          email: userData.email || "",
-          password: hashedPassword,
-          key: uuidv4(),
-        };
-        await createUser(validatedUserData);
-      } catch (error) {}
+      const userData = {
+        name: row.getCell(1).value?.toString(),
+        email: row.getCell(2).value?.toString(),
+        password: row.getCell(3).value?.toString(),
+        confirm_password: row.getCell(4).value?.toString(),
+      };
+      userInsertData.push(userData);
     }
   });
-  return;
+  for (let i = 0; i < userInsertData.length; i++) {
+    try {
+      await createUserBodySchema.parseAsync(userInsertData[i]);
+      await createUserUniqueEmailSchema.parseAsync(userInsertData[i].email);
+      const hashedPassword = await app.bcrypt.hash(
+        userInsertData[i].password || ""
+      );
+      const validatedUserData = {
+        name: userInsertData[i].name || "",
+        email: userInsertData[i].email || "",
+        password: hashedPassword,
+        key: uuidv4(),
+      };
+      await createUser(validatedUserData);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedUsersImport.push({
+        ...userInsertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedUsersImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<UserExcelData & { error: string }>(
+      "Failed Users Import",
+      ExcelFailedUsersColumn,
+      failedUsersImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

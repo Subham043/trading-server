@@ -5,6 +5,25 @@ import db from "../../db";
 import { NameChangeMasterUpdateType } from "../../@types/name_change_master.type";
 import { WorksheetColumnsType } from "../../utils/excel";
 
+export type NameChangeMasterExcelData = {
+  NSE: string | undefined;
+  BSE: string | undefined;
+  currentName: string | undefined;
+  previousName: string | undefined;
+  dateNameChange: string | undefined;
+  companyId: number;
+};
+
+export const ExcelFailedNameChangeMasterColumn: WorksheetColumnsType = [
+  { key: "NSE", header: "NSE" },
+  { key: "BSE", header: "BSE" },
+  { key: "currentName", header: "New Name" },
+  { key: "previousName", header: "Previous Name" },
+  { key: "dateNameChange", header: "Date of Name Change" },
+  { key: "companyId", header: "Company Master Id" },
+  { key: "error", header: "Error" },
+];
+
 export const ExcelNameChangeMastersColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "NSE", header: "NSE" },

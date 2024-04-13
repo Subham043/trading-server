@@ -30,6 +30,7 @@ import closeWithGrace from "close-with-grace";
 import { accountRoutes } from "../modules/account/account.routes";
 import { companyMasterRoutes } from "../modules/company_master/company_master.routes";
 import { nameChangeMasterRoutes } from "../modules/name_change_master/name_change_master.routes";
+import { excelRoutes } from "../modules/excel/excel.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -104,6 +105,7 @@ export async function buildServer() {
   await server.register(authRoutes, { prefix: "/api/auth" });
   await server.register(userRoutes, { prefix: "/api/users" });
   await server.register(accountRoutes, { prefix: "/api/account" });
+  await server.register(excelRoutes, { prefix: "/api/excel" });
   await server.register(companyMasterRoutes, {
     prefix: "/api/company-masters",
   });
