@@ -20,14 +20,12 @@ export const updateNameChangeMasterBodySchema = z.object({
     .string({
       errorMap: () => ({ message: "Previous Name must be a string" }),
     })
-    .trim()
-    .optional(),
+    .trim(),
   currentName: z
     .string({
       errorMap: () => ({ message: "New Name must be a string" }),
     })
-    .trim()
-    .optional(),
+    .trim(),
   // oldSecuritySymbol: z
   //   .string({
   //     errorMap: () => ({ message: "Old Security Symbol must be a string" }),
