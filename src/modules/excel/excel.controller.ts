@@ -19,24 +19,8 @@ export async function downloadFailedExcel(
     );
     const fileStream = fs.createReadStream(filePath);
     return reply
-      .header("Content-Disposition", 'attachment; filename="' + id + '"')
-      .send(fileStream)
-      .then(
-        () => {
-          fs.unlink(filePath, (err) => {
-            if (err) {
-              console.error(err);
-            }
-          });
-        },
-        () => {
-          fs.unlink(filePath, (err) => {
-            if (err) {
-              console.error(err);
-            }
-          });
-        }
-      );
+      .header("Content-Disposition", 'attachment; filename="FailedExcel.xlsx"')
+      .send(fileStream);
   } catch (error) {
     throw new NotFoundError("File not found");
   }
