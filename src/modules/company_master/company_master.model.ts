@@ -17,7 +17,7 @@ export type CompanyMasterExcelData = {
   registeredOffice: string | undefined;
   city: string | undefined;
   state: string | undefined;
-  pincode: string | undefined;
+  pincode: number | undefined;
   telephone: string | undefined;
   fax: string | undefined;
   email: string | undefined;

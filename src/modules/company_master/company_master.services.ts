@@ -171,7 +171,7 @@ export async function importExcel(
         registeredOffice: row.getCell(10).value?.toString(),
         city: row.getCell(11).value?.toString(),
         state: row.getCell(12).value?.toString(),
-        pincode: row.getCell(13).value?.toString(),
+        pincode: Number(row.getCell(13).value?.toString()),
         telephone: row.getCell(14).value?.toString(),
         fax: row.getCell(15).value?.toString(),
         email: row.getCell(16).value?.toString(),
@@ -196,7 +196,10 @@ export async function importExcel(
         NSE: companyMasterInsertData[i].NSE,
         BSE: companyMasterInsertData[i].BSE,
       });
-      await createCompanyMaster(companyMasterInsertData[i]);
+      await createCompanyMaster({
+        ...companyMasterInsertData[i],
+        pincode: companyMasterInsertData[i].pincode?.toString(),
+      });
       successCount = successCount + 1;
     } catch (error) {
       failedCompanyMasterImport.push({
