@@ -5,7 +5,7 @@ import bcrypt from "fastify-bcrypt";
 import jwt from "@fastify/jwt";
 import cookie from "@fastify/cookie";
 import auth from "@fastify/auth";
-import multipart from "@fastify/multipart";
+import multipartFileUpload from "fastify-file-upload";
 import mailer from "fastify-mailer";
 import fastifyRequestLogger from "@mgcrea/fastify-request-logger";
 import { logger } from "./logger";
@@ -31,6 +31,7 @@ import { accountRoutes } from "../modules/account/account.routes";
 import { companyMasterRoutes } from "../modules/company_master/company_master.routes";
 import { nameChangeMasterRoutes } from "../modules/name_change_master/name_change_master.routes";
 import { excelRoutes } from "../modules/excel/excel.routes";
+import { registrarMasterRoutes } from "../modules/registrar_master/registrar_master.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -85,17 +86,14 @@ export async function buildServer() {
 
   await server.register(helmet, helmetOptions);
 
-  await server.register(multipart, {
-    attachFieldsToBody: true,
-    limits: {
-      fieldNameSize: 100, // Max field name size in bytes
-      fieldSize: 100, // Max field value size in bytes
-      fields: 10, // Max number of non-file fields
-      fileSize: 1000000, // For multipart forms, the max file size in bytes
-      files: 1, // Max number of file fields
-      headerPairs: 2000, // Max number of header key=>value pairs
-      parts: 1000, // For multipart forms, the max number of parts (fields + files)
-    },
+  await server.register(multipartFileUpload, {
+    safeFileNames: true,
+    uriDecodeFileNames: true,
+    preserveExtension: false,
+    useTempFiles: true,
+    tempFileDir: "../../static/temp",
+    parseNested: true,
+    debug: false,
   });
 
   await server.register(bcrypt, {
@@ -111,6 +109,9 @@ export async function buildServer() {
   });
   await server.register(nameChangeMasterRoutes, {
     prefix: "/api/name-change-masters",
+  });
+  await server.register(registrarMasterRoutes, {
+    prefix: "/api/registrar-masters",
   });
 
   // delay is the number of milliseconds for the graceful close to finish

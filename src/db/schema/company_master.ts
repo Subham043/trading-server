@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { users } from "./user";
 import { nameChangeMasters } from "./name_change_master";
+import { registrarMasters } from "./registrar_master";
 
 export const companyMasters = pgTable(
   "company_masters",
@@ -61,5 +62,6 @@ export const companyMastersRelations = relations(
       references: [users.id],
     }),
     companyName: many(nameChangeMasters),
+    registrar: one(registrarMasters),
   })
 );

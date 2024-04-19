@@ -1,6 +1,7 @@
-import { MultipartFile } from "@fastify/multipart";
+import { MultipartFile } from "../@types/multipart_file.type";
 import Excel from "exceljs";
 import path from "path";
+import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
 type WorksheetColumnType = {
@@ -86,8 +87,15 @@ export const generateEmptyExcel: GenerateEmptyExcelType = async (
 export const readExcel: (
   file: MultipartFile
 ) => Promise<Excel.Worksheet | undefined> = async (file) => {
-  const buffer = await file.toBuffer();
+  const extension = file.mimetype.split("/")[1];
+  const fileName = file.md5 + "." + extension;
+  const filePath = path.resolve(
+    __dirname,
+    `../../static/temp_excel/${fileName}`
+  );
+  file.mv(filePath);
   const workbook = new Excel.Workbook();
-  await workbook.xlsx.load(buffer);
+  await workbook.xlsx.readFile(filePath);
+  fs.unlinkSync(filePath);
   return workbook.getWorksheet();
 };

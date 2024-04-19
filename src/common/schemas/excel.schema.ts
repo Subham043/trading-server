@@ -1,6 +1,5 @@
-import { Stream } from "stream";
 import { z } from "zod";
-import { MultipartFile } from "@fastify/multipart";
+import { MultipartFile } from "../../@types/multipart_file.type";
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 5; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -13,17 +12,17 @@ export const postExcelBodySchema = z
     file: z
       .any()
       .refine((file) => {
-        if (!file || !file.file) {
+        if (!file || !file.data) {
           return false;
         }
-        return file.file instanceof Stream;
+        return true;
       }, "Excel file is required")
       .refine(
         (file) => ACCEPTED_FILE_TYPES.includes(file.mimetype),
         "Invalid excel file type"
       )
       .refine(
-        (file) => file.file.bytesRead <= MAX_UPLOAD_SIZE,
+        (file) => file.size <= MAX_UPLOAD_SIZE,
         "File size must be less than 3MB"
       )
       .transform((file) => file as MultipartFile),
