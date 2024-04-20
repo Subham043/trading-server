@@ -83,6 +83,7 @@ export const ExcelRegistrarMastersColumns: WorksheetColumnsType = [
     key: "branch",
     header: "Branch",
   },
+  { key: "newName", header: "Company Name" },
   { key: "companyId", header: "Company Master Id" },
   { key: "createdAt", header: "Created At" },
 ];

@@ -15,6 +15,7 @@ import {
   Descending_NameChangeMaster_ID,
 } from "./registrar_master.model";
 import { registrarMasters } from "../../db/schema/registrar_master";
+import { desc } from "drizzle-orm";
 
 /**
  * Create a new registrarMaster with the provided data.
@@ -27,7 +28,7 @@ export async function createRegistrarMaster(
 ): Promise<RegistrarMasterType> {
   const result = await db
     .insert(registrarMasters)
-    .values(data)
+    .values({ ...data, companyID: data.companyId })
     .onConflictDoNothing()
     .returning(RegistrarMasterSelect);
   const res = await getById(result[0].id);
@@ -48,9 +49,10 @@ export async function updateRegistrarMaster(
   data: RegistrarMasterUpdateType,
   id: number
 ): Promise<RegistrarMasterType> {
+  const { companyId, ...rest } = data;
   const result = await db
     .update(registrarMasters)
-    .set(data)
+    .set({ ...rest, companyID: companyId })
     .where(eq(registrarMasters.id, id))
     .returning(RegistrarMasterSelect);
   const res = await getById(id);
@@ -84,26 +86,30 @@ export async function paginate(
       search
         ? and(
             eq(
-              companyMasters.id,
+              nameChangeMasters.id,
               db
                 .select({
                   id: nameChangeMasters.id,
                 })
                 .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
+                .where(
+                  eq(nameChangeMasters.companyID, registrarMasters.companyID)
+                )
                 .orderBy(Descending_NameChangeMaster_ID)
                 .limit(1)
             ),
             Search_Query(search)
           )
         : eq(
-            companyMasters.id,
+            nameChangeMasters.id,
             db
               .select({
                 id: nameChangeMasters.id,
               })
               .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
+              .where(
+                eq(nameChangeMasters.companyID, registrarMasters.companyID)
+              )
               .orderBy(Descending_NameChangeMaster_ID)
               .limit(1)
           )
@@ -134,26 +140,30 @@ export async function getAll(search?: string): Promise<RegistrarMasterType[]> {
       search
         ? and(
             eq(
-              companyMasters.id,
+              nameChangeMasters.id,
               db
                 .select({
                   id: nameChangeMasters.id,
                 })
                 .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
+                .where(
+                  eq(nameChangeMasters.companyID, registrarMasters.companyID)
+                )
                 .orderBy(Descending_NameChangeMaster_ID)
                 .limit(1)
             ),
             Search_Query(search)
           )
         : eq(
-            companyMasters.id,
+            nameChangeMasters.id,
             db
               .select({
                 id: nameChangeMasters.id,
               })
               .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
+              .where(
+                eq(nameChangeMasters.companyID, registrarMasters.companyID)
+              )
               .orderBy(Descending_NameChangeMaster_ID)
               .limit(1)
           )
@@ -183,26 +193,30 @@ export async function count(search?: string): Promise<number> {
       search
         ? and(
             eq(
-              companyMasters.id,
+              nameChangeMasters.id,
               db
                 .select({
                   id: nameChangeMasters.id,
                 })
                 .from(nameChangeMasters)
-                .where(eq(nameChangeMasters.companyID, companyMasters.id))
+                .where(
+                  eq(nameChangeMasters.companyID, registrarMasters.companyID)
+                )
                 .orderBy(Descending_NameChangeMaster_ID)
                 .limit(1)
             ),
             Search_Query(search)
           )
         : eq(
-            companyMasters.id,
+            nameChangeMasters.id,
             db
               .select({
                 id: nameChangeMasters.id,
               })
               .from(nameChangeMasters)
-              .where(eq(nameChangeMasters.companyID, companyMasters.id))
+              .where(
+                eq(nameChangeMasters.companyID, registrarMasters.companyID)
+              )
               .orderBy(Descending_NameChangeMaster_ID)
               .limit(1)
           )
@@ -230,13 +244,13 @@ export async function getById(id: number): Promise<RegistrarMasterType | null> {
       and(
         eq(registrarMasters.id, id),
         eq(
-          companyMasters.id,
+          nameChangeMasters.id,
           db
             .select({
               id: nameChangeMasters.id,
             })
             .from(nameChangeMasters)
-            .where(eq(nameChangeMasters.companyID, companyMasters.id))
+            .where(eq(nameChangeMasters.companyID, registrarMasters.companyID))
             .orderBy(Descending_NameChangeMaster_ID)
             .limit(1)
         )
@@ -291,23 +305,30 @@ export async function remove(id: number): Promise<RegistrarMasterType> {
   return result[0];
 }
 
-export async function getCompanyMasterSelect(): Promise<
+export async function getCompanyMasterSelect(param: {
+  companyId?: string;
+}): Promise<
   {
     newName: string | null;
     currentName: string | null;
-    nameChangeMasterId: number | null;
+    companyID: number | null;
   }[]
 > {
   const registrar = await db
     .select({
       companyID: registrarMasters.companyID,
     })
-    .from(registrarMasters);
+    .from(registrarMasters)
+    .where(
+      param.companyId
+        ? notInArray(registrarMasters.companyID, [Number(param.companyId)])
+        : undefined
+    );
   const data = await db
     .select({
+      companyID: companyMasters.id,
       newName: nameChangeMasters.newName,
       currentName: nameChangeMasters.currentName,
-      nameChangeMasterId: nameChangeMasters.id,
     })
     .from(companyMasters)
     .leftJoin(
@@ -327,12 +348,13 @@ export async function getCompanyMasterSelect(): Promise<
             .orderBy(Descending_NameChangeMaster_ID)
             .limit(1)
         ),
-        notInArray(
-          companyMasters.id,
-          registrar.map((item) => item.companyID)
-        )
+        registrar.length > 0
+          ? notInArray(companyMasters.id, [
+              ...registrar.map((item) => item.companyID),
+            ])
+          : undefined
       )
     )
-    .orderBy(companyMasters.createdAt);
+    .orderBy(desc(companyMasters.createdAt));
   return data;
 }

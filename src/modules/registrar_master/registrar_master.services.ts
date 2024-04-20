@@ -232,12 +232,14 @@ export async function importExcel(
   };
 }
 
-export async function companyMasterSelect(): Promise<
+export async function companyMasterSelect(param: {
+  companyId?: string;
+}): Promise<
   {
     newName: string | null;
     currentName: string | null;
-    nameChangeMasterId: number | null;
+    companyID: number | null;
   }[]
 > {
-  return await getCompanyMasterSelect();
+  return await getCompanyMasterSelect(param);
 }

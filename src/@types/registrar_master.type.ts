@@ -22,9 +22,12 @@ export type RegistrarMasterType = {
   companyId?: number | null | undefined;
 };
 
-export type RegistrarMasterCreateType = Omit<
-  RegistrarMasterType,
-  "id" | "createdAt" | "newName" | "currentName"
->;
+export interface RegistrarMasterCreateType
+  extends Omit<
+    RegistrarMasterType,
+    "id" | "createdAt" | "newName" | "currentName" | "companyId"
+  > {
+  companyId: number;
+}
 
 export interface RegistrarMasterUpdateType extends RegistrarMasterCreateType {}

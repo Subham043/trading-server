@@ -162,10 +162,15 @@ export async function importRegistrarMasters(
 }
 
 export async function listCompanyMasterSelect(
-  request: FastifyRequest,
+  request: FastifyRequest<{
+    Querystring: {
+      companyId?: string;
+    };
+  }>,
   reply: FastifyReply
 ) {
-  const result = await companyMasterSelect();
+  const query = request.query;
+  const result = await companyMasterSelect(query);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
