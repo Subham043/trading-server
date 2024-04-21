@@ -215,7 +215,8 @@ export async function importExcel(
     >(
       "Failed Company Master Import",
       ExcelFailedCompanyMasterColumn,
-      failedCompanyMasterImport
+      failedCompanyMasterImport,
+      userId
     );
     return {
       successCount,

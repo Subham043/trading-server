@@ -3,6 +3,7 @@ import Excel from "exceljs";
 import path from "path";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
+import { createFailedExcel } from "../modules/upload/excel.repository";
 
 type WorksheetColumnType = {
   key: string;
@@ -20,7 +21,8 @@ type GenerateExcelType = <T = any>(
 type StoreExcelType = <T = any>(
   key: string,
   worksheetColumns: WorksheetColumnsType,
-  columns: T[]
+  columns: T[],
+  createdBy: number
 ) => Promise<string>;
 
 type GenerateEmptyExcelType = (
@@ -61,7 +63,8 @@ export const generateExcel: GenerateExcelType = async (
 export const storeExcel: StoreExcelType = async (
   key,
   worksheetColumns,
-  columns
+  columns,
+  createdBy
 ) => {
   const { workbook, worksheet } = setup(key, worksheetColumns);
   columns.forEach((column) => {
@@ -73,6 +76,11 @@ export const storeExcel: StoreExcelType = async (
     "../../static/failed_excel/" + fileName
   );
   await workbook.xlsx.writeFile(exportPath);
+  await createFailedExcel({
+    file_name: fileName,
+    file_of: key,
+    createdBy: createdBy,
+  });
   return fileName;
 };
 
@@ -93,7 +101,7 @@ export const readExcel: (
     __dirname,
     `../../static/temp_excel/${fileName}`
   );
-  file.mv(filePath);
+  await file.mv(filePath);
   const workbook = new Excel.Workbook();
   await workbook.xlsx.readFile(filePath);
   fs.unlinkSync(filePath);

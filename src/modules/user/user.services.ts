@@ -181,7 +181,10 @@ export async function destroy(params: GetIdParam): Promise<UserType> {
   return user;
 }
 
-export async function importExcel(data: PostExcelBody): Promise<{
+export async function importExcel(
+  data: PostExcelBody,
+  createdBy: number
+): Promise<{
   successCount: number;
   errorCount: number;
   fileName: string | null;
@@ -230,7 +233,8 @@ export async function importExcel(data: PostExcelBody): Promise<{
     const fileName = await storeExcel<UserExcelData & { error: string }>(
       "Failed Users Import",
       ExcelFailedUsersColumn,
-      failedUsersImport
+      failedUsersImport,
+      createdBy
     );
     return {
       successCount,

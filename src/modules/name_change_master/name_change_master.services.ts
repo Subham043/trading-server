@@ -240,7 +240,10 @@ export async function destroy(
   return nameChangeMaster;
 }
 
-export async function importExcel(data: PostExcelBody): Promise<{
+export async function importExcel(
+  data: PostExcelBody,
+  createdBy: number
+): Promise<{
   successCount: number;
   errorCount: number;
   fileName: string | null;
@@ -308,7 +311,8 @@ export async function importExcel(data: PostExcelBody): Promise<{
     >(
       "Failed Name Change Master Import",
       ExcelFailedNameChangeMasterColumn,
-      failedNameChangeMasterImport
+      failedNameChangeMasterImport,
+      createdBy
     );
     return {
       successCount,

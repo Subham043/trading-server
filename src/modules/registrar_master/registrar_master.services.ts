@@ -217,7 +217,8 @@ export async function importExcel(
     >(
       "Failed Registrar Master Import",
       ExcelFailedRegistrarMasterColumn,
-      failedRegistrarMasterImport
+      failedRegistrarMasterImport,
+      userId
     );
     return {
       successCount,
