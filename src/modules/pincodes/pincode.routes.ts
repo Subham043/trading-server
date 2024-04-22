@@ -3,6 +3,7 @@ import {
   createPincode,
   exportPincodes,
   getPincode,
+  getPincodeSelect,
   listPincodes,
   removePincode,
   updatePincode,
@@ -29,6 +30,14 @@ export async function pincodeRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportPincodes
+  );
+  app.get(
+    "/select",
+    {
+      schema: { querystring: getSearchQuerySchema },
+      preHandler: app.verifyJwt,
+    },
+    getPincodeSelect
   );
   app.get(
     "/:id",

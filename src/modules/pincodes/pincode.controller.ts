@@ -4,6 +4,7 @@ import {
   destroy,
   exportExcel,
   findById,
+  getPincodesSelect,
   list,
   update,
 } from "./pincode.services";
@@ -54,6 +55,21 @@ export async function getPincode(
   reply: FastifyReply
 ): Promise<void> {
   const result = await findById(request.params);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Pincode Fetched",
+    data: result,
+  });
+}
+
+export async function getPincodeSelect(
+  request: FastifyRequest<{
+    Querystring: GetSearchQuery;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await getPincodesSelect(request.query);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

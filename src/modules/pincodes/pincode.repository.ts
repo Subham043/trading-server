@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { InferInsertModel } from "drizzle-orm";
 import db from "../../db";
 import { pincodes } from "../../db/schema/pincode";
@@ -141,4 +141,24 @@ export async function remove(id: number): Promise<PincodeType> {
     .where(eq(pincodes.id, id))
     .returning(PincodeSelect);
   return result[0];
+}
+
+export async function getAllDistinct(search?: string): Promise<
+  {
+    id: number;
+    pincode: string;
+    state_name: string;
+  }[]
+> {
+  const data = await db
+    .selectDistinctOn([pincodes.pincode], {
+      id: pincodes.id,
+      pincode: pincodes.pincode,
+      state_name: pincodes.state_name,
+    })
+    .from(pincodes)
+    .where(search ? Search_Query(search) : undefined)
+    .orderBy(desc(pincodes.pincode));
+
+  return data;
 }

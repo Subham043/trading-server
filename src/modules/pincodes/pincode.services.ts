@@ -2,6 +2,7 @@ import {
   count,
   createPincode,
   getAll,
+  getAllDistinct,
   getById,
   paginate,
   remove,
@@ -120,4 +121,14 @@ export async function destroy(params: GetIdParam): Promise<PincodeType> {
   const pincode = await findById(params);
   await remove(id);
   return pincode;
+}
+
+export async function getPincodesSelect(querystring: GetSearchQuery): Promise<
+  {
+    id: number;
+    pincode: string;
+    state_name: string;
+  }[]
+> {
+  return await getAllDistinct(querystring.search);
 }
