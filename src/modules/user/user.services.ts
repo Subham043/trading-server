@@ -36,6 +36,7 @@ import {
   UserExcelData,
 } from "./user.model";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
+import { ZodError } from "zod";
 
 /**
  * Create a new user with the provided user information.
@@ -222,9 +223,16 @@ export async function importExcel(
       await createUser(validatedUserData);
       successCount = successCount + 1;
     } catch (error) {
+      let errorData: unknown = error;
+      if (error instanceof ZodError) {
+        errorData = error.issues
+          .map((issue) => issue.message)
+          .join(", ")
+          .replace('"', "");
+      }
       failedUsersImport.push({
         ...userInsertData[i],
-        error: JSON.stringify(error),
+        error: JSON.stringify(errorData),
       });
       errorCount = errorCount + 1;
     }

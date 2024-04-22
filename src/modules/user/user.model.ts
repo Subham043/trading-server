@@ -11,10 +11,10 @@ export type UserExcelData = {
 };
 
 export const ExcelFailedUsersColumn: WorksheetColumnsType = [
-  { key: "name", header: "Name" },
-  { key: "email", header: "Email" },
-  { key: "password", header: "Password" },
-  { key: "confirm_password", header: "Confirm Password" },
+  { key: "name", header: "Name*" },
+  { key: "email", header: "Email*" },
+  { key: "password", header: "Password*" },
+  { key: "confirm_password", header: "Confirm Password*" },
   { key: "error", header: "Error" },
 ];
 

@@ -35,6 +35,7 @@ import {
   createRegistrarMasterBodySchema,
   createRegistrarMasterUniqueSchema,
 } from "./schemas/create.schema";
+import { ZodError } from "zod";
 
 /**
  * Create a new registrarMaster with the provided registrarMaster information.
@@ -204,9 +205,16 @@ export async function importExcel(
       });
       successCount = successCount + 1;
     } catch (error) {
+      let errorData: unknown = error;
+      if (error instanceof ZodError) {
+        errorData = error.issues
+          .map((issue) => issue.message)
+          .join(", ")
+          .replace('"', "");
+      }
       failedRegistrarMasterImport.push({
         ...registrarMasterInsertData[i],
-        error: JSON.stringify(error),
+        error: JSON.stringify(errorData),
       });
       errorCount = errorCount + 1;
     }

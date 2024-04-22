@@ -43,6 +43,7 @@ import {
   createNameChangeMasterBodySchema,
   createNameChangeMasterUniqueSchema,
 } from "./schemas/create.schema";
+import { ZodError } from "zod";
 
 /**
  * Create a new nameChangeMaster with the provided nameChangeMaster information.
@@ -298,9 +299,16 @@ export async function importExcel(
       await createNameChangeMaster(validatedNameChangeMasterData);
       successCount = successCount + 1;
     } catch (error) {
+      let errorData: unknown = error;
+      if (error instanceof ZodError) {
+        errorData = error.issues
+          .map((issue) => issue.message)
+          .join(", ")
+          .replace('"', "");
+      }
       failedNameChangeMasterImport.push({
         ...nameChangeMasterInsertData[i],
-        error: JSON.stringify(error),
+        error: JSON.stringify(errorData),
       });
       errorCount = errorCount + 1;
     }

@@ -34,6 +34,7 @@ import {
   createCompanyMasterBodySchema,
   createCompanyMasterUniqueSchema,
 } from "./schemas/create.schema";
+import { ZodError } from "zod";
 
 /**
  * Create a new companyMaster with the provided companyMaster information.
@@ -202,9 +203,16 @@ export async function importExcel(
       });
       successCount = successCount + 1;
     } catch (error) {
+      let errorData: unknown = error;
+      if (error instanceof ZodError) {
+        errorData = error.issues
+          .map((issue) => issue.message)
+          .join(", ")
+          .replace('"', "");
+      }
       failedCompanyMasterImport.push({
         ...companyMasterInsertData[i],
-        error: JSON.stringify(error),
+        error: JSON.stringify(errorData),
       });
       errorCount = errorCount + 1;
     }
