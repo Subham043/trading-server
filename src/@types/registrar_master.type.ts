@@ -1,6 +1,5 @@
 export type RegistrarMasterType = {
   id: number;
-  newName?: string | null;
   currentName?: string | null;
   registrar_name: string;
   sebi_regn_id: string;
@@ -25,7 +24,7 @@ export type RegistrarMasterType = {
 export interface RegistrarMasterCreateType
   extends Omit<
     RegistrarMasterType,
-    "id" | "createdAt" | "newName" | "currentName" | "companyId"
+    "id" | "createdAt" | "currentName" | "companyId"
   > {
   companyId: number;
 }

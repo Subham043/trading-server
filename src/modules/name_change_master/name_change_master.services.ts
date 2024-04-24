@@ -11,7 +11,6 @@ import {
   remove,
   updateNameChangeMaster,
 } from "./name_change_master.repository";
-import { getById as getByCompanyMasterId } from "../company_master/company_master.repository";
 import { InvalidRequestError, NotFoundError } from "../../utils/exceptions";
 import {
   NameChangeMasterCreateType,
@@ -55,10 +54,8 @@ export async function create(
   data: NameChangeMasterCreateType,
   companyId: number
 ): Promise<NameChangeMasterType> {
-  const companyMaster = await getByCompanyMasterId(companyId);
   return await createNameChangeMaster({
     ...data,
-    newName: companyMaster?.newName,
     companyID: companyId,
   });
 }
@@ -281,13 +278,9 @@ export async function importExcel(
         NSE: nameChangeMasterInsertData[i].NSE,
         BSE: nameChangeMasterInsertData[i].BSE,
       });
-      const companyMaster = await getByCompanyMasterId(
-        nameChangeMasterInsertData[i].companyId
-      );
       const validatedNameChangeMasterData = {
         NSE: nameChangeMasterInsertData[i].NSE,
         BSE: nameChangeMasterInsertData[i].BSE,
-        newName: companyMaster?.newName,
         currentName: nameChangeMasterInsertData[i].currentName,
         previousName: nameChangeMasterInsertData[i].previousName,
         dateNameChange:

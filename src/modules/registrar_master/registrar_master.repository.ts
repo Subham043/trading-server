@@ -309,7 +309,6 @@ export async function getCompanyMasterSelect(param: {
   companyId?: string;
 }): Promise<
   {
-    newName: string | null;
     currentName: string | null;
     companyID: number | null;
   }[]
@@ -327,7 +326,6 @@ export async function getCompanyMasterSelect(param: {
   const data = await db
     .select({
       companyID: companyMasters.id,
-      newName: nameChangeMasters.newName,
       currentName: nameChangeMasters.currentName,
     })
     .from(companyMasters)

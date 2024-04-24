@@ -6,11 +6,6 @@ import {
 } from "../../name_change_master/name_change_master.repository";
 
 export const createCompanyMasterBodySchema = z.object({
-  newName: z
-    .string({
-      errorMap: () => ({ message: "New Name must be a string" }),
-    })
-    .trim(),
   currentName: z
     .string({
       errorMap: () => ({ message: "Current Name must be a string" }),

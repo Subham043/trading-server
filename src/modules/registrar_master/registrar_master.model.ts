@@ -83,7 +83,6 @@ export const ExcelRegistrarMastersColumns: WorksheetColumnsType = [
     key: "branch",
     header: "Branch",
   },
-  { key: "newName", header: "Company Name" },
   { key: "companyId", header: "Company Master Id" },
   { key: "createdAt", header: "Created At" },
 ];
@@ -111,7 +110,6 @@ export const RegistrarMasterSelect = {
 
 export const CompanyMasterSelect = {
   companyId: companyMasters.id,
-  newName: nameChangeMasters.newName,
   currentName: nameChangeMasters.currentName,
 };
 
@@ -162,7 +160,6 @@ export const Select_Sub_Query_Name_Change_Main =
 export const Search_Query = (search: string) =>
   or(
     ilike(registrarMasters.registrar_name, `%${search}%`),
-    ilike(nameChangeMasters.newName, `%${search}%`),
     ilike(nameChangeMasters.currentName, `%${search}%`),
     ilike(registrarMasters.sebi_regn_id, `%${search}%`),
     ilike(registrarMasters.address, `%${search}%`),

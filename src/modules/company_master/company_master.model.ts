@@ -5,7 +5,6 @@ import { nameChangeMasters } from "../../db/schema/name_change_master";
 import { WorksheetColumnsType } from "../../utils/excel";
 
 export type CompanyMasterExcelData = {
-  newName: string | undefined;
   currentName: string | undefined;
   NSE: string | undefined;
   BSE: string | undefined;
@@ -32,7 +31,6 @@ export type CompanyMasterExcelData = {
 export const ExcelFailedCompanyMasterColumn: WorksheetColumnsType = [
   { key: "NSE", header: "NSE" },
   { key: "BSE", header: "BSE" },
-  { key: "newName", header: "Name of the Company(as per certificate)" },
   { key: "currentName", header: "Current Name of the Company" },
   { key: "ISIN", header: "ISIN" },
   { key: "CIN", header: "CIN" },
@@ -61,7 +59,6 @@ export const ExcelCompanyMastersColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "NSE", header: "NSE" },
   { key: "BSE", header: "BSE" },
-  { key: "newName", header: "Name of the Company(as per certificate)" },
   { key: "currentName", header: "Current Name of the Company" },
   { key: "ISIN", header: "ISIN" },
   { key: "CIN", header: "CIN" },
@@ -110,7 +107,6 @@ export const CompanyMasterSelect = {
 };
 
 export const NameChangeMasterSelect = {
-  newName: nameChangeMasters.newName,
   currentName: nameChangeMasters.currentName,
   NSE: nameChangeMasters.NSE,
   BSE: nameChangeMasters.BSE,
@@ -150,7 +146,6 @@ export const Select_Sub_Query_Main = Select_Sub_Query.where(
 export const Search_Query = (search: string) =>
   or(
     ilike(companyMasters.ISIN, `%${search}%`),
-    ilike(nameChangeMasters.newName, `%${search}%`),
     ilike(nameChangeMasters.currentName, `%${search}%`),
     ilike(nameChangeMasters.BSE, `%${search}%`),
     ilike(nameChangeMasters.NSE, `%${search}%`),

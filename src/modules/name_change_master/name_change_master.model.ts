@@ -46,16 +46,9 @@ export const NameChangeMasterSelect = {
   id: nameChangeMasters.id,
   NSE: nameChangeMasters.NSE,
   BSE: nameChangeMasters.BSE,
-  // newName: nameChangeMasters.newName,
   currentName: nameChangeMasters.currentName,
   previousName: nameChangeMasters.previousName,
   dateNameChange: nameChangeMasters.dateNameChange,
-  // newRTA: nameChangeMasters.newRTA,
-  // previousRTA: nameChangeMasters.previousRTA,
-  // dateRTAChange: nameChangeMasters.dateRTAChange,
-  // oldSecuritySymbol: nameChangeMasters.oldSecuritySymbol,
-  // newSecuritySymbol: nameChangeMasters.newSecuritySymbol,
-  // dateSecurityChange: nameChangeMasters.dateSecurityChange,
   createdAt: nameChangeMasters.createdAt,
   companyId: nameChangeMasters.companyID,
 };
@@ -111,13 +104,8 @@ const Name_Change_Search_Query = (search: string) => {
   return or(
     ilike(nameChangeMasters.NSE, `%${search}%`),
     ilike(nameChangeMasters.BSE, `%${search}%`),
-    // ilike(nameChangeMasters.newName, `%${search}%`),
     ilike(nameChangeMasters.currentName, `%${search}%`),
     ilike(nameChangeMasters.previousName, `%${search}%`)
-    // ilike(nameChangeMasters.newRTA, `%${search}%`),
-    // ilike(nameChangeMasters.previousRTA, `%${search}%`),
-    // ilike(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-    // ilike(nameChangeMasters.newSecuritySymbol, `%${search}%`)
   );
 };
 
@@ -125,13 +113,8 @@ const Company_Search_Query = (search: string) => {
   return or(
     ilike(nameChangeMasters.NSE, `%${search}%`),
     ilike(nameChangeMasters.BSE, `%${search}%`),
-    // ilike(nameChangeMasters.newName, `%${search}%`),
     ilike(nameChangeMasters.currentName, `%${search}%`),
     ilike(nameChangeMasters.previousName, `%${search}%`),
-    // ilike(nameChangeMasters.newRTA, `%${search}%`),
-    // ilike(nameChangeMasters.previousRTA, `%${search}%`),
-    // ilike(nameChangeMasters.oldSecuritySymbol, `%${search}%`),
-    // ilike(nameChangeMasters.newSecuritySymbol, `%${search}%`)
     ilike(companyMasters.ISIN, `%${search}%`),
     ilike(companyMasters.CIN, `%${search}%`),
     eq(companyMasters.faceValue, Number(search))
@@ -145,10 +128,4 @@ export const transformData = (
   dateNameChange: data.dateNameChange
     ? new Date(data.dateNameChange)
     : new Date(),
-  // dateSecurityChange: data.dateSecurityChange
-  //   ? new Date(data.dateSecurityChange)
-  //   : new Date(),
-  // dateRTAChange: data.dateRTAChange
-  //   ? new Date(data.dateRTAChange)
-  //   : new Date(),
 });

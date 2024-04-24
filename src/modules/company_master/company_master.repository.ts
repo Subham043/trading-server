@@ -26,7 +26,7 @@ import {
 export async function createCompanyMaster(
   data: CompanyMasterCreateType & { createdBy: number }
 ): Promise<CompanyMasterType> {
-  const { newName, currentName, NSE, BSE, ...companyData } = data;
+  const { currentName, NSE, BSE, ...companyData } = data;
   const resp = await db.transaction(async (tx) => {
     try {
       const result = await tx
@@ -38,7 +38,6 @@ export async function createCompanyMaster(
         .insert(nameChangeMasters)
         .values({
           companyID: result[0].id,
-          newName: newName,
           currentName: currentName,
           NSE: NSE,
           BSE: BSE,
@@ -65,7 +64,7 @@ export async function updateCompanyMaster(
   data: CompanyMasterUpdateType,
   id: number
 ): Promise<CompanyMasterType> {
-  const { newName, currentName, NSE, BSE, ...companyData } = data;
+  const { currentName, NSE, BSE, ...companyData } = data;
   const resp = await db.transaction(async (tx) => {
     try {
       const result = await tx
@@ -76,7 +75,6 @@ export async function updateCompanyMaster(
       const nameChangeResult = await tx
         .update(nameChangeMasters)
         .set({
-          newName: newName,
           currentName: currentName,
           NSE: NSE,
           BSE: BSE,

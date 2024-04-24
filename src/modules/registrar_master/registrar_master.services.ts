@@ -245,7 +245,6 @@ export async function companyMasterSelect(param: {
   companyId?: string;
 }): Promise<
   {
-    newName: string | null;
     currentName: string | null;
     companyID: number | null;
   }[]
