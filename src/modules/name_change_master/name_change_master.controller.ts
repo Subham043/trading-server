@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   create,
   destroy,
+  destroyMultiple,
   exportExcel,
   exportExcelCompany,
   findByCompanyId,
@@ -15,6 +16,7 @@ import {
   GetCompanyIdAndIdParam,
   GetCompanyIdParam,
   GetIdParam,
+  GetIdsBody,
 } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import {
@@ -201,6 +203,21 @@ export async function removeNameChangeMaster(
     success: true,
     message: "Name Change Master Removed",
     data: result,
+  });
+}
+
+export async function removeMultipleNameChangeMaster(
+  request: FastifyRequest<{
+    Params: GetCompanyIdParam;
+    Body: GetIdsBody;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  await destroyMultiple(request.params, request.body);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Name Change Masters Removed",
   });
 }
 

@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { InferInsertModel } from "drizzle-orm";
 import db from "../../db";
 import { users } from "../../db/schema/user";
@@ -139,4 +139,12 @@ export async function remove(id: number): Promise<UserType> {
     .where(eq(users.id, id))
     .returning(UserSelect);
   return result[0];
+}
+
+export async function removeMultiple(ids: number[]): Promise<UserType[]> {
+  const result = await db
+    .delete(users)
+    .where(inArray(users.id, ids))
+    .returning(UserSelect);
+  return result;
 }

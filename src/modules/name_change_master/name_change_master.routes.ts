@@ -8,6 +8,7 @@ import {
   importNameChangeMasters,
   listNameChangeMaster,
   listNameChangeMasterWithCompany,
+  removeMultipleNameChangeMaster,
   removeNameChangeMaster,
   updateNameChangeMaster,
 } from "./name_change_master.controller";
@@ -17,6 +18,7 @@ import {
   getCompanyIdAndIdParamSchema,
   getCompanyIdParamSchema,
   getIdParamSchema,
+  getIdsBodySchema,
 } from "../../common/schemas/id_param.schema";
 import { createNameChangeMasterBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
@@ -126,5 +128,16 @@ export async function nameChangeMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     removeNameChangeMaster
+  );
+  app.post(
+    "/delete-multiple/:companyId",
+    {
+      schema: {
+        params: getCompanyIdParamSchema,
+        body: getIdsBodySchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    removeMultipleNameChangeMaster
   );
 }

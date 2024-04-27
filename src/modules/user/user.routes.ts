@@ -5,12 +5,16 @@ import {
   getUser,
   importUsers,
   listUsers,
+  removeMultipleUser,
   removeUser,
   updateUser,
 } from "./user.controller";
 import { updateUserBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
-import { getIdParamSchema } from "../../common/schemas/id_param.schema";
+import {
+  getIdParamSchema,
+  getIdsBodySchema,
+} from "../../common/schemas/id_param.schema";
 import { createUserBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
 import { postExcelBodySchema } from "../../common/schemas/excel.schema";
@@ -39,6 +43,16 @@ export async function userRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     importUsers
+  );
+  app.post(
+    "/delete-multiple",
+    {
+      schema: {
+        body: getIdsBodySchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    removeMultipleUser
   );
   app.get(
     "/:id",

@@ -3,6 +3,7 @@ import {
   companyMasterSelect,
   create,
   destroy,
+  destroyMultiple,
   exportExcel,
   findById,
   importExcel,
@@ -11,7 +12,7 @@ import {
 } from "./registrar_master.services";
 import { createRegistrarMasterUniqueSchema } from "./schemas/create.schema";
 import { updateRegistrarMasterUniqueSchema } from "./schemas/update.schema";
-import { GetIdParam } from "../../common/schemas/id_param.schema";
+import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import {
   RegistrarMasterCreateType,
@@ -143,6 +144,20 @@ export async function removeRegistrarMaster(
     success: true,
     message: "Registrar Master Removed",
     data: result,
+  });
+}
+
+export async function removeMultipleRegistrarMaster(
+  request: FastifyRequest<{
+    Body: GetIdsBody;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  await destroyMultiple(request.body);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Registrar Masters Removed",
   });
 }
 

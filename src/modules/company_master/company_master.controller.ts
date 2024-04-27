@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   create,
   destroy,
+  destroyMultiple,
   exportExcel,
   findById,
   importExcel,
@@ -10,7 +11,7 @@ import {
 } from "./company_master.services";
 import { createCompanyMasterUniqueSchema } from "./schemas/create.schema";
 import { updateCompanyMasterUniqueSchema } from "./schemas/update.schema";
-import { GetIdParam } from "../../common/schemas/id_param.schema";
+import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import {
   CompanyMasterCreateType,
@@ -148,6 +149,20 @@ export async function removeCompanyMaster(
     success: true,
     message: "Company Master Removed",
     data: result,
+  });
+}
+
+export async function removeMultipleCompanyMaster(
+  request: FastifyRequest<{
+    Body: GetIdsBody;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  await destroyMultiple(request.body);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Company Masters Removed",
   });
 }
 

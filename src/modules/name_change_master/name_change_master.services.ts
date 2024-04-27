@@ -9,6 +9,7 @@ import {
   paginate,
   paginateCompany,
   remove,
+  removeMultiple,
   updateNameChangeMaster,
 } from "./name_change_master.repository";
 import { InvalidRequestError, NotFoundError } from "../../utils/exceptions";
@@ -22,6 +23,7 @@ import { PaginationType } from "../../@types/pagination.type";
 import {
   GetCompanyIdParam,
   GetIdParam,
+  GetIdsBody,
 } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
@@ -236,6 +238,22 @@ export async function destroy(
   }
   await remove(id);
   return nameChangeMaster;
+}
+
+export async function destroyMultiple(
+  params: GetCompanyIdParam,
+  body: GetIdsBody
+): Promise<void> {
+  const { companyId } = params;
+  const { id } = body;
+
+  const nameChangeMasterCount = await count(companyId, undefined);
+  if (nameChangeMasterCount === 1) {
+    throw new InvalidRequestError(
+      "Company must have at least one name change master"
+    );
+  }
+  await removeMultiple(id, companyId);
 }
 
 export async function importExcel(

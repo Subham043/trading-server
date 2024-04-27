@@ -13,6 +13,19 @@ export const getIdParamSchema = z
 
 export type GetIdParam = z.infer<typeof getIdParamSchema>;
 
+export const getIdsBodySchema = z
+  .object({
+    id: z
+      .number({
+        errorMap: () => ({ message: "ID must be a number" }),
+      })
+      .array()
+      .nonempty("At least one ID is required"),
+  })
+  .required();
+
+export type GetIdsBody = z.infer<typeof getIdsBodySchema>;
+
 export const getCompanyIdParamSchema = z
   .object({
     companyId: z

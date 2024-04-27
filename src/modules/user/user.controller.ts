@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   create,
   destroy,
+  destroyMultiple,
   exportExcel,
   findById,
   importExcel,
@@ -16,7 +17,7 @@ import {
   UpdateUserBody,
   updateUserUniqueEmailSchema,
 } from "./schemas/update.schema";
-import { GetIdParam } from "../../common/schemas/id_param.schema";
+import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
@@ -154,5 +155,19 @@ export async function removeUser(
     success: true,
     message: "User Removed",
     data: result,
+  });
+}
+
+export async function removeMultipleUser(
+  request: FastifyRequest<{
+    Body: GetIdsBody;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  await destroyMultiple(request.body);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Users Removed",
   });
 }

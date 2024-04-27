@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { InferInsertModel } from "drizzle-orm";
 import db from "../../db";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
@@ -183,6 +183,42 @@ export async function remove(id: number): Promise<NameChangeMasterType> {
     .where(eq(nameChangeMasters.id, id))
     .returning(NameChangeMasterSelect);
   return result[0];
+}
+
+export async function removeMultiple(
+  ids: number[],
+  companyID: number
+): Promise<void> {
+  const data = await Select_Master_Query.where(
+    and(
+      eq(nameChangeMasters.companyID, companyID),
+      eq(
+        nameChangeMasters.id,
+        db
+          .select({
+            id: nameChangeMasters.id,
+          })
+          .from(nameChangeMasters)
+          .where(eq(nameChangeMasters.companyID, companyMasters.id))
+          .orderBy(asc(nameChangeMasters.id))
+          .limit(1)
+      )
+    )
+  ).limit(1);
+  if (data.length > 0) {
+    const filteredIds = ids.filter((id) => id !== data[0].id);
+    if (filteredIds.length === 0) return;
+    await db
+      .delete(nameChangeMasters)
+      .where(inArray(nameChangeMasters.id, filteredIds))
+      .returning(NameChangeMasterSelect);
+    return;
+  }
+  await db
+    .delete(nameChangeMasters)
+    .where(inArray(nameChangeMasters.id, ids))
+    .returning(NameChangeMasterSelect);
+  return;
 }
 
 export async function paginateCompany(

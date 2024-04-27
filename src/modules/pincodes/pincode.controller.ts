@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   create,
   destroy,
+  destroyMultiple,
   exportExcel,
   findById,
   getPincodesSelect,
@@ -10,7 +11,7 @@ import {
 } from "./pincode.services";
 import { CreatePincodeBody } from "./schemas/create.schema";
 import { UpdatePincodeBody } from "./schemas/update.schema";
-import { GetIdParam } from "../../common/schemas/id_param.schema";
+import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 
@@ -142,5 +143,19 @@ export async function removePincode(
     success: true,
     message: "Pincode Removed",
     data: result,
+  });
+}
+
+export async function removeMultiplePincode(
+  request: FastifyRequest<{
+    Body: GetIdsBody;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  await destroyMultiple(request.body);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Pincodes Removed",
   });
 }

@@ -5,6 +5,7 @@ import {
   getById,
   paginate,
   remove,
+  removeMultiple,
   updateUser,
 } from "./user.repository";
 import { v4 as uuidv4 } from "uuid";
@@ -19,7 +20,7 @@ import { UserType } from "../../@types/user.type";
 import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
 import { PaginationType } from "../../@types/pagination.type";
 import { logger } from "../../utils/logger";
-import { GetIdParam } from "../../common/schemas/id_param.schema";
+import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { UpdateUserBody } from "./schemas/update.schema";
 import env from "../../config/env";
@@ -180,6 +181,11 @@ export async function destroy(params: GetIdParam): Promise<UserType> {
   const user = await findById(params);
   await remove(id);
   return user;
+}
+
+export async function destroyMultiple(body: GetIdsBody): Promise<void> {
+  const { id } = body;
+  await removeMultiple(id);
 }
 
 export async function importExcel(

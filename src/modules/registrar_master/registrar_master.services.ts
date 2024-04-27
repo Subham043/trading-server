@@ -6,6 +6,7 @@ import {
   getCompanyMasterSelect,
   paginate,
   remove,
+  removeMultiple,
   updateRegistrarMaster,
 } from "./registrar_master.repository";
 import { NotFoundError } from "../../utils/exceptions";
@@ -16,7 +17,7 @@ import {
 } from "../../@types/registrar_master.type";
 import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
 import { PaginationType } from "../../@types/pagination.type";
-import { GetIdParam } from "../../common/schemas/id_param.schema";
+import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import {
@@ -145,6 +146,11 @@ export async function destroy(
   const registrarMaster = await findById(params);
   await remove(id);
   return registrarMaster;
+}
+
+export async function destroyMultiple(body: GetIdsBody): Promise<void> {
+  const { id } = body;
+  await removeMultiple(id);
 }
 
 export async function importExcel(

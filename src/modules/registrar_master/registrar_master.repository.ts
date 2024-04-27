@@ -1,4 +1,4 @@
-import { and, eq, notInArray, sql } from "drizzle-orm";
+import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import db from "../../db";
 import { companyMasters } from "../../db/schema/company_master";
 import {
@@ -303,6 +303,16 @@ export async function remove(id: number): Promise<RegistrarMasterType> {
     return res;
   }
   return result[0];
+}
+
+export async function removeMultiple(
+  ids: number[]
+): Promise<RegistrarMasterType[]> {
+  const result = await db
+    .delete(registrarMasters)
+    .where(inArray(registrarMasters.id, ids))
+    .returning(RegistrarMasterSelect);
+  return result;
 }
 
 export async function getCompanyMasterSelect(param: {

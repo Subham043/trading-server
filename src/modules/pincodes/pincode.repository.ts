@@ -1,4 +1,4 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, inArray, sql } from "drizzle-orm";
 import { InferInsertModel } from "drizzle-orm";
 import db from "../../db";
 import { pincodes } from "../../db/schema/pincode";
@@ -141,6 +141,14 @@ export async function remove(id: number): Promise<PincodeType> {
     .where(eq(pincodes.id, id))
     .returning(PincodeSelect);
   return result[0];
+}
+
+export async function removeMultiple(ids: number[]): Promise<PincodeType[]> {
+  const result = await db
+    .delete(pincodes)
+    .where(inArray(pincodes.id, ids))
+    .returning(PincodeSelect);
+  return result;
 }
 
 export async function getAllDistinct(search?: string): Promise<
