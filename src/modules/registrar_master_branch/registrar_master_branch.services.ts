@@ -217,7 +217,9 @@ export async function importExcel(
         address: row.getCell(3).value?.toString(),
         city: row.getCell(4).value?.toString(),
         state: row.getCell(5).value?.toString(),
-        pincode: Number(row.getCell(6).value?.toString()),
+        pincode: isNaN(Number(row.getCell(6).value?.toString()))
+          ? undefined
+          : Number(row.getCell(6).value?.toString()),
         telephone1: row.getCell(7).value?.toString(),
         telephone2: row.getCell(8).value?.toString(),
         email: row.getCell(9).value?.toString(),
@@ -228,7 +230,7 @@ export async function importExcel(
         phoneContactPerson: row.getCell(14).value?.toString(),
         officerAssigned: row.getCell(15).value?.toString(),
         branch: row.getCell(16).value?.toString(),
-        registrarMasterId: Number(row.getCell(17).value),
+        registrarMasterId: Number(row.getCell(17).value?.toString()),
       };
       registrarMasterBranchInsertData.push(registrarMasterData);
     }
