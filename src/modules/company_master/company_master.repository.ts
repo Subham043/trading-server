@@ -33,14 +33,14 @@ export async function createCompanyMaster(
       const result = await tx
         .insert(companyMasters)
         .values(
-          registrarMasterBranchId
-            ? companyData
-            : {
+          typeof registrarMasterBranchId === "number"
+            ? {
                 ...companyData,
                 registrarMasterBranchId: registrarMasterBranchId
                   ? registrarMasterBranchId
                   : null,
               }
+            : companyData
         )
         .onConflictDoNothing()
         .returning(CompanyMasterSelect);

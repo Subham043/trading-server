@@ -38,11 +38,11 @@ export const companyMasters = pgTable(
     phoneContactPerson: varchar("phone_contact_person", { length: 256 }),
     createdBy: bigint("createdBy", { mode: "number" }).references(
       () => users.id,
-      { onDelete: "cascade" }
+      { onDelete: "set null" }
     ),
     registrarMasterBranchId: bigint("registrarMasterBranchId", {
       mode: "number",
-    }).references(() => registrarMasterBranches.id, { onDelete: "cascade" }),
+    }),
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAt: timestamp("updatedAt").defaultNow(),
   },

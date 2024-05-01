@@ -177,7 +177,9 @@ export async function importExcel(
         registeredOffice: row.getCell(9).value?.toString(),
         city: row.getCell(10).value?.toString(),
         state: row.getCell(11).value?.toString(),
-        pincode: Number(row.getCell(12).value?.toString()),
+        pincode: isNaN(Number(row.getCell(12).value?.toString()))
+          ? undefined
+          : Number(row.getCell(12).value?.toString()),
         telephone: row.getCell(13).value?.toString(),
         fax: row.getCell(14).value?.toString(),
         email: row.getCell(15).value?.toString(),
@@ -186,7 +188,11 @@ export async function importExcel(
         designationContactPerson: row.getCell(20).value?.toString(),
         emailContactPerson: row.getCell(18).value?.toString(),
         phoneContactPerson: row.getCell(19).value?.toString(),
-        registrarMasterBranchId: row.getCell(20).value as number | undefined,
+        registrarMasterBranchId: isNaN(
+          Number(row.getCell(21).value?.toString())
+        )
+          ? undefined
+          : Number(row.getCell(21).value?.toString()),
         createdBy: userId,
       };
       companyMasterInsertData.push(companyMasterData);
