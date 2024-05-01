@@ -3,6 +3,8 @@ import db from "../../db";
 import { companyMasters } from "../../db/schema/company_master";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
 import { WorksheetColumnsType } from "../../utils/excel";
+import { registrarMasterBranches } from "../../db/schema/registrar_master_branch";
+import { registrarMasters } from "../../db/schema/registrar_master";
 
 export type CompanyMasterExcelData = {
   currentName: string | undefined;
@@ -25,6 +27,7 @@ export type CompanyMasterExcelData = {
   emailContactPerson: string | undefined;
   phoneContactPerson: string | undefined;
   designationContactPerson: string | undefined;
+  registrarMasterBranchId: number | undefined;
   createdBy: number;
 };
 
@@ -51,6 +54,10 @@ export const ExcelFailedCompanyMasterColumn: WorksheetColumnsType = [
   {
     key: "designationContactPerson",
     header: "Designation of Contact Person",
+  },
+  {
+    key: "registrarMasterBranchId",
+    header: "Registrar Master Branch Id",
   },
   { key: "error", header: "Error" },
 ];
@@ -81,6 +88,14 @@ export const ExcelCompanyMastersColumns: WorksheetColumnsType = [
     header: "Designation of Contact Person",
   },
   { key: "nameChangeMasterId", header: "Name Change Master Id" },
+  { key: "registrar_name", header: "Registrar Name" },
+  { key: "sebi_regn_id", header: "SEBI Regn. ID" },
+  { key: "registrarMasterId", header: "Registrar Master Id" },
+  { key: "registrar_branch", header: "Registrar Branch" },
+  { key: "registrar_city", header: "Registrar City" },
+  { key: "registrar_state", header: "Registrar State" },
+  { key: "registrar_pincodes", header: "Registrar Pincode" },
+  { key: "registrarMasterBranchId", header: "Registrar Master Branch Id" },
   { key: "createdAt", header: "Created At" },
 ];
 
@@ -113,9 +128,25 @@ export const NameChangeMasterSelect = {
   nameChangeMasterId: nameChangeMasters.id,
 };
 
+export const RegistrarMasterBranchSelect = {
+  registrar_branch: registrarMasterBranches.branch,
+  registrar_city: registrarMasterBranches.city,
+  registrar_pincodes: registrarMasterBranches.pincode,
+  registrar_state: registrarMasterBranches.state,
+  registrarMasterBranchId: registrarMasterBranches.id,
+};
+
+export const RegistrarMasterSelect = {
+  registrarMasterId: registrarMasters.id,
+  registrar_name: registrarMasters.registrar_name,
+  sebi_regn_id: registrarMasters.sebi_regn_id,
+};
+
 export const MasterSelect = {
   ...CompanyMasterSelect,
   ...NameChangeMasterSelect,
+  ...RegistrarMasterSelect,
+  ...RegistrarMasterBranchSelect,
 };
 
 export const Descending_CompanyMaster_CreatedAt = desc(
@@ -129,6 +160,14 @@ export const Select_Master_Query = db
   .leftJoin(
     nameChangeMasters,
     eq(nameChangeMasters.companyID, companyMasters.id)
+  )
+  .leftJoin(
+    registrarMasterBranches,
+    eq(registrarMasterBranches.id, companyMasters.registrarMasterBranchId)
+  )
+  .leftJoin(
+    registrarMasters,
+    eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
   );
 
 export const Select_Sub_Query = db
@@ -164,5 +203,11 @@ export const Search_Query = (search: string) =>
     ilike(companyMasters.fax, `%${search}%`),
     eq(companyMasters.faceValue, Number(search)),
     eq(companyMasters.closingPriceNSE, Number(search)),
-    eq(companyMasters.closingPriceBSE, Number(search))
+    eq(companyMasters.closingPriceBSE, Number(search)),
+    ilike(registrarMasters.registrar_name, `%${search}%`),
+    ilike(registrarMasters.sebi_regn_id, `%${search}%`),
+    ilike(registrarMasterBranches.branch, `%${search}%`),
+    ilike(registrarMasterBranches.city, `%${search}%`),
+    eq(registrarMasterBranches.pincode, search),
+    ilike(registrarMasterBranches.state, `%${search}%`)
   );

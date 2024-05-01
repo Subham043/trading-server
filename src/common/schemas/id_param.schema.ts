@@ -37,6 +37,17 @@ export const getCompanyIdParamSchema = z
   })
   .required();
 
+export const getRegistrarMasterIdParamSchema = z
+  .object({
+    registrarMasterId: z
+      .string({
+        errorMap: () => ({ message: "Registrar Master ID must be a number" }),
+      })
+      .regex(/^\d+$/, { message: "Registrar Master ID must be a number" })
+      .transform((value) => parseInt(value)),
+  })
+  .required();
+
 export type GetCompanyIdParam = z.infer<typeof getCompanyIdParamSchema>;
 
 export const getCompanyIdAndIdParamSchema = z

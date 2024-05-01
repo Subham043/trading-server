@@ -46,7 +46,7 @@ import { ZodError } from "zod";
 export async function create(
   data: CompanyMasterCreateType,
   userId: number
-): Promise<CompanyMasterType> {
+): Promise<CompanyMasterType | null> {
   return await createCompanyMaster({ ...data, createdBy: userId });
 }
 
@@ -60,7 +60,7 @@ export async function create(
 export async function update(
   data: CompanyMasterUpdateType,
   param: GetIdParam
-): Promise<CompanyMasterType> {
+): Promise<CompanyMasterType | null> {
   return await updateCompanyMaster(data, param.id);
 }
 
@@ -186,6 +186,7 @@ export async function importExcel(
         designationContactPerson: row.getCell(20).value?.toString(),
         emailContactPerson: row.getCell(18).value?.toString(),
         phoneContactPerson: row.getCell(19).value?.toString(),
+        registrarMasterBranchId: row.getCell(20).value as number | undefined,
         createdBy: userId,
       };
       companyMasterInsertData.push(companyMasterData);
@@ -201,10 +202,14 @@ export async function importExcel(
         ISIN: companyMasterInsertData[i].ISIN,
         NSE: companyMasterInsertData[i].NSE,
         BSE: companyMasterInsertData[i].BSE,
+        registrarMasterBranchId:
+          companyMasterInsertData[i].registrarMasterBranchId,
       });
       await createCompanyMaster({
         ...companyMasterInsertData[i],
         pincode: companyMasterInsertData[i].pincode?.toString(),
+        registrarMasterBranchId: companyMasterInsertData[i]
+          .registrarMasterBranchId as number | undefined,
       });
       successCount = successCount + 1;
     } catch (error) {

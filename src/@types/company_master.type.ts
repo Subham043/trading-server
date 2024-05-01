@@ -22,11 +22,28 @@ export type CompanyMasterType = {
   phoneContactPerson?: string | null | undefined;
   createdAt?: Date | null;
   nameChangeMasterId?: number | null | undefined;
+  registrar_branch: string | null | undefined;
+  registrar_city: string | null | undefined;
+  registrar_pincodes: string | null | undefined;
+  registrar_state: string | null | undefined;
+  registrarMasterBranchId?: number | null | undefined;
+  registrarMasterId: number | null | undefined;
+  registrar_name: string | null | undefined;
+  sebi_regn_id: string | null | undefined;
 };
 
 export type CompanyMasterCreateType = Omit<
   CompanyMasterType,
-  "id" | "createdAt" | "nameChangeMasterId"
+  | "id"
+  | "createdAt"
+  | "nameChangeMasterId"
+  | "registrarMasterId"
+  | "registrar_branch"
+  | "registrar_city"
+  | "registrar_pincodes"
+  | "registrar_state"
+  | "registrar_name"
+  | "sebi_regn_id"
 >;
 
 export interface CompanyMasterUpdateType extends CompanyMasterCreateType {}

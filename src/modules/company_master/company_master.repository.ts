@@ -25,13 +25,23 @@ import {
  */
 export async function createCompanyMaster(
   data: CompanyMasterCreateType & { createdBy: number }
-): Promise<CompanyMasterType> {
-  const { currentName, NSE, BSE, ...companyData } = data;
+): Promise<CompanyMasterType | null> {
+  const { currentName, NSE, BSE, registrarMasterBranchId, ...companyData } =
+    data;
   const resp = await db.transaction(async (tx) => {
     try {
       const result = await tx
         .insert(companyMasters)
-        .values(companyData)
+        .values(
+          registrarMasterBranchId
+            ? companyData
+            : {
+                ...companyData,
+                registrarMasterBranchId: registrarMasterBranchId
+                  ? registrarMasterBranchId
+                  : null,
+              }
+        )
         .onConflictDoNothing()
         .returning(CompanyMasterSelect);
       const nameChangeResult = await tx
@@ -46,11 +56,12 @@ export async function createCompanyMaster(
         .returning(NameChangeMasterSelect);
       return { ...result[0], ...nameChangeResult[0] };
     } catch (error) {
+      console.log(error);
       tx.rollback();
       throw error;
     }
   });
-  return resp;
+  return await getById(resp.id);
 }
 
 /**
@@ -63,16 +74,16 @@ export async function createCompanyMaster(
 export async function updateCompanyMaster(
   data: CompanyMasterUpdateType,
   id: number
-): Promise<CompanyMasterType> {
+): Promise<CompanyMasterType | null> {
   const { currentName, NSE, BSE, ...companyData } = data;
-  const resp = await db.transaction(async (tx) => {
+  await db.transaction(async (tx) => {
     try {
       const result = await tx
         .update(companyMasters)
         .set(companyData)
         .where(eq(companyMasters.id, id))
         .returning(CompanyMasterSelect);
-      const nameChangeResult = await tx
+      await tx
         .update(nameChangeMasters)
         .set({
           currentName: currentName,
@@ -96,13 +107,13 @@ export async function updateCompanyMaster(
           )
         )
         .returning(NameChangeMasterSelect);
-      return { ...result[0], ...nameChangeResult[0] };
+      return result[0];
     } catch (error) {
       tx.rollback();
       throw error;
     }
   });
-  return resp;
+  return await getById(id);
 }
 
 /**
@@ -248,9 +259,11 @@ export async function getById(id: number): Promise<CompanyMasterType | null> {
  * Retrieves companyMaster information by CIN from the database.
  *
  * @param {string} CIN - The CIN of the companyMaster to retrieve
- * @return {Promise<CompanyMasterType | null>} The companyMaster information if found, otherwise null
+ * @return {Promise<{ id: number, createdAt: Date | null } | null>} The companyMaster information if found, otherwise null
  */
-export async function getByCIN(CIN: string): Promise<CompanyMasterType | null> {
+export async function getByCIN(
+  CIN: string
+): Promise<{ id: number; createdAt: Date | null } | null> {
   const data = await db
     .select({
       id: companyMasters.id,
@@ -268,11 +281,11 @@ export async function getByCIN(CIN: string): Promise<CompanyMasterType | null> {
  * Retrieves companyMaster information by ISIN from the database.
  *
  * @param {string} ISIN - The ISIN of the companyMaster to retrieve
- * @return {Promise<CompanyMasterType | null>} The companyMaster information if found, otherwise null
+ * @return {Promise<{ id: number, createdAt: Date | null } | null>} The companyMaster information if found, otherwise null
  */
 export async function getByISIN(
   ISIN: string
-): Promise<CompanyMasterType | null> {
+): Promise<{ id: number; createdAt: Date | null } | null> {
   const data = await db
     .select({
       id: companyMasters.id,
@@ -292,20 +305,15 @@ export async function getByISIN(
  * @param {number} id - the ID of the companyMaster to be removed
  * @return {Promise<CompanyMasterType>} a promise that resolves once the companyMaster is removed
  */
-export async function remove(id: number): Promise<CompanyMasterType> {
-  const result = await db
+export async function remove(id: number): Promise<CompanyMasterType | null> {
+  const data = await getById(id);
+  await db
     .delete(companyMasters)
     .where(eq(companyMasters.id, id))
     .returning(CompanyMasterSelect);
-  return result[0];
+  return data;
 }
 
-export async function removeMultiple(
-  ids: number[]
-): Promise<CompanyMasterType[]> {
-  const result = await db
-    .delete(companyMasters)
-    .where(inArray(companyMasters.id, ids))
-    .returning(CompanyMasterSelect);
-  return result;
+export async function removeMultiple(ids: number[]): Promise<void> {
+  await db.delete(companyMasters).where(inArray(companyMasters.id, ids));
 }

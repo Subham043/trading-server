@@ -4,7 +4,6 @@ import {
   exportRegistrarMasters,
   getRegistrarMaster,
   importRegistrarMasters,
-  listCompanyMasterSelect,
   listRegistrarMasters,
   removeMultipleRegistrarMaster,
   removeRegistrarMaster,
@@ -28,13 +27,6 @@ export async function registrarMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     listRegistrarMasters
-  );
-  app.get(
-    "/company-select",
-    {
-      preHandler: app.verifyJwt,
-    },
-    listCompanyMasterSelect
   );
   app.get(
     "/export",

@@ -90,6 +90,7 @@ export async function createCompanyMaster(
     ISIN: request.body.ISIN,
     NSE: request.body.NSE,
     BSE: request.body.BSE,
+    registrarMasterBranchId: request.body.registrarMasterBranchId,
   });
   const result = await create(request.body, request.authenticatedUser!.id);
   return reply.code(201).type("application/json").send({
@@ -120,6 +121,7 @@ export async function updateCompanyMaster(
     ISIN: request.body.ISIN,
     NSE: request.body.NSE,
     BSE: request.body.BSE,
+    registrarMasterBranchId: request.body.registrarMasterBranchId,
   });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({

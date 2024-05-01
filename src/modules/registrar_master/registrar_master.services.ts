@@ -3,7 +3,6 @@ import {
   createRegistrarMaster,
   getAll,
   getById,
-  getCompanyMasterSelect,
   paginate,
   remove,
   removeMultiple,
@@ -32,10 +31,7 @@ import {
   ExcelFailedRegistrarMasterColumn,
 } from "./registrar_master.model";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
-import {
-  createRegistrarMasterBodySchema,
-  createRegistrarMasterUniqueSchema,
-} from "./schemas/create.schema";
+import { createRegistrarMasterBodySchema } from "./schemas/create.schema";
 import { ZodError } from "zod";
 
 /**
@@ -177,21 +173,6 @@ export async function importExcel(
         sebi_regn_id: (row.getCell(2).value?.toString()
           ? row.getCell(2).value?.toString()
           : "") as string,
-        address: row.getCell(3).value?.toString(),
-        city: row.getCell(4).value?.toString(),
-        state: row.getCell(5).value?.toString(),
-        pincode: Number(row.getCell(6).value?.toString()),
-        telephone1: row.getCell(7).value?.toString(),
-        telephone2: row.getCell(8).value?.toString(),
-        email: row.getCell(9).value?.toString(),
-        website: row.getCell(10).value?.toString(),
-        nameContactPerson: row.getCell(11).value?.toString(),
-        designationContactPerson: row.getCell(12).value?.toString(),
-        emailContactPerson: row.getCell(13).value?.toString(),
-        phoneContactPerson: row.getCell(14).value?.toString(),
-        officerAssigned: row.getCell(15).value?.toString(),
-        branch: row.getCell(16).value?.toString(),
-        companyId: Number(row.getCell(17).value),
         createdBy: userId,
       };
       registrarMasterInsertData.push(registrarMasterData);
@@ -202,12 +183,8 @@ export async function importExcel(
       await createRegistrarMasterBodySchema.parseAsync(
         registrarMasterInsertData[i]
       );
-      await createRegistrarMasterUniqueSchema.parseAsync({
-        companyId: registrarMasterInsertData[i].companyId,
-      });
       await createRegistrarMaster({
         ...registrarMasterInsertData[i],
-        pincode: registrarMasterInsertData[i].pincode?.toString(),
       });
       successCount = successCount + 1;
     } catch (error) {
@@ -245,15 +222,4 @@ export async function importExcel(
     errorCount,
     fileName: null,
   };
-}
-
-export async function companyMasterSelect(param: {
-  companyId?: string;
-}): Promise<
-  {
-    currentName: string | null;
-    companyID: number | null;
-  }[]
-> {
-  return await getCompanyMasterSelect(param);
 }

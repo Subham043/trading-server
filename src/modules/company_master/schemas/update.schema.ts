@@ -4,6 +4,7 @@ import {
   getByBSE,
   getByNSE,
 } from "../../name_change_master/name_change_master.repository";
+import { getById as getRegistrarMasterBranchId } from "../../registrar_master_branch/registrar_master_branch.repository";
 
 export const updateCompanyMasterBodySchema = z.object({
   currentName: z
@@ -152,6 +153,13 @@ export const updateCompanyMasterBodySchema = z.object({
       }),
     })
     .transform((value) => value.toFixed(2)),
+  registrarMasterBranchId: z
+    .number({
+      errorMap: () => ({
+        message: "Registrar Master Branch ID must be a number",
+      }),
+    })
+    .optional(),
 });
 
 export const updateCompanyMasterUniqueSchema = z
@@ -199,6 +207,28 @@ export const updateCompanyMasterUniqueSchema = z
       .max(256, { message: "BSE must be less than 256 characters" })
       .trim()
       .optional(),
+    registrarMasterBranchId: z
+      .number({
+        errorMap: () => ({
+          message: "Registrar Master Branch ID must be a number",
+        }),
+      })
+      .optional()
+      .superRefine(async (registrarMasterBranchId, ctx) => {
+        if (registrarMasterBranchId) {
+          const registrarMasterBranch = await getRegistrarMasterBranchId(
+            registrarMasterBranchId
+          );
+          if (!registrarMasterBranch) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Registrar Master Branch ID doesn't exists",
+              path: ["registrarMasterBranchId"],
+            });
+            return false;
+          }
+        }
+      }),
   })
   .superRefine(async ({ id, CIN, ISIN, BSE, NSE }, ctx) => {
     if (CIN) {

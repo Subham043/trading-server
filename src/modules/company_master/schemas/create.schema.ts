@@ -4,6 +4,7 @@ import {
   getByBSE,
   getByNSE,
 } from "../../name_change_master/name_change_master.repository";
+import { getById as getRegistrarMasterBranchId } from "../../registrar_master_branch/registrar_master_branch.repository";
 
 export const createCompanyMasterBodySchema = z.object({
   currentName: z
@@ -152,6 +153,13 @@ export const createCompanyMasterBodySchema = z.object({
       }),
     })
     .transform((value) => value.toFixed(2)),
+  registrarMasterBranchId: z
+    .number({
+      errorMap: () => ({
+        message: "Registrar Master Branch ID must be a number",
+      }),
+    })
+    .optional(),
 });
 
 export const createCompanyMasterUniqueSchema = z.object({
@@ -227,6 +235,28 @@ export const createCompanyMasterUniqueSchema = z.object({
             code: "custom",
             message: "BSE already exists",
             path: ["BSE"],
+          });
+          return false;
+        }
+      }
+    }),
+  registrarMasterBranchId: z
+    .number({
+      errorMap: () => ({
+        message: "Registrar Master Branch ID must be a number",
+      }),
+    })
+    .optional()
+    .superRefine(async (registrarMasterBranchId, ctx) => {
+      if (registrarMasterBranchId) {
+        const registrarMasterBranch = await getRegistrarMasterBranchId(
+          registrarMasterBranchId
+        );
+        if (!registrarMasterBranch) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Registrar Master Branch ID doesn't exists",
+            path: ["registrarMasterBranchId"],
           });
           return false;
         }

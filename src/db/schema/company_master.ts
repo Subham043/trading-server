@@ -10,6 +10,8 @@ import {
 import { users } from "./user";
 import { nameChangeMasters } from "./name_change_master";
 import { registrarMasters } from "./registrar_master";
+import { registrarMasterBranches } from "./registrar_master_branch";
+import { bigint } from "drizzle-orm/pg-core";
 
 export const companyMasters = pgTable(
   "company_masters",
@@ -34,9 +36,13 @@ export const companyMasters = pgTable(
     }),
     emailContactPerson: varchar("email_contact_person", { length: 256 }),
     phoneContactPerson: varchar("phone_contact_person", { length: 256 }),
-    createdBy: bigserial("createdBy", { mode: "number" })
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+    createdBy: bigint("createdBy", { mode: "number" }).references(
+      () => users.id,
+      { onDelete: "cascade" }
+    ),
+    registrarMasterBranchId: bigint("registrarMasterBranchId", {
+      mode: "number",
+    }).references(() => registrarMasterBranches.id, { onDelete: "cascade" }),
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAt: timestamp("updatedAt").defaultNow(),
   },
@@ -60,6 +66,10 @@ export const companyMastersRelations = relations(
     creator: one(users, {
       fields: [companyMasters.createdBy],
       references: [users.id],
+    }),
+    registrarMasterBranch: one(registrarMasterBranches, {
+      fields: [companyMasters.registrarMasterBranchId],
+      references: [registrarMasterBranches.id],
     }),
     companyName: many(nameChangeMasters),
     registrar: one(registrarMasters),

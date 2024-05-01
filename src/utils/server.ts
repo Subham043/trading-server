@@ -33,6 +33,7 @@ import { nameChangeMasterRoutes } from "../modules/name_change_master/name_chang
 import { uploadRoutes } from "../modules/upload/upload.routes";
 import { registrarMasterRoutes } from "../modules/registrar_master/registrar_master.routes";
 import { pincodeRoutes } from "../modules/pincodes/pincode.routes";
+import { registrarMasterBranchRoutes } from "../modules/registrar_master_branch/registrar_master_branch.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -106,6 +107,9 @@ export async function buildServer() {
   await server.register(accountRoutes, { prefix: "/api/account" });
   await server.register(pincodeRoutes, { prefix: "/api/pincodes" });
   await server.register(uploadRoutes, { prefix: "/api/upload" });
+  await server.register(registrarMasterBranchRoutes, {
+    prefix: "/api/registrar-master-branches",
+  });
   await server.register(companyMasterRoutes, {
     prefix: "/api/company-masters",
   });

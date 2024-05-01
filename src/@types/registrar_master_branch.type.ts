@@ -1,14 +1,7 @@
-export type RegistrarMasterType = {
+export type RegistrarMasterBranchType = {
   id: number;
-  registrar_name: string;
-  sebi_regn_id: string;
-  createdAt?: Date | null;
-};
-
-export type RegistrarMasterAllType = {
-  id: number;
-  registrar_name: string;
-  sebi_regn_id: string;
+  registrar_name?: string | null;
+  sebi_regn_id?: string | null;
   address?: string | null | undefined;
   city?: string | null | undefined;
   state?: string | null | undefined;
@@ -22,12 +15,16 @@ export type RegistrarMasterAllType = {
   emailContactPerson?: string | null | undefined;
   phoneContactPerson?: string | null | undefined;
   officerAssigned?: string | null | undefined;
-  branch?: string | null | undefined;
-  registrarMasterBranchId?: number | null | undefined;
+  branch: string | null | undefined;
   createdAt?: Date | null;
+  registrarMasterId?: number | null | undefined;
 };
 
-export interface RegistrarMasterCreateType
-  extends Omit<RegistrarMasterType, "id" | "createdAt"> {}
+export interface RegistrarMasterBranchCreateType
+  extends Omit<
+    RegistrarMasterBranchType,
+    "id" | "createdAt" | "registrar_name" | "sebi_regn_id" | "registrarMasterId"
+  > {}
 
-export interface RegistrarMasterUpdateType extends RegistrarMasterCreateType {}
+export interface RegistrarMasterBranchUpdateType
+  extends RegistrarMasterBranchCreateType {}
