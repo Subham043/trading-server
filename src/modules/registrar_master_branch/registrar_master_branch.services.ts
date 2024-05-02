@@ -176,19 +176,19 @@ export async function exportExcel(
 }
 
 /**
- * Destroys a registrarMaster based on the provided parameters.
+ * Destroys a registrarMasterBranch based on the provided parameters.
  *
- * @param {GetIdParam} params - the parameters for destroying the registrarMaster
- * @return {Promise<RegistrarMasterBranchType>} the destroyed registrarMaster
+ * @param {GetIdParam} params - the parameters for destroying the registrarMasterBranch
+ * @return {Promise<RegistrarMasterBranchType>} the destroyed registrarMasterBranch
  */
 export async function destroy(
   params: GetIdParam
 ): Promise<RegistrarMasterBranchType> {
   const { id } = params;
 
-  const registrarMaster = await findById(params);
+  const registrarMasterBranch = await findById(params);
   await remove(id);
-  return registrarMaster;
+  return registrarMasterBranch;
 }
 
 export async function destroyMultiple(body: GetIdsBody): Promise<void> {
@@ -214,23 +214,23 @@ export async function importExcel(
   worksheet?.eachRow(async function (row, rowNumber) {
     if (rowNumber > 1) {
       const registrarMasterData = {
-        address: row.getCell(3).value?.toString(),
-        city: row.getCell(4).value?.toString(),
-        state: row.getCell(5).value?.toString(),
-        pincode: isNaN(Number(row.getCell(6).value?.toString()))
+        branch: row.getCell(1).value?.toString(),
+        address: row.getCell(2).value?.toString(),
+        city: row.getCell(3).value?.toString(),
+        state: row.getCell(4).value?.toString(),
+        pincode: isNaN(Number(row.getCell(5).value?.toString()))
           ? undefined
-          : Number(row.getCell(6).value?.toString()),
-        telephone1: row.getCell(7).value?.toString(),
-        telephone2: row.getCell(8).value?.toString(),
-        email: row.getCell(9).value?.toString(),
-        website: row.getCell(10).value?.toString(),
-        nameContactPerson: row.getCell(11).value?.toString(),
-        designationContactPerson: row.getCell(12).value?.toString(),
-        emailContactPerson: row.getCell(13).value?.toString(),
-        phoneContactPerson: row.getCell(14).value?.toString(),
-        officerAssigned: row.getCell(15).value?.toString(),
-        branch: row.getCell(16).value?.toString(),
-        registrarMasterId: Number(row.getCell(17).value?.toString()),
+          : Number(row.getCell(5).value?.toString()),
+        telephone1: row.getCell(6).value?.toString(),
+        telephone2: row.getCell(7).value?.toString(),
+        email: row.getCell(8).value?.toString(),
+        website: row.getCell(9).value?.toString(),
+        nameContactPerson: row.getCell(10).value?.toString(),
+        designationContactPerson: row.getCell(11).value?.toString(),
+        emailContactPerson: row.getCell(12).value?.toString(),
+        phoneContactPerson: row.getCell(13).value?.toString(),
+        officerAssigned: row.getCell(14).value?.toString(),
+        registrarMasterId: Number(row.getCell(15).value?.toString()),
       };
       registrarMasterBranchInsertData.push(registrarMasterData);
     }

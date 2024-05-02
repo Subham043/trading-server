@@ -7,7 +7,6 @@ import {
 } from "../../@types/registrar_master_branch.type";
 import {
   Search_Query,
-  MasterSelect,
   RegistrarMasterBranchSelect,
   Select_Master_Query,
   Descending_RegistrarMasterBranch_CreatedAt,
@@ -192,7 +191,7 @@ export async function remove(id: number): Promise<RegistrarMasterBranchType> {
   const result = await db
     .delete(registrarMasterBranches)
     .where(eq(registrarMasterBranches.id, id))
-    .returning(MasterSelect);
+    .returning(RegistrarMasterBranchSelect);
   if (res) {
     return res;
   }
