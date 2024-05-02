@@ -6,6 +6,7 @@ import {
   exportExcel,
   findById,
   importExcel,
+  importUpdateExcel,
   list,
   update,
 } from "./company_master.services";
@@ -175,6 +176,24 @@ export async function importCompanyMasters(
   reply: FastifyReply
 ) {
   const result = await importExcel(request.body, request.authenticatedUser!.id);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Company Masters Imported",
+    data: result,
+  });
+}
+
+export async function importCompanyMastersUpdate(
+  request: FastifyRequest<{
+    Body: PostExcelBody;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await importUpdateExcel(
+    request.body,
+    request.authenticatedUser!.id
+  );
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

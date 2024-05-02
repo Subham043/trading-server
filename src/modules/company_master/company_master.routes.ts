@@ -4,6 +4,7 @@ import {
   exportCompanyMasters,
   getCompanyMaster,
   importCompanyMasters,
+  importCompanyMastersUpdate,
   listCompanyMasters,
   removeCompanyMaster,
   removeMultipleCompanyMaster,
@@ -43,6 +44,14 @@ export async function companyMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     importCompanyMasters
+  );
+  app.post(
+    "/import-update",
+    {
+      schema: { body: postExcelBodySchema },
+      preHandler: app.verifyJwt,
+    },
+    importCompanyMastersUpdate
   );
   app.post(
     "/delete-multiple",

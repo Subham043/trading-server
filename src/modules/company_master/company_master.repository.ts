@@ -8,6 +8,7 @@ import {
 } from "../../@types/company_master.type";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
 import {
+  CompanyMasterExcelUpdateRepoData,
   CompanyMasterSelect,
   Descending_CompanyMaster_CreatedAt,
   Descending_NameChangeMaster_ID,
@@ -56,7 +57,6 @@ export async function createCompanyMaster(
         .returning(NameChangeMasterSelect);
       return { ...result[0], ...nameChangeResult[0] };
     } catch (error) {
-      console.log(error);
       tx.rollback();
       throw error;
     }
@@ -114,6 +114,70 @@ export async function updateCompanyMaster(
     }
   });
   return await getById(id);
+}
+
+function isObjectEmpty(obj) {
+  for (const prop in obj) {
+    if (Object.hasOwn(obj, prop)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export async function updateCompanyMasterImport(
+  data: CompanyMasterExcelUpdateRepoData
+): Promise<CompanyMasterType | null> {
+  const { currentName, NSE, BSE, ...companyData } = data;
+  const nameChangeUpdateData = { currentName, NSE, BSE };
+  await db.transaction(async (tx) => {
+    Object.keys(companyData).forEach(function (key) {
+      if (typeof companyData[key] === "undefined") {
+        delete companyData[key];
+      }
+    });
+    Object.keys(nameChangeUpdateData).forEach(function (key) {
+      if (typeof nameChangeUpdateData[key] === "undefined") {
+        delete nameChangeUpdateData[key];
+      }
+    });
+    try {
+      if (!isObjectEmpty(companyData)) {
+        await tx
+          .update(companyMasters)
+          .set(companyData)
+          .where(eq(companyMasters.id, data.id))
+          .returning(CompanyMasterSelect);
+      }
+      if (!isObjectEmpty(nameChangeUpdateData)) {
+        await tx
+          .update(nameChangeMasters)
+          .set(nameChangeUpdateData)
+          .where(
+            and(
+              eq(nameChangeMasters.companyID, data.id),
+              eq(
+                nameChangeMasters.id,
+                tx
+                  .select({
+                    id: nameChangeMasters.id,
+                  })
+                  .from(nameChangeMasters)
+                  .where(eq(nameChangeMasters.companyID, data.id))
+                  .orderBy(Descending_NameChangeMaster_ID)
+                  .limit(1)
+              )
+            )
+          )
+          .returning(NameChangeMasterSelect);
+      }
+    } catch (error) {
+      tx.rollback();
+      throw error;
+    }
+  });
+  return await getById(data.id);
 }
 
 /**

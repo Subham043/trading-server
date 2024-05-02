@@ -31,7 +31,69 @@ export type CompanyMasterExcelData = {
   createdBy: number;
 };
 
+export type CompanyMasterExcelUpdateData = {
+  id: number;
+  currentName: string | undefined;
+  NSE: string | undefined;
+  BSE: string | undefined;
+  ISIN: string | undefined;
+  CIN: string | undefined;
+  faceValue: number | undefined;
+  closingPriceNSE: number | undefined;
+  closingPriceBSE: number | undefined;
+  registeredOffice: string | undefined;
+  city: string | undefined;
+  state: string | undefined;
+  pincode: number | undefined;
+  telephone: string | undefined;
+  fax: string | undefined;
+  email: string | undefined;
+  website: string | undefined;
+  nameContactPerson: string | undefined;
+  emailContactPerson: string | undefined;
+  phoneContactPerson: string | undefined;
+  designationContactPerson: string | undefined;
+  registrarMasterBranchId: number | undefined;
+};
+
+export interface CompanyMasterExcelUpdateRepoData
+  extends Omit<CompanyMasterExcelUpdateData, "pincode"> {
+  pincode?: string | undefined;
+}
+
 export const ExcelFailedCompanyMasterColumn: WorksheetColumnsType = [
+  { key: "NSE", header: "NSE" },
+  { key: "BSE", header: "BSE" },
+  { key: "currentName", header: "Current Name of the Company" },
+  { key: "ISIN", header: "ISIN" },
+  { key: "CIN", header: "CIN" },
+  { key: "faceValue", header: "Face Value" },
+  { key: "closingPriceNSE", header: "Closing Price in NSE" },
+  { key: "closingPriceBSE", header: "Closing Price in BSE" },
+  { key: "registeredOffice", header: "Registered Office" },
+  { key: "city", header: "City" },
+  { key: "state", header: "State" },
+  { key: "pincode", header: "Pincode" },
+  { key: "telephone", header: "Telephone" },
+  { key: "fax", header: "Fax" },
+  { key: "email", header: "Email" },
+  { key: "website", header: "Website" },
+  { key: "nameContactPerson", header: "Name of Contact Person" },
+  { key: "emailContactPerson", header: "Email of Contact Person" },
+  { key: "phoneContactPerson", header: "Phone of Contact Person" },
+  {
+    key: "designationContactPerson",
+    header: "Designation of Contact Person",
+  },
+  {
+    key: "registrarMasterBranchId",
+    header: "Registrar Master Branch Id",
+  },
+  { key: "error", header: "Error" },
+];
+
+export const ExcelFailedCompanyMasterUpdateColumn: WorksheetColumnsType = [
+  { key: "id", header: "ID" },
   { key: "NSE", header: "NSE" },
   { key: "BSE", header: "BSE" },
   { key: "currentName", header: "Current Name of the Company" },
