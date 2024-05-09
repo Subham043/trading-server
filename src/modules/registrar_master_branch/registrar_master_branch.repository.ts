@@ -151,6 +151,7 @@ export async function getById(
     eq(registrarMasterBranches.id, id)
   );
   if (data.length > 0) {
+    console.log(data[0]);
     return data[0];
   }
   return null;
