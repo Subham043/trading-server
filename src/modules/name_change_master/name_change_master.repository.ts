@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, exists, inArray, max, sql } from "drizzle-orm";
 import { InferInsertModel } from "drizzle-orm";
 import db from "../../db";
 import { nameChangeMasters } from "../../db/schema/name_change_master";
@@ -233,13 +233,29 @@ export async function paginateCompany(
     companyId?: number | null | undefined;
   })[]
 > {
+  const nCId = await db
+    .select({
+      id: max(nameChangeMasters.id),
+    })
+    .from(nameChangeMasters)
+    .where(
+      exists(
+        db
+          .select({
+            id: companyMasters.id,
+          })
+          .from(companyMasters)
+          .where(eq(companyMasters.id, nameChangeMasters.companyID))
+          .limit(limit)
+          .offset(offset)
+      )
+    )
+    .groupBy(nameChangeMasters.companyID);
+  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
   const data = await Select_Master_Query.where(
     search
-      ? and(
-          eq(nameChangeMasters.id, Select_Sub_Query),
-          Search_Query(search, true)
-        )
-      : eq(nameChangeMasters.id, Select_Sub_Query)
+      ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search, true))
+      : inArray(nameChangeMasters.id, nCIdArr)
   )
     .orderBy(desc(companyMasters.createdAt))
     .limit(limit)
@@ -256,19 +272,50 @@ export async function getAllCompany(search?: string): Promise<
     companyId?: number | null | undefined;
   })[]
 > {
+  const nCId = await db
+    .select({
+      id: max(nameChangeMasters.id),
+    })
+    .from(nameChangeMasters)
+    .where(
+      exists(
+        db
+          .select({
+            id: companyMasters.id,
+          })
+          .from(companyMasters)
+          .where(eq(companyMasters.id, nameChangeMasters.companyID))
+      )
+    )
+    .groupBy(nameChangeMasters.companyID);
+  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
   const data = await Select_Master_Query.where(
     search
-      ? and(
-          eq(nameChangeMasters.id, Select_Sub_Query),
-          Search_Query(search, true)
-        )
-      : eq(nameChangeMasters.id, Select_Sub_Query)
+      ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search, true))
+      : inArray(nameChangeMasters.id, nCIdArr)
   ).orderBy(desc(companyMasters.createdAt));
 
   return data;
 }
 
 export async function countCompany(search?: string): Promise<number> {
+  const nCId = await db
+    .select({
+      id: max(nameChangeMasters.id),
+    })
+    .from(nameChangeMasters)
+    .where(
+      exists(
+        db
+          .select({
+            id: companyMasters.id,
+          })
+          .from(companyMasters)
+          .where(eq(companyMasters.id, nameChangeMasters.companyID))
+      )
+    )
+    .groupBy(nameChangeMasters.companyID);
+  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
   const data = await db
     .select({
       count: sql<number>`cast(count(${nameChangeMasters.id}) as int)`,
@@ -281,10 +328,10 @@ export async function countCompany(search?: string): Promise<number> {
     .where(
       search
         ? and(
-            eq(nameChangeMasters.id, Select_Sub_Query),
+            inArray(nameChangeMasters.id, nCIdArr),
             Search_Query(search, true)
           )
-        : eq(nameChangeMasters.id, Select_Sub_Query)
+        : inArray(nameChangeMasters.id, nCIdArr)
     );
 
   return data[0].count;

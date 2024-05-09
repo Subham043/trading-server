@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, max, sql } from "drizzle-orm";
 import db from "../../db";
 import { companyMasters } from "../../db/schema/company_master";
 import {
@@ -17,6 +17,7 @@ import {
   Select_Master_Query,
   Select_Sub_Query,
 } from "./company_master.model";
+import { exists } from "drizzle-orm";
 
 /**
  * Create a new companyMaster with the provided data.
@@ -192,27 +193,30 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<CompanyMasterType[]> {
+  const nCId = await db
+    .select({
+      id: max(nameChangeMasters.id),
+    })
+    .from(nameChangeMasters)
+    .where(
+      exists(
+        db
+          .select({
+            id: companyMasters.id,
+          })
+          .from(companyMasters)
+          .where(eq(companyMasters.id, nameChangeMasters.companyID))
+          .limit(limit)
+          .offset(offset)
+      )
+    )
+    .groupBy(nameChangeMasters.companyID);
+  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+
   const data = await Select_Master_Query.where(
     search
-      ? and(
-          eq(
-            nameChangeMasters.id,
-            Select_Sub_Query.where(
-              eq(nameChangeMasters.companyID, companyMasters.id)
-            )
-              .orderBy(Descending_NameChangeMaster_ID)
-              .limit(1)
-          ),
-          Search_Query(search)
-        )
-      : eq(
-          nameChangeMasters.id,
-          Select_Sub_Query.where(
-            eq(nameChangeMasters.companyID, companyMasters.id)
-          )
-            .orderBy(Descending_NameChangeMaster_ID)
-            .limit(1)
-        )
+      ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
+      : inArray(nameChangeMasters.id, nCIdArr)
   )
     .orderBy(Descending_CompanyMaster_CreatedAt)
     .limit(limit)
@@ -228,27 +232,28 @@ export async function paginate(
  * @return {Promise<CompanyMasterType[]>} the paginated companyMaster data as a promise
  */
 export async function getAll(search?: string): Promise<CompanyMasterType[]> {
+  const nCId = await db
+    .select({
+      id: max(nameChangeMasters.id),
+    })
+    .from(nameChangeMasters)
+    .where(
+      exists(
+        db
+          .select({
+            id: companyMasters.id,
+          })
+          .from(companyMasters)
+          .where(eq(companyMasters.id, nameChangeMasters.companyID))
+      )
+    )
+    .groupBy(nameChangeMasters.companyID);
+  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+
   const data = await Select_Master_Query.where(
     search
-      ? and(
-          eq(
-            nameChangeMasters.id,
-            Select_Sub_Query.where(
-              eq(nameChangeMasters.companyID, companyMasters.id)
-            )
-              .orderBy(Descending_NameChangeMaster_ID)
-              .limit(1)
-          ),
-          Search_Query(search)
-        )
-      : eq(
-          nameChangeMasters.id,
-          Select_Sub_Query.where(
-            eq(nameChangeMasters.companyID, companyMasters.id)
-          )
-            .orderBy(Descending_NameChangeMaster_ID)
-            .limit(1)
-        )
+      ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
+      : inArray(nameChangeMasters.id, nCIdArr)
   ).orderBy(Descending_CompanyMaster_CreatedAt);
 
   return data;
@@ -260,6 +265,24 @@ export async function getAll(search?: string): Promise<CompanyMasterType[]> {
  * @return {Promise<number>} The number of records.
  */
 export async function count(search?: string): Promise<number> {
+  const nCId = await db
+    .select({
+      id: max(nameChangeMasters.id),
+    })
+    .from(nameChangeMasters)
+    .where(
+      exists(
+        db
+          .select({
+            id: companyMasters.id,
+          })
+          .from(companyMasters)
+          .where(eq(companyMasters.id, nameChangeMasters.companyID))
+      )
+    )
+    .groupBy(nameChangeMasters.companyID);
+  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+
   const data = await db
     .select({
       count: sql<number>`cast(count(${companyMasters.id}) as int)`,
@@ -271,25 +294,8 @@ export async function count(search?: string): Promise<number> {
     )
     .where(
       search
-        ? and(
-            eq(
-              nameChangeMasters.id,
-              Select_Sub_Query.where(
-                eq(nameChangeMasters.companyID, companyMasters.id)
-              )
-                .orderBy(Descending_NameChangeMaster_ID)
-                .limit(1)
-            ),
-            Search_Query(search)
-          )
-        : eq(
-            nameChangeMasters.id,
-            Select_Sub_Query.where(
-              eq(nameChangeMasters.companyID, companyMasters.id)
-            )
-              .orderBy(Descending_NameChangeMaster_ID)
-              .limit(1)
-          )
+        ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
+        : inArray(nameChangeMasters.id, nCIdArr)
     );
 
   return data[0].count;
