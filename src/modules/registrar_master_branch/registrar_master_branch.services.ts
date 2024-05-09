@@ -267,7 +267,7 @@ export async function importExcel(
     const fileName = await storeExcel<
       RegistrarMasterBranchExcelData & { error: string }
     >(
-      "Failed Registrar Master Branch Import",
+      "Registrar_Master_Branch",
       ExcelFailedRegistrarMasterBranchColumn,
       failedRegistrarMasterBranchImport,
       userId

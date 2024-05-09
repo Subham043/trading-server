@@ -206,7 +206,7 @@ export async function importExcel(
     const fileName = await storeExcel<
       RegistrarMasterExcelData & { error: string }
     >(
-      "Failed Registrar Master Import",
+      "Registrar_Master",
       ExcelFailedRegistrarMasterColumn,
       failedRegistrarMasterImport,
       userId

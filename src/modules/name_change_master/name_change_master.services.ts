@@ -328,7 +328,7 @@ export async function importExcel(
     const fileName = await storeExcel<
       NameChangeMasterExcelData & { error: string }
     >(
-      "Failed Name Change Master Import",
+      "Name_Change_Master",
       ExcelFailedNameChangeMasterColumn,
       failedNameChangeMasterImport,
       createdBy

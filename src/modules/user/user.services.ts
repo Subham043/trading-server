@@ -245,7 +245,7 @@ export async function importExcel(
   }
   if (failedUsersImport.length > 0 && errorCount > 0) {
     const fileName = await storeExcel<UserExcelData & { error: string }>(
-      "Failed Users Import",
+      "Users",
       ExcelFailedUsersColumn,
       failedUsersImport,
       createdBy

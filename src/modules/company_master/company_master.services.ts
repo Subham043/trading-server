@@ -358,7 +358,7 @@ export async function importUpdateExcel(
     const fileName = await storeExcel<
       CompanyMasterExcelUpdateData & { error: string }
     >(
-      "Failed Company Master Update Import",
+      "Company_Master",
       ExcelFailedCompanyMasterUpdateColumn,
       failedCompanyMasterImport,
       userId
