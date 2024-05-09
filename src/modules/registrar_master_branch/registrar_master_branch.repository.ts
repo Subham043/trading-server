@@ -150,8 +150,8 @@ export async function getById(
   const data = await Select_Master_Query.where(
     eq(registrarMasterBranches.id, id)
   );
+  console.log(data);
   if (data.length > 0) {
-    console.log(data[0]);
     return data[0];
   }
   return null;
