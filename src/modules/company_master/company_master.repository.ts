@@ -15,7 +15,6 @@ import {
   NameChangeMasterSelect,
   Search_Query,
   Select_Master_Query,
-  Select_Sub_Query,
 } from "./company_master.model";
 import { exists } from "drizzle-orm";
 
@@ -306,16 +305,29 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<CompanyMasterType|null>} The companyMaster data if found, otherwise null
  */
 export async function getById(id: number): Promise<CompanyMasterType | null> {
-  const data = await Select_Master_Query.where(
-    and(
-      eq(companyMasters.id, id),
-      eq(
-        nameChangeMasters.id,
-        Select_Sub_Query.where(eq(nameChangeMasters.companyID, id))
-          .orderBy(Descending_NameChangeMaster_ID)
-          .limit(1)
+  const nCId = await db
+    .select({
+      id: max(nameChangeMasters.id),
+    })
+    .from(nameChangeMasters)
+    .where(
+      and(
+        eq(nameChangeMasters.companyID, id),
+        exists(
+          db
+            .select({
+              id: companyMasters.id,
+            })
+            .from(companyMasters)
+            .where(eq(companyMasters.id, nameChangeMasters.companyID))
+        )
       )
     )
+    .groupBy(nameChangeMasters.companyID);
+  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+
+  const data = await Select_Master_Query.where(
+    and(eq(companyMasters.id, id), inArray(nameChangeMasters.id, nCIdArr))
   );
   if (data.length > 0) {
     return data[0];
