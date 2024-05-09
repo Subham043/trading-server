@@ -206,8 +206,6 @@ export async function paginate(
           })
           .from(companyMasters)
           .where(eq(companyMasters.id, nameChangeMasters.companyID))
-          .limit(limit)
-          .offset(offset)
       )
     )
     .groupBy(nameChangeMasters.companyID);
