@@ -1,13 +1,8 @@
 import { relations } from "drizzle-orm";
-import {
-  pgTable,
-  bigserial,
-  uniqueIndex,
-  varchar,
-  timestamp,
-} from "drizzle-orm/pg-core";
+import { pgTable, bigserial, varchar, timestamp } from "drizzle-orm/pg-core";
 import { registrarMasters } from "./registrar_master";
 import { bigint } from "drizzle-orm/pg-core";
+import { index } from "drizzle-orm/pg-core";
 
 export const registrarMasterBranches = pgTable(
   "registrar_master_branches",
@@ -37,7 +32,7 @@ export const registrarMasterBranches = pgTable(
   },
   (registrar_master_branches) => {
     return {
-      registrarMasterIndex: uniqueIndex("registrar_master_idx").on(
+      registrarMasterIndex: index("registrar_master_idx").on(
         registrar_master_branches.id,
         registrar_master_branches.registrarMasterID
       ),
