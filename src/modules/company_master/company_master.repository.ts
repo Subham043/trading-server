@@ -12,11 +12,13 @@ import {
   CompanyMasterSelect,
   Descending_CompanyMaster_CreatedAt,
   Descending_NameChangeMaster_ID,
+  MasterSelect,
   NameChangeMasterSelect,
   Search_Query,
-  Select_Master_Query,
 } from "./company_master.model";
 import { exists } from "drizzle-orm";
+import { registrarMasterBranches } from "../../db/schema/registrar_master_branch";
+import { registrarMasters } from "../../db/schema/registrar_master";
 
 /**
  * Create a new companyMaster with the provided data.
@@ -210,11 +212,26 @@ export async function paginate(
     .groupBy(nameChangeMasters.companyID);
   const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
 
-  const data = await Select_Master_Query.where(
-    search
-      ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
-      : inArray(nameChangeMasters.id, nCIdArr)
-  )
+  const data = await db
+    .select(MasterSelect)
+    .from(companyMasters)
+    .leftJoin(
+      nameChangeMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
+    )
+    .leftJoin(
+      registrarMasterBranches,
+      eq(registrarMasterBranches.id, companyMasters.registrarMasterBranchId)
+    )
+    .leftJoin(
+      registrarMasters,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
+    .where(
+      search
+        ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
+        : inArray(nameChangeMasters.id, nCIdArr)
+    )
     .orderBy(Descending_CompanyMaster_CreatedAt)
     .limit(limit)
     .offset(offset);
@@ -247,11 +264,27 @@ export async function getAll(search?: string): Promise<CompanyMasterType[]> {
     .groupBy(nameChangeMasters.companyID);
   const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
 
-  const data = await Select_Master_Query.where(
-    search
-      ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
-      : inArray(nameChangeMasters.id, nCIdArr)
-  ).orderBy(Descending_CompanyMaster_CreatedAt);
+  const data = await db
+    .select(MasterSelect)
+    .from(companyMasters)
+    .leftJoin(
+      nameChangeMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
+    )
+    .leftJoin(
+      registrarMasterBranches,
+      eq(registrarMasterBranches.id, companyMasters.registrarMasterBranchId)
+    )
+    .leftJoin(
+      registrarMasters,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
+    .where(
+      search
+        ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
+        : inArray(nameChangeMasters.id, nCIdArr)
+    )
+    .orderBy(Descending_CompanyMaster_CreatedAt);
 
   return data;
 }
@@ -326,9 +359,24 @@ export async function getById(id: number): Promise<CompanyMasterType | null> {
     .groupBy(nameChangeMasters.companyID);
   const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
 
-  const data = await Select_Master_Query.where(
-    and(eq(companyMasters.id, id), inArray(nameChangeMasters.id, nCIdArr))
-  );
+  const data = await db
+    .select(MasterSelect)
+    .from(companyMasters)
+    .leftJoin(
+      nameChangeMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
+    )
+    .leftJoin(
+      registrarMasterBranches,
+      eq(registrarMasterBranches.id, companyMasters.registrarMasterBranchId)
+    )
+    .leftJoin(
+      registrarMasters,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
+    .where(
+      and(eq(companyMasters.id, id), inArray(nameChangeMasters.id, nCIdArr))
+    );
   if (data.length > 0) {
     return data[0];
   }

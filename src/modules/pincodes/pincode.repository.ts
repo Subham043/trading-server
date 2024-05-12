@@ -7,7 +7,6 @@ import { UpdatePincodeBody } from "./schemas/update.schema";
 import {
   Descending_Pincode_ID,
   Search_Query,
-  Select_Query,
   PincodeSelect,
 } from "./pincode.model";
 
@@ -59,9 +58,10 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<PincodeType[]> {
-  const data = await Select_Query.where(
-    search ? Search_Query(search) : undefined
-  )
+  const data = await db
+    .select(PincodeSelect)
+    .from(pincodes)
+    .where(search ? Search_Query(search) : undefined)
     .orderBy(Descending_Pincode_ID)
     .limit(limit)
     .offset(offset);
@@ -76,9 +76,11 @@ export async function paginate(
  * @return {Promise<PincodeType[]>} the paginated pincode data as a promise
  */
 export async function getAll(search?: string): Promise<PincodeType[]> {
-  const data = await Select_Query.where(
-    search ? Search_Query(search) : undefined
-  ).orderBy(Descending_Pincode_ID);
+  const data = await db
+    .select(PincodeSelect)
+    .from(pincodes)
+    .where(search ? Search_Query(search) : undefined)
+    .orderBy(Descending_Pincode_ID);
 
   return data;
 }
@@ -106,7 +108,10 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<PincodeType|null>} The pincode data if found, otherwise null
  */
 export async function getById(id: number): Promise<PincodeType | null> {
-  const data = await Select_Query.where(eq(pincodes.id, id));
+  const data = await db
+    .select(PincodeSelect)
+    .from(pincodes)
+    .where(eq(pincodes.id, id));
   if (data.length > 0) {
     return data[0];
   }
@@ -122,7 +127,10 @@ export async function getById(id: number): Promise<PincodeType | null> {
 export async function getByPincode(
   pincode: string
 ): Promise<PincodeType | null> {
-  const data = await Select_Query.where(eq(pincodes.pincode, pincode));
+  const data = await db
+    .select(PincodeSelect)
+    .from(pincodes)
+    .where(eq(pincodes.pincode, pincode));
   if (data.length > 0) {
     return data[0];
   }

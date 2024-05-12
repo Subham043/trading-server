@@ -9,12 +9,9 @@ import {
 import { companyMasters } from "../../db/schema/company_master";
 import {
   Descending_NameChangeMaster_ID,
+  MasterSelect,
   NameChangeMasterSelect,
   Search_Query,
-  Select_NSE_BSE_Query,
-  Select_Name_Change_Master_Query,
-  Select_Master_Query,
-  Select_Sub_Query,
   transformData,
 } from "./name_change_master.model";
 
@@ -67,11 +64,14 @@ export async function paginate(
   companyID: number,
   search?: string
 ): Promise<NameChangeMasterType[]> {
-  const data = await Select_Name_Change_Master_Query.where(
-    search
-      ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
-      : eq(nameChangeMasters.companyID, companyID)
-  )
+  const data = await db
+    .select(NameChangeMasterSelect)
+    .from(nameChangeMasters)
+    .where(
+      search
+        ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
+        : eq(nameChangeMasters.companyID, companyID)
+    )
     .orderBy(Descending_NameChangeMaster_ID)
     .limit(limit)
     .offset(offset);
@@ -89,11 +89,15 @@ export async function getAll(
   companyID: number,
   search?: string
 ): Promise<NameChangeMasterType[]> {
-  const data = await Select_Name_Change_Master_Query.where(
-    search
-      ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
-      : eq(nameChangeMasters.companyID, companyID)
-  ).orderBy(Descending_NameChangeMaster_ID);
+  const data = await db
+    .select(NameChangeMasterSelect)
+    .from(nameChangeMasters)
+    .where(
+      search
+        ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
+        : eq(nameChangeMasters.companyID, companyID)
+    )
+    .orderBy(Descending_NameChangeMaster_ID);
 
   return data;
 }
@@ -130,9 +134,10 @@ export async function count(
 export async function getById(
   id: number
 ): Promise<NameChangeMasterType | null> {
-  const data = await Select_Name_Change_Master_Query.where(
-    eq(nameChangeMasters.id, id)
-  );
+  const data = await db
+    .select(NameChangeMasterSelect)
+    .from(nameChangeMasters)
+    .where(eq(nameChangeMasters.id, id));
   if (data.length > 0) {
     return data[0];
   }
@@ -148,7 +153,14 @@ export async function getById(
 export async function getByNSE(
   NSE: string
 ): Promise<NameChangeMasterType | null> {
-  const data = await Select_NSE_BSE_Query.where(eq(nameChangeMasters.NSE, NSE));
+  const data = await db
+    .select({
+      id: nameChangeMasters.id,
+      companyId: nameChangeMasters.companyID,
+      createdAt: nameChangeMasters.createdAt,
+    })
+    .from(nameChangeMasters)
+    .where(eq(nameChangeMasters.NSE, NSE));
   if (data.length > 0) {
     return data[0];
   }
@@ -164,7 +176,14 @@ export async function getByNSE(
 export async function getByBSE(
   BSE: string
 ): Promise<NameChangeMasterType | null> {
-  const data = await Select_NSE_BSE_Query.where(eq(nameChangeMasters.BSE, BSE));
+  const data = await db
+    .select({
+      id: nameChangeMasters.id,
+      companyId: nameChangeMasters.companyID,
+      createdAt: nameChangeMasters.createdAt,
+    })
+    .from(nameChangeMasters)
+    .where(eq(nameChangeMasters.BSE, BSE));
   if (data.length > 0) {
     return data[0];
   }
@@ -189,22 +208,30 @@ export async function removeMultiple(
   ids: number[],
   companyID: number
 ): Promise<void> {
-  const data = await Select_Master_Query.where(
-    and(
-      eq(nameChangeMasters.companyID, companyID),
-      eq(
-        nameChangeMasters.id,
-        db
-          .select({
-            id: nameChangeMasters.id,
-          })
-          .from(nameChangeMasters)
-          .where(eq(nameChangeMasters.companyID, companyMasters.id))
-          .orderBy(asc(nameChangeMasters.id))
-          .limit(1)
+  const data = await db
+    .select(MasterSelect)
+    .from(nameChangeMasters)
+    .leftJoin(
+      companyMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
+    )
+    .where(
+      and(
+        eq(nameChangeMasters.companyID, companyID),
+        eq(
+          nameChangeMasters.id,
+          db
+            .select({
+              id: nameChangeMasters.id,
+            })
+            .from(nameChangeMasters)
+            .where(eq(nameChangeMasters.companyID, companyMasters.id))
+            .orderBy(asc(nameChangeMasters.id))
+            .limit(1)
+        )
       )
     )
-  ).limit(1);
+    .limit(1);
   if (data.length > 0) {
     const filteredIds = ids.filter((id) => id !== data[0].id);
     if (filteredIds.length === 0) return;
@@ -250,11 +277,21 @@ export async function paginateCompany(
     )
     .groupBy(nameChangeMasters.companyID);
   const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
-  const data = await Select_Master_Query.where(
-    search
-      ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search, true))
-      : inArray(nameChangeMasters.id, nCIdArr)
-  )
+  const data = await db
+    .select(MasterSelect)
+    .from(nameChangeMasters)
+    .leftJoin(
+      companyMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
+    )
+    .where(
+      search
+        ? and(
+            inArray(nameChangeMasters.id, nCIdArr),
+            Search_Query(search, true)
+          )
+        : inArray(nameChangeMasters.id, nCIdArr)
+    )
     .orderBy(desc(companyMasters.createdAt))
     .limit(limit)
     .offset(offset);
@@ -287,11 +324,22 @@ export async function getAllCompany(search?: string): Promise<
     )
     .groupBy(nameChangeMasters.companyID);
   const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
-  const data = await Select_Master_Query.where(
-    search
-      ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search, true))
-      : inArray(nameChangeMasters.id, nCIdArr)
-  ).orderBy(desc(companyMasters.createdAt));
+  const data = await db
+    .select(MasterSelect)
+    .from(nameChangeMasters)
+    .leftJoin(
+      companyMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
+    )
+    .where(
+      search
+        ? and(
+            inArray(nameChangeMasters.id, nCIdArr),
+            Search_Query(search, true)
+          )
+        : inArray(nameChangeMasters.id, nCIdArr)
+    )
+    .orderBy(desc(companyMasters.createdAt));
 
   return data;
 }
@@ -343,12 +391,29 @@ export async function getByCompanyId(companyId: number): Promise<
     companyId?: number | null | undefined;
   }
 > {
-  const data = await Select_Master_Query.where(
-    and(
-      eq(nameChangeMasters.companyID, companyId),
-      eq(nameChangeMasters.id, Select_Sub_Query)
+  const data = await db
+    .select(MasterSelect)
+    .from(nameChangeMasters)
+    .leftJoin(
+      companyMasters,
+      eq(nameChangeMasters.companyID, companyMasters.id)
     )
-  );
+    .where(
+      and(
+        eq(nameChangeMasters.companyID, companyId),
+        eq(
+          nameChangeMasters.id,
+          db
+            .select({
+              id: nameChangeMasters.id,
+            })
+            .from(nameChangeMasters)
+            .where(eq(nameChangeMasters.companyID, companyMasters.id))
+            .orderBy(Descending_NameChangeMaster_ID)
+            .limit(1)
+        )
+      )
+    );
   if (data.length > 0) {
     return data[0];
   }

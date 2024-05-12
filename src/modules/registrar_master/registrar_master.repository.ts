@@ -9,12 +9,12 @@ import {
 } from "../../@types/registrar_master.type";
 import {
   Descending_RegistrarMaster_CreatedAt,
+  MasterSelect,
   RegistrarMasterSelect,
   Search_Query,
-  Select_All_Master_Query,
-  Select_Master_Query,
 } from "./registrar_master.model";
 import { registrarMasters } from "../../db/schema/registrar_master";
+import { registrarMasterBranches } from "../../db/schema/registrar_master_branch";
 
 /**
  * Create a new registrarMaster with the provided data.
@@ -64,9 +64,10 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<RegistrarMasterType[]> {
-  const data = await Select_Master_Query.where(
-    search ? Search_Query(search) : undefined
-  )
+  const data = await db
+    .select(RegistrarMasterSelect)
+    .from(registrarMasters)
+    .where(search ? Search_Query(search) : undefined)
     .orderBy(Descending_RegistrarMaster_CreatedAt)
     .limit(limit)
     .offset(offset);
@@ -83,9 +84,15 @@ export async function paginate(
 export async function getAll(
   search?: string
 ): Promise<RegistrarMasterAllType[]> {
-  const data = await Select_All_Master_Query.where(
-    search ? Search_Query(search) : undefined
-  ).orderBy(Descending_RegistrarMaster_CreatedAt);
+  const data = await db
+    .select(MasterSelect)
+    .from(registrarMasters)
+    .leftJoin(
+      registrarMasterBranches,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
+    .where(search ? Search_Query(search) : undefined)
+    .orderBy(Descending_RegistrarMaster_CreatedAt);
 
   return data;
 }
@@ -113,7 +120,10 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<RegistrarMasterType|null>} The registrarMaster data if found, otherwise null
  */
 export async function getById(id: number): Promise<RegistrarMasterType | null> {
-  const data = await Select_Master_Query.where(eq(registrarMasters.id, id));
+  const data = await db
+    .select(RegistrarMasterSelect)
+    .from(registrarMasters)
+    .where(eq(registrarMasters.id, id));
   if (data.length > 0) {
     return data[0];
   }

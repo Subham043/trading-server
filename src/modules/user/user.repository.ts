@@ -4,12 +4,7 @@ import db from "../../db";
 import { users } from "../../db/schema/user";
 import { UserType } from "../../@types/user.type";
 import { UpdateUserBody } from "./schemas/update.schema";
-import {
-  Descending_User_ID,
-  Search_Query,
-  Select_Query,
-  UserSelect,
-} from "./user.model";
+import { Descending_User_ID, Search_Query, UserSelect } from "./user.model";
 
 /**
  * Create a new user with the provided data.
@@ -59,9 +54,10 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<UserType[]> {
-  const data = await Select_Query.where(
-    search ? Search_Query(search) : undefined
-  )
+  const data = await db
+    .select(UserSelect)
+    .from(users)
+    .where(search ? Search_Query(search) : undefined)
     .orderBy(Descending_User_ID)
     .limit(limit)
     .offset(offset);
@@ -76,9 +72,11 @@ export async function paginate(
  * @return {Promise<UserType[]>} the paginated user data as a promise
  */
 export async function getAll(search?: string): Promise<UserType[]> {
-  const data = await Select_Query.where(
-    search ? Search_Query(search) : undefined
-  ).orderBy(Descending_User_ID);
+  const data = await db
+    .select(UserSelect)
+    .from(users)
+    .where(search ? Search_Query(search) : undefined)
+    .orderBy(Descending_User_ID);
 
   return data;
 }
@@ -106,7 +104,7 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<UserType|null>} The user data if found, otherwise null
  */
 export async function getById(id: number): Promise<UserType | null> {
-  const data = await Select_Query.where(eq(users.id, id));
+  const data = await db.select(UserSelect).from(users).where(eq(users.id, id));
   if (data.length > 0) {
     return data[0];
   }
@@ -120,7 +118,10 @@ export async function getById(id: number): Promise<UserType | null> {
  * @return {Promise<UserType | null>} The user information if found, otherwise null
  */
 export async function getByEmail(email: string): Promise<UserType | null> {
-  const data = await Select_Query.where(eq(users.email, email));
+  const data = await db
+    .select(UserSelect)
+    .from(users)
+    .where(eq(users.email, email));
   if (data.length > 0) {
     return data[0];
   }

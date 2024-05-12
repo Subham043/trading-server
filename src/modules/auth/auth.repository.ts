@@ -4,16 +4,15 @@ import db from "../../db";
 import { users } from "../../db/schema/user";
 import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
 import { tokens } from "../../db/schema/token";
-import {
-  AuthTokenSelect,
-  Select_Auth_Query,
-  Select_Auth_Token_Query,
-} from "./auth.model";
+import { AuthSelect, AuthTokenSelect } from "./auth.model";
 
 export async function getByEmail(
   email: string
 ): Promise<(UserType & { password: string }) | null> {
-  const data = await Select_Auth_Query.where(eq(users.email, email));
+  const data = await db
+    .select(AuthSelect)
+    .from(users)
+    .where(eq(users.email, email));
   if (data.length > 0) {
     return data[0];
   }
@@ -61,9 +60,10 @@ export async function getToken(data: {
   token: string;
   userId: number;
 }): Promise<{ id: number; token: string }[]> {
-  const result = await Select_Auth_Token_Query.where(
-    and(eq(tokens.token, data.token), eq(tokens.userId, data.userId))
-  );
+  const result = await db
+    .select(AuthTokenSelect)
+    .from(tokens)
+    .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)));
   return result;
 }
 

@@ -8,8 +8,8 @@ import {
 import {
   Search_Query,
   RegistrarMasterBranchSelect,
-  Select_Master_Query,
   Descending_RegistrarMasterBranch_CreatedAt,
+  MasterSelect,
 } from "./registrar_master_branch.model";
 import { registrarMasterBranches } from "../../db/schema/registrar_master_branch";
 import { registrarMasters } from "../../db/schema/registrar_master";
@@ -71,14 +71,21 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<RegistrarMasterBranchType[]> {
-  const data = await Select_Master_Query.where(
-    search
-      ? and(
-          eq(registrarMasterBranches.registrarMasterID, registrarMasterId),
-          Search_Query(search)
-        )
-      : eq(registrarMasterBranches.registrarMasterID, registrarMasterId)
-  )
+  const data = await db
+    .select(MasterSelect)
+    .from(registrarMasterBranches)
+    .leftJoin(
+      registrarMasters,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
+    .where(
+      search
+        ? and(
+            eq(registrarMasterBranches.registrarMasterID, registrarMasterId),
+            Search_Query(search)
+          )
+        : eq(registrarMasterBranches.registrarMasterID, registrarMasterId)
+    )
     .orderBy(Descending_RegistrarMasterBranch_CreatedAt)
     .limit(limit)
     .offset(offset);
@@ -96,14 +103,22 @@ export async function getAll(
   registrarMasterId: number,
   search?: string
 ): Promise<RegistrarMasterBranchType[]> {
-  const data = await Select_Master_Query.where(
-    search
-      ? and(
-          eq(registrarMasterBranches.registrarMasterID, registrarMasterId),
-          Search_Query(search)
-        )
-      : eq(registrarMasterBranches.registrarMasterID, registrarMasterId)
-  ).orderBy(Descending_RegistrarMasterBranch_CreatedAt);
+  const data = await db
+    .select(MasterSelect)
+    .from(registrarMasterBranches)
+    .leftJoin(
+      registrarMasters,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
+    .where(
+      search
+        ? and(
+            eq(registrarMasterBranches.registrarMasterID, registrarMasterId),
+            Search_Query(search)
+          )
+        : eq(registrarMasterBranches.registrarMasterID, registrarMasterId)
+    )
+    .orderBy(Descending_RegistrarMasterBranch_CreatedAt);
 
   return data;
 }
@@ -147,9 +162,14 @@ export async function count(
 export async function getById(
   id: number
 ): Promise<RegistrarMasterBranchType | null> {
-  const data = await Select_Master_Query.where(
-    eq(registrarMasterBranches.id, id)
-  );
+  const data = await db
+    .select(MasterSelect)
+    .from(registrarMasterBranches)
+    .leftJoin(
+      registrarMasters,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
+    .where(eq(registrarMasterBranches.id, id));
   if (data.length > 0) {
     return data[0];
   }
@@ -209,9 +229,14 @@ export async function paginateAll(
   offset: number,
   search?: string
 ): Promise<RegistrarMasterBranchType[]> {
-  const data = await Select_Master_Query.where(
-    search ? Search_Query(search) : undefined
-  )
+  const data = await db
+    .select(MasterSelect)
+    .from(registrarMasterBranches)
+    .leftJoin(
+      registrarMasters,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
+    .where(search ? Search_Query(search) : undefined)
     .orderBy(Descending_RegistrarMasterBranch_CreatedAt)
     .limit(limit)
     .offset(offset);
