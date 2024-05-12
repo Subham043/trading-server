@@ -260,7 +260,7 @@ export async function paginateCompany(
     companyId?: number | null | undefined;
   })[]
 > {
-  const nCId = await db
+  const nameChangeMaxIdQuery = await db
     .select({
       id: max(nameChangeMasters.id),
     })
@@ -276,7 +276,9 @@ export async function paginateCompany(
       )
     )
     .groupBy(nameChangeMasters.companyID);
-  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+  const nameChangeMaxIdArr = nameChangeMaxIdQuery
+    .map((x) => x.id)
+    .filter((x) => x !== null) as number[];
   const data = await db
     .select(MasterSelect)
     .from(nameChangeMasters)
@@ -287,10 +289,16 @@ export async function paginateCompany(
     .where(
       search
         ? and(
-            inArray(nameChangeMasters.id, nCIdArr),
+            inArray(
+              nameChangeMasters.id,
+              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+            ),
             Search_Query(search, true)
           )
-        : inArray(nameChangeMasters.id, nCIdArr)
+        : inArray(
+            nameChangeMasters.id,
+            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+          )
     )
     .orderBy(desc(companyMasters.createdAt))
     .limit(limit)
@@ -307,7 +315,7 @@ export async function getAllCompany(search?: string): Promise<
     companyId?: number | null | undefined;
   })[]
 > {
-  const nCId = await db
+  const nameChangeMaxIdQuery = await db
     .select({
       id: max(nameChangeMasters.id),
     })
@@ -323,7 +331,9 @@ export async function getAllCompany(search?: string): Promise<
       )
     )
     .groupBy(nameChangeMasters.companyID);
-  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+  const nameChangeMaxIdArr = nameChangeMaxIdQuery
+    .map((x) => x.id)
+    .filter((x) => x !== null) as number[];
   const data = await db
     .select(MasterSelect)
     .from(nameChangeMasters)
@@ -334,10 +344,16 @@ export async function getAllCompany(search?: string): Promise<
     .where(
       search
         ? and(
-            inArray(nameChangeMasters.id, nCIdArr),
+            inArray(
+              nameChangeMasters.id,
+              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+            ),
             Search_Query(search, true)
           )
-        : inArray(nameChangeMasters.id, nCIdArr)
+        : inArray(
+            nameChangeMasters.id,
+            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+          )
     )
     .orderBy(desc(companyMasters.createdAt));
 
@@ -345,7 +361,7 @@ export async function getAllCompany(search?: string): Promise<
 }
 
 export async function countCompany(search?: string): Promise<number> {
-  const nCId = await db
+  const nameChangeMaxIdQuery = await db
     .select({
       id: max(nameChangeMasters.id),
     })
@@ -361,7 +377,9 @@ export async function countCompany(search?: string): Promise<number> {
       )
     )
     .groupBy(nameChangeMasters.companyID);
-  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+  const nameChangeMaxIdArr = nameChangeMaxIdQuery
+    .map((x) => x.id)
+    .filter((x) => x !== null) as number[];
   const data = await db
     .select({
       count: sql<number>`cast(count(${nameChangeMasters.id}) as int)`,
@@ -374,10 +392,16 @@ export async function countCompany(search?: string): Promise<number> {
     .where(
       search
         ? and(
-            inArray(nameChangeMasters.id, nCIdArr),
+            inArray(
+              nameChangeMasters.id,
+              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+            ),
             Search_Query(search, true)
           )
-        : inArray(nameChangeMasters.id, nCIdArr)
+        : inArray(
+            nameChangeMasters.id,
+            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+          )
     );
 
   return data[0].count;

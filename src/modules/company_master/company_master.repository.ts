@@ -194,23 +194,26 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<CompanyMasterType[]> {
-  const nCId = await db
+  const nameChangeMaxIdQuery = await db
     .select({
       id: max(nameChangeMasters.id),
+      companyID: nameChangeMasters.companyID,
     })
     .from(nameChangeMasters)
     .where(
       exists(
         db
           .select({
-            id: companyMasters.id,
+            companyID: companyMasters.id,
           })
           .from(companyMasters)
           .where(eq(companyMasters.id, nameChangeMasters.companyID))
       )
     )
     .groupBy(nameChangeMasters.companyID);
-  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+  const nameChangeMaxIdArr = nameChangeMaxIdQuery
+    .map((x) => x.id)
+    .filter((x) => x !== null) as number[];
 
   const data = await db
     .select(MasterSelect)
@@ -229,8 +232,17 @@ export async function paginate(
     )
     .where(
       search
-        ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
-        : inArray(nameChangeMasters.id, nCIdArr)
+        ? and(
+            inArray(
+              nameChangeMasters.id,
+              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+            ),
+            Search_Query(search)
+          )
+        : inArray(
+            nameChangeMasters.id,
+            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+          )
     )
     .orderBy(Descending_CompanyMaster_CreatedAt)
     .limit(limit)
@@ -246,7 +258,7 @@ export async function paginate(
  * @return {Promise<CompanyMasterType[]>} the paginated companyMaster data as a promise
  */
 export async function getAll(search?: string): Promise<CompanyMasterType[]> {
-  const nCId = await db
+  const nameChangeMaxIdQuery = await db
     .select({
       id: max(nameChangeMasters.id),
     })
@@ -262,7 +274,9 @@ export async function getAll(search?: string): Promise<CompanyMasterType[]> {
       )
     )
     .groupBy(nameChangeMasters.companyID);
-  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+  const nameChangeMaxIdArr = nameChangeMaxIdQuery
+    .map((x) => x.id)
+    .filter((x) => x !== null) as number[];
 
   const data = await db
     .select(MasterSelect)
@@ -281,8 +295,17 @@ export async function getAll(search?: string): Promise<CompanyMasterType[]> {
     )
     .where(
       search
-        ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
-        : inArray(nameChangeMasters.id, nCIdArr)
+        ? and(
+            inArray(
+              nameChangeMasters.id,
+              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+            ),
+            Search_Query(search)
+          )
+        : inArray(
+            nameChangeMasters.id,
+            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+          )
     )
     .orderBy(Descending_CompanyMaster_CreatedAt);
 
@@ -295,7 +318,7 @@ export async function getAll(search?: string): Promise<CompanyMasterType[]> {
  * @return {Promise<number>} The number of records.
  */
 export async function count(search?: string): Promise<number> {
-  const nCId = await db
+  const nameChangeMaxIdQuery = await db
     .select({
       id: max(nameChangeMasters.id),
     })
@@ -311,7 +334,9 @@ export async function count(search?: string): Promise<number> {
       )
     )
     .groupBy(nameChangeMasters.companyID);
-  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+  const nameChangeMaxIdArr = nameChangeMaxIdQuery
+    .map((x) => x.id)
+    .filter((x) => x !== null) as number[];
 
   const data = await db
     .select({
@@ -324,8 +349,17 @@ export async function count(search?: string): Promise<number> {
     )
     .where(
       search
-        ? and(inArray(nameChangeMasters.id, nCIdArr), Search_Query(search))
-        : inArray(nameChangeMasters.id, nCIdArr)
+        ? and(
+            inArray(
+              nameChangeMasters.id,
+              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+            ),
+            Search_Query(search)
+          )
+        : inArray(
+            nameChangeMasters.id,
+            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+          )
     );
 
   return data[0].count;
@@ -338,7 +372,7 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<CompanyMasterType|null>} The companyMaster data if found, otherwise null
  */
 export async function getById(id: number): Promise<CompanyMasterType | null> {
-  const nCId = await db
+  const nameChangeMaxIdQuery = await db
     .select({
       id: max(nameChangeMasters.id),
     })
@@ -357,7 +391,9 @@ export async function getById(id: number): Promise<CompanyMasterType | null> {
       )
     )
     .groupBy(nameChangeMasters.companyID);
-  const nCIdArr = nCId.map((x) => x.id).filter((x) => x !== null) as number[];
+  const nameChangeMaxIdArr = nameChangeMaxIdQuery
+    .map((x) => x.id)
+    .filter((x) => x !== null) as number[];
 
   const data = await db
     .select(MasterSelect)
@@ -375,7 +411,13 @@ export async function getById(id: number): Promise<CompanyMasterType | null> {
       eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
     )
     .where(
-      and(eq(companyMasters.id, id), inArray(nameChangeMasters.id, nCIdArr))
+      and(
+        eq(companyMasters.id, id),
+        inArray(
+          nameChangeMasters.id,
+          nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
+        )
+      )
     );
   if (data.length > 0) {
     return data[0];
