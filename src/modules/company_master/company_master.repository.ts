@@ -347,6 +347,14 @@ export async function count(search?: string): Promise<number> {
       nameChangeMasters,
       eq(nameChangeMasters.companyID, companyMasters.id)
     )
+    .leftJoin(
+      registrarMasterBranches,
+      eq(registrarMasterBranches.id, companyMasters.registrarMasterBranchId)
+    )
+    .leftJoin(
+      registrarMasters,
+      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
+    )
     .where(
       search
         ? and(
