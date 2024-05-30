@@ -1,7 +1,8 @@
-import { desc, ilike, or } from "drizzle-orm";
-import { pincodes } from "../../db/schema/pincode";
-import db from "../../db";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { WorksheetColumnsType } from "../../utils/excel";
+import { PincodeRepoCreateType, PincodeType } from "../../@types/pincode.type";
+import { UpdatePincodeBody } from "./schemas/update.schema";
+import { prisma } from "../../db";
 
 export const ExcelPincodesColumn: WorksheetColumnsType = [
   { key: "id", header: "ID" },
@@ -16,31 +17,189 @@ export const ExcelPincodesColumn: WorksheetColumnsType = [
   { key: "createdAt", header: "Created At" },
 ];
 
-export const PincodeSelect = {
-  id: pincodes.id,
-  circle_name: pincodes.circle_name,
-  region_name: pincodes.region_name,
-  division_name: pincodes.division_name,
-  office_name: pincodes.office_name,
-  pincode: pincodes.pincode,
-  office_type: pincodes.office_type,
-  district: pincodes.district,
-  state_name: pincodes.state_name,
-  createdAt: pincodes.createdAt,
+export const PincodeColumn = {
+  id: true,
+  region_name: true,
+  circle_name: true,
+  division_name: true,
+  office_name: true,
+  pincode: true,
+  office_type: true,
+  district: true,
+  state_name: true,
+  createdAt: true,
 };
 
-export const Descending_Pincode_ID = desc(pincodes.id);
+export class PincodesModel {
+  constructor(protected readonly prismaPincode: PrismaClient["pincode"]) {}
 
-export const Select_Query = db.select(PincodeSelect).from(pincodes);
+  searchQuery(search?: string): Prisma.PincodeWhereInput {
+    return search
+      ? {
+          OR: [
+            {
+              region_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              circle_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              division_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              office_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              pincode: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              office_type: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              district: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              state_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : {};
+  }
 
-export const Search_Query = (search: string) =>
-  or(
-    ilike(pincodes.circle_name, `%${search}%`),
-    ilike(pincodes.region_name, `%${search}%`),
-    ilike(pincodes.division_name, `%${search}%`),
-    ilike(pincodes.office_name, `%${search}%`),
-    ilike(pincodes.pincode, `%${search}%`),
-    ilike(pincodes.office_type, `%${search}%`),
-    ilike(pincodes.district, `%${search}%`),
-    ilike(pincodes.state_name, `%${search}%`)
-  );
+  // create a new user
+  async store(data: PincodeRepoCreateType): Promise<PincodeType> {
+    // do some custom validation...
+    return await this.prismaPincode.create({
+      data,
+      select: PincodeColumn,
+    });
+  }
+
+  async updateById(
+    data: Omit<UpdatePincodeBody, "id" | "createdAt">,
+    id: number
+  ): Promise<PincodeType> {
+    // do some custom validation...
+    return await this.prismaPincode.update({
+      where: { id },
+      data,
+      select: PincodeColumn,
+    });
+  }
+
+  async findById(id: number): Promise<PincodeType | null> {
+    // do some custom validation...
+    return await this.prismaPincode.findFirst({
+      where: { id },
+      select: PincodeColumn,
+    });
+  }
+
+  async findByPincode(pincode: string): Promise<PincodeType | null> {
+    return await this.prismaPincode.findFirst({
+      where: { pincode },
+      select: PincodeColumn,
+    });
+  }
+
+  async deleteById(id: number): Promise<PincodeType> {
+    // do some custom validation...
+    return await this.prismaPincode.delete({
+      where: { id },
+      select: PincodeColumn,
+    });
+  }
+
+  async deleteManyByIds(ids: number[]): Promise<Prisma.BatchPayload> {
+    // do some custom validation...
+    return await this.prismaPincode.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+
+  async totalCount(search?: string): Promise<number> {
+    // do some custom validation...
+    return await this.prismaPincode.count({
+      where: this.searchQuery(search),
+    });
+  }
+
+  async all(search?: string): Promise<PincodeType[]> {
+    // do some custom validation...
+    return await this.prismaPincode.findMany({
+      where: this.searchQuery(search),
+      select: PincodeColumn,
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+
+  async allDistinctPincodes(search?: string): Promise<
+    {
+      id: number;
+      pincode: string;
+      state_name: string;
+    }[]
+  > {
+    return await this.prismaPincode.findMany({
+      where: this.searchQuery(search),
+      distinct: ["pincode"],
+      select: {
+        id: true,
+        pincode: true,
+        state_name: true,
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+
+  async paginate(
+    limit: number,
+    offset: number,
+    search?: string
+  ): Promise<PincodeType[]> {
+    // do some custom validation...
+    return await this.prismaPincode.findMany({
+      skip: offset,
+      take: limit,
+      where: this.searchQuery(search),
+      select: PincodeColumn,
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+}
+
+export const pincodesModel = new PincodesModel(prisma.pincode);

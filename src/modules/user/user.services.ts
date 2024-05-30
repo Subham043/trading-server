@@ -205,10 +205,18 @@ export async function importExcel(
   worksheet?.eachRow(function (row, rowNumber) {
     if (rowNumber > 1) {
       const userData = {
-        name: row.getCell(1).value?.toString(),
-        email: row.getCell(2).value?.toString(),
-        password: row.getCell(3).value?.toString(),
-        confirm_password: row.getCell(4).value?.toString(),
+        name: row.getCell(1).isHyperlink
+          ? row.getCell(1).toCsvString().replace("mailto:", "")
+          : row.getCell(1).value?.toString(),
+        email: row.getCell(2).isHyperlink
+          ? row.getCell(2).toCsvString().replace("mailto:", "")
+          : row.getCell(2).toCsvString(),
+        password: row.getCell(3).isHyperlink
+          ? row.getCell(3).toCsvString().replace("mailto:", "")
+          : row.getCell(3).value?.toString(),
+        confirm_password: row.getCell(4).isHyperlink
+          ? row.getCell(4).toCsvString().replace("mailto:", "")
+          : row.getCell(4).value?.toString(),
       };
       userInsertData.push(userData);
     }

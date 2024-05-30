@@ -34,6 +34,7 @@ import { uploadRoutes } from "../modules/upload/upload.routes";
 import { registrarMasterRoutes } from "../modules/registrar_master/registrar_master.routes";
 import { pincodeRoutes } from "../modules/pincodes/pincode.routes";
 import { registrarMasterBranchRoutes } from "../modules/registrar_master_branch/registrar_master_branch.routes";
+import { prisma } from "../db";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -57,6 +58,8 @@ export async function buildServer() {
       plugins: [require("ajv-errors")],
     },
   });
+
+  await prisma.$connect();
 
   server.setValidatorCompiler(validatorCompiler);
   server.setSerializerCompiler(serializerCompiler);
@@ -128,6 +131,7 @@ export async function buildServer() {
       if (err) {
         server.log.error(err);
       }
+      await prisma.$disconnect();
       await server.close();
     } as closeWithGrace.CloseWithGraceAsyncCallback
   );

@@ -1,20 +1,11 @@
-import { eq, inArray, sql } from "drizzle-orm";
-import db from "../../db";
-import { companyMasters } from "../../db/schema/company_master";
 import {
   RegistrarMasterType,
   RegistrarMasterUpdateType,
   RegistrarMasterCreateType,
   RegistrarMasterAllType,
 } from "../../@types/registrar_master.type";
-import {
-  Descending_RegistrarMaster_CreatedAt,
-  MasterSelect,
-  RegistrarMasterSelect,
-  Search_Query,
-} from "./registrar_master.model";
-import { registrarMasters } from "../../db/schema/registrar_master";
-import { registrarMasterBranches } from "../../db/schema/registrar_master_branch";
+import { registrarMasterModel } from "./registrar_master.model";
+import { Prisma } from "@prisma/client";
 
 /**
  * Create a new registrarMaster with the provided data.
@@ -25,12 +16,7 @@ import { registrarMasterBranches } from "../../db/schema/registrar_master_branch
 export async function createRegistrarMaster(
   data: RegistrarMasterCreateType & { createdBy: number }
 ): Promise<RegistrarMasterType> {
-  const result = await db
-    .insert(registrarMasters)
-    .values({ ...data })
-    .onConflictDoNothing()
-    .returning(RegistrarMasterSelect);
-  return result[0];
+  return await registrarMasterModel.store(data);
 }
 
 /**
@@ -44,12 +30,7 @@ export async function updateRegistrarMaster(
   data: RegistrarMasterUpdateType,
   id: number
 ): Promise<RegistrarMasterType> {
-  const result = await db
-    .update(registrarMasters)
-    .set({ ...data })
-    .where(eq(registrarMasters.id, id))
-    .returning(RegistrarMasterSelect);
-  return result[0];
+  return await registrarMasterModel.updateById(data, id);
 }
 
 /**
@@ -64,37 +45,19 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<RegistrarMasterType[]> {
-  const data = await db
-    .select(RegistrarMasterSelect)
-    .from(registrarMasters)
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(Descending_RegistrarMaster_CreatedAt)
-    .limit(limit)
-    .offset(offset);
-
-  return data;
+  return await registrarMasterModel.paginate(limit, offset, search);
 }
 
 /**
  * Asynchronously get all the data from the database.
  *
  * @param {string} search - the maximum number of items to retrieve
- * @return {Promise<RegistrarMasterAllType[]>} the paginated registrarMaster data as a promise
+ * @return {Promise<RegistrarMasterType[]>} the paginated registrarMaster data as a promise
  */
 export async function getAll(
   search?: string
 ): Promise<RegistrarMasterAllType[]> {
-  const data = await db
-    .select(MasterSelect)
-    .from(registrarMasters)
-    .leftJoin(
-      registrarMasterBranches,
-      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
-    )
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(Descending_RegistrarMaster_CreatedAt);
-
-  return data;
+  return await registrarMasterModel.all(search);
 }
 
 /**
@@ -103,14 +66,7 @@ export async function getAll(
  * @return {Promise<number>} The number of records.
  */
 export async function count(search?: string): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${companyMasters.id}) as int)`,
-    })
-    .from(registrarMasters)
-    .where(search ? Search_Query(search) : undefined);
-
-  return data[0].count;
+  return await registrarMasterModel.totalCount(search);
 }
 
 /**
@@ -120,14 +76,7 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<RegistrarMasterType|null>} The registrarMaster data if found, otherwise null
  */
 export async function getById(id: number): Promise<RegistrarMasterType | null> {
-  const data = await db
-    .select(RegistrarMasterSelect)
-    .from(registrarMasters)
-    .where(eq(registrarMasters.id, id));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await registrarMasterModel.findById(id);
 }
 
 /**
@@ -137,23 +86,11 @@ export async function getById(id: number): Promise<RegistrarMasterType | null> {
  * @return {Promise<RegistrarMasterType>} a promise that resolves once the registrarMaster is removed
  */
 export async function remove(id: number): Promise<RegistrarMasterType> {
-  const res = await getById(id);
-  const result = await db
-    .delete(registrarMasters)
-    .where(eq(registrarMasters.id, id))
-    .returning(RegistrarMasterSelect);
-  if (res) {
-    return res;
-  }
-  return result[0];
+  return await registrarMasterModel.deleteById(id);
 }
 
 export async function removeMultiple(
   ids: number[]
-): Promise<RegistrarMasterType[]> {
-  const result = await db
-    .delete(registrarMasters)
-    .where(inArray(registrarMasters.id, ids))
-    .returning(RegistrarMasterSelect);
-  return result;
+): Promise<Prisma.BatchPayload> {
+  return await registrarMasterModel.deleteManyByIds(ids);
 }

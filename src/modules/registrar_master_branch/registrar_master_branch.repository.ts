@@ -1,18 +1,9 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
-import db from "../../db";
 import {
   RegistrarMasterBranchType,
   RegistrarMasterBranchUpdateType,
   RegistrarMasterBranchCreateType,
 } from "../../@types/registrar_master_branch.type";
-import {
-  Search_Query,
-  RegistrarMasterBranchSelect,
-  Descending_RegistrarMasterBranch_CreatedAt,
-  MasterSelect,
-} from "./registrar_master_branch.model";
-import { registrarMasterBranches } from "../../db/schema/registrar_master_branch";
-import { registrarMasters } from "../../db/schema/registrar_master";
+import { registrarMasterBranchModel } from "./registrar_master_branch.model";
 
 /**
  * Create a new registrarMaster with the provided data.
@@ -23,16 +14,7 @@ import { registrarMasters } from "../../db/schema/registrar_master";
 export async function createRegistrarMasterBranch(
   data: RegistrarMasterBranchCreateType & { registrarMasterId: number }
 ): Promise<RegistrarMasterBranchType> {
-  const result = await db
-    .insert(registrarMasterBranches)
-    .values({ ...data, registrarMasterID: data.registrarMasterId })
-    .onConflictDoNothing()
-    .returning(RegistrarMasterBranchSelect);
-  const res = await getById(result[0].id);
-  if (res) {
-    return res;
-  }
-  return result[0];
+  return await registrarMasterBranchModel.store(data);
 }
 
 /**
@@ -46,16 +28,7 @@ export async function updateRegistrarMasterBranch(
   data: RegistrarMasterBranchUpdateType,
   id: number
 ): Promise<RegistrarMasterBranchType> {
-  const result = await db
-    .update(registrarMasterBranches)
-    .set({ ...data })
-    .where(eq(registrarMasterBranches.id, id))
-    .returning(RegistrarMasterBranchSelect);
-  const res = await getById(id);
-  if (res) {
-    return res;
-  }
-  return result[0];
+  return await registrarMasterBranchModel.updateById(data, id);
 }
 
 /**
@@ -71,26 +44,12 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<RegistrarMasterBranchType[]> {
-  const data = await db
-    .select(MasterSelect)
-    .from(registrarMasterBranches)
-    .leftJoin(
-      registrarMasters,
-      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
-    )
-    .where(
-      search
-        ? and(
-            eq(registrarMasterBranches.registrarMasterID, registrarMasterId),
-            Search_Query(search)
-          )
-        : eq(registrarMasterBranches.registrarMasterID, registrarMasterId)
-    )
-    .orderBy(Descending_RegistrarMasterBranch_CreatedAt)
-    .limit(limit)
-    .offset(offset);
-
-  return data;
+  return await registrarMasterBranchModel.paginate({
+    limit,
+    offset,
+    registrarMasterId,
+    search,
+  });
 }
 
 /**
@@ -103,24 +62,10 @@ export async function getAll(
   registrarMasterId: number,
   search?: string
 ): Promise<RegistrarMasterBranchType[]> {
-  const data = await db
-    .select(MasterSelect)
-    .from(registrarMasterBranches)
-    .leftJoin(
-      registrarMasters,
-      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
-    )
-    .where(
-      search
-        ? and(
-            eq(registrarMasterBranches.registrarMasterID, registrarMasterId),
-            Search_Query(search)
-          )
-        : eq(registrarMasterBranches.registrarMasterID, registrarMasterId)
-    )
-    .orderBy(Descending_RegistrarMasterBranch_CreatedAt);
-
-  return data;
+  return await registrarMasterBranchModel.all({
+    registrarMasterId,
+    search,
+  });
 }
 
 /**
@@ -132,25 +77,10 @@ export async function count(
   registrarMasterId: number,
   search?: string
 ): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${registrarMasterBranches.id}) as int)`,
-    })
-    .from(registrarMasterBranches)
-    .leftJoin(
-      registrarMasters,
-      eq(registrarMasterBranches.registrarMasterID, registrarMasters.id)
-    )
-    .where(
-      search
-        ? and(
-            eq(registrarMasterBranches.registrarMasterID, registrarMasterId),
-            Search_Query(search)
-          )
-        : eq(registrarMasterBranches.registrarMasterID, registrarMasterId)
-    );
-
-  return data[0].count;
+  return await registrarMasterBranchModel.totalCount({
+    registrarMasterId,
+    search,
+  });
 }
 
 /**
@@ -162,18 +92,7 @@ export async function count(
 export async function getById(
   id: number
 ): Promise<RegistrarMasterBranchType | null> {
-  const data = await db
-    .select(MasterSelect)
-    .from(registrarMasterBranches)
-    .leftJoin(
-      registrarMasters,
-      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
-    )
-    .where(eq(registrarMasterBranches.id, id));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await registrarMasterBranchModel.findById(id);
 }
 
 /**
@@ -184,20 +103,15 @@ export async function getById(
  */
 export async function getByRegistrarMasterId(
   registrarMasterId: number
-): Promise<RegistrarMasterBranchType | null> {
-  const data = await db
-    .select({
-      id: registrarMasterBranches.id,
-      branch: registrarMasterBranches.branch,
-      registrarMasterID: registrarMasterBranches.registrarMasterID,
-      createdAt: registrarMasterBranches.createdAt,
-    })
-    .from(registrarMasterBranches)
-    .where(eq(registrarMasterBranches.registrarMasterID, registrarMasterId));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+): Promise<{
+  id: number;
+  branch: string | null;
+  registrarMasterID: number | null;
+  createdAt: Date;
+} | null> {
+  return await registrarMasterBranchModel.findByRegistrarMasterId(
+    registrarMasterId
+  );
 }
 
 /**
@@ -207,21 +121,11 @@ export async function getByRegistrarMasterId(
  * @return {Promise<RegistrarMasterBranchType>} a promise that resolves once the registrarMaster is removed
  */
 export async function remove(id: number): Promise<RegistrarMasterBranchType> {
-  const res = await getById(id);
-  const result = await db
-    .delete(registrarMasterBranches)
-    .where(eq(registrarMasterBranches.id, id))
-    .returning(RegistrarMasterBranchSelect);
-  if (res) {
-    return res;
-  }
-  return result[0];
+  return await registrarMasterBranchModel.deleteById(id);
 }
 
 export async function removeMultiple(ids: number[]): Promise<void> {
-  await db
-    .delete(registrarMasterBranches)
-    .where(inArray(registrarMasterBranches.id, ids));
+  await registrarMasterBranchModel.deleteManyByIds(ids);
 }
 
 export async function paginateAll(
@@ -229,32 +133,15 @@ export async function paginateAll(
   offset: number,
   search?: string
 ): Promise<RegistrarMasterBranchType[]> {
-  const data = await db
-    .select(MasterSelect)
-    .from(registrarMasterBranches)
-    .leftJoin(
-      registrarMasters,
-      eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
-    )
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(Descending_RegistrarMasterBranch_CreatedAt)
-    .limit(limit)
-    .offset(offset);
-
-  return data;
+  return await registrarMasterBranchModel.paginate({
+    limit,
+    offset,
+    search,
+  });
 }
 
 export async function countAll(search?: string): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${registrarMasterBranches.id}) as int)`,
-    })
-    .from(registrarMasterBranches)
-    .leftJoin(
-      registrarMasters,
-      eq(registrarMasterBranches.registrarMasterID, registrarMasters.id)
-    )
-    .where(search ? Search_Query(search) : undefined);
-
-  return data[0].count;
+  return await registrarMasterBranchModel.totalCount({
+    search,
+  });
 }

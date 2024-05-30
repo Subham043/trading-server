@@ -28,6 +28,7 @@ export const updateRegistrarMasterBodySchema = z.object({
       errorMap: () => ({ message: "pincode must be a number" }),
     })
     .positive({ message: "pincode must be a positive number" })
+    .transform((value) => value.toString())
     .optional(),
   telephone1: z
     .string({

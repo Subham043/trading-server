@@ -1,30 +1,18 @@
-import { desc, eq, inArray, sql } from "drizzle-orm";
-import { InferInsertModel } from "drizzle-orm";
-import db from "../../db";
-import { pincodes } from "../../db/schema/pincode";
-import { PincodeType } from "../../@types/pincode.type";
+import { PincodeRepoCreateType, PincodeType } from "../../@types/pincode.type";
 import { UpdatePincodeBody } from "./schemas/update.schema";
-import {
-  Descending_Pincode_ID,
-  Search_Query,
-  PincodeSelect,
-} from "./pincode.model";
+import { pincodesModel } from "./pincode.model";
+import { Prisma } from "@prisma/client";
 
 /**
  * Create a new pincode with the provided data.
  *
- * @param {InferInsertModel<typeof pincodes>} data - the data for creating the pincode
+ * @param {PincodeRepoCreateType} data - the data for creating the pincode
  * @return {Promise<PincodeType>} a promise that resolves to the newly created pincode
  */
 export async function createPincode(
-  data: InferInsertModel<typeof pincodes>
+  data: PincodeRepoCreateType
 ): Promise<PincodeType> {
-  const result = await db
-    .insert(pincodes)
-    .values(data)
-    .onConflictDoNothing()
-    .returning(PincodeSelect);
-  return result[0];
+  return await pincodesModel.store(data);
 }
 
 /**
@@ -38,12 +26,7 @@ export async function updatePincode(
   data: Omit<UpdatePincodeBody, "id" | "createdAt">,
   id: number
 ): Promise<PincodeType> {
-  const result = await db
-    .update(pincodes)
-    .set(data)
-    .where(eq(pincodes.id, id))
-    .returning(PincodeSelect);
-  return result[0];
+  return await pincodesModel.updateById(data, id);
 }
 
 /**
@@ -58,15 +41,7 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<PincodeType[]> {
-  const data = await db
-    .select(PincodeSelect)
-    .from(pincodes)
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(Descending_Pincode_ID)
-    .limit(limit)
-    .offset(offset);
-
-  return data;
+  return await pincodesModel.paginate(limit, offset, search);
 }
 
 /**
@@ -76,13 +51,7 @@ export async function paginate(
  * @return {Promise<PincodeType[]>} the paginated pincode data as a promise
  */
 export async function getAll(search?: string): Promise<PincodeType[]> {
-  const data = await db
-    .select(PincodeSelect)
-    .from(pincodes)
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(Descending_Pincode_ID);
-
-  return data;
+  return await pincodesModel.all(search);
 }
 
 /**
@@ -91,14 +60,7 @@ export async function getAll(search?: string): Promise<PincodeType[]> {
  * @return {Promise<number>} The number of records.
  */
 export async function count(search?: string): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${pincodes.id}) as int)`,
-    })
-    .from(pincodes)
-    .where(search ? Search_Query(search) : undefined);
-
-  return data[0].count;
+  return await pincodesModel.totalCount(search);
 }
 
 /**
@@ -108,14 +70,7 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<PincodeType|null>} The pincode data if found, otherwise null
  */
 export async function getById(id: number): Promise<PincodeType | null> {
-  const data = await db
-    .select(PincodeSelect)
-    .from(pincodes)
-    .where(eq(pincodes.id, id));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await pincodesModel.findById(id);
 }
 
 /**
@@ -127,14 +82,7 @@ export async function getById(id: number): Promise<PincodeType | null> {
 export async function getByPincode(
   pincode: string
 ): Promise<PincodeType | null> {
-  const data = await db
-    .select(PincodeSelect)
-    .from(pincodes)
-    .where(eq(pincodes.pincode, pincode));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await pincodesModel.findByPincode(pincode);
 }
 
 /**
@@ -144,19 +92,13 @@ export async function getByPincode(
  * @return {Promise<PincodeType>} a promise that resolves once the pincode is removed
  */
 export async function remove(id: number): Promise<PincodeType> {
-  const result = await db
-    .delete(pincodes)
-    .where(eq(pincodes.id, id))
-    .returning(PincodeSelect);
-  return result[0];
+  return await pincodesModel.deleteById(id);
 }
 
-export async function removeMultiple(ids: number[]): Promise<PincodeType[]> {
-  const result = await db
-    .delete(pincodes)
-    .where(inArray(pincodes.id, ids))
-    .returning(PincodeSelect);
-  return result;
+export async function removeMultiple(
+  ids: number[]
+): Promise<Prisma.BatchPayload> {
+  return await pincodesModel.deleteManyByIds(ids);
 }
 
 export async function getAllDistinct(search?: string): Promise<
@@ -166,15 +108,5 @@ export async function getAllDistinct(search?: string): Promise<
     state_name: string;
   }[]
 > {
-  const data = await db
-    .selectDistinctOn([pincodes.pincode], {
-      id: pincodes.id,
-      pincode: pincodes.pincode,
-      state_name: pincodes.state_name,
-    })
-    .from(pincodes)
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(desc(pincodes.pincode));
-
-  return data;
+  return await pincodesModel.allDistinctPincodes(search);
 }

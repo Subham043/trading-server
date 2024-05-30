@@ -1,7 +1,6 @@
 import {
   count,
   createRegistrarMaster,
-  getAll,
   getById,
   paginate,
   remove,
@@ -29,10 +28,12 @@ import {
   RegistrarMasterExcelData,
   ExcelRegistrarMastersColumns,
   ExcelFailedRegistrarMasterColumn,
+  RegistrarMasterExportExcelData,
 } from "./registrar_master.model";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 import { createRegistrarMasterBodySchema } from "./schemas/create.schema";
 import { ZodError } from "zod";
+import { registrarMasterBranchModel } from "../registrar_master_branch/registrar_master_branch.model";
 
 /**
  * Create a new registrarMaster with the provided registrarMaster information.
@@ -115,12 +116,28 @@ export async function list(querystring: GetPaginationQuery): Promise<
 export async function exportExcel(querystring: GetSearchQuery): Promise<{
   file: ExcelBuffer;
 }> {
-  const registrarMasters = await getAll(querystring.search);
+  const registrarMasterBranches = await registrarMasterBranchModel.all({
+    search: querystring.search,
+  });
 
-  const buffer = await generateExcel<RegistrarMasterType>(
+  const excelData = registrarMasterBranches.map((registrarMasterBranch) => {
+    return {
+      id: registrarMasterBranch.id,
+      registrar_name: registrarMasterBranch.registrarMaster?.registrar_name,
+      sebi_regn_id: registrarMasterBranch.registrarMaster?.sebi_regn_id,
+      registrarMasterID: registrarMasterBranch.registrarMasterID,
+      branch: registrarMasterBranch.branch,
+      city: registrarMasterBranch.city,
+      state: registrarMasterBranch.state,
+      pincode: registrarMasterBranch.pincode,
+      address: registrarMasterBranch.address,
+    };
+  });
+
+  const buffer = await generateExcel<RegistrarMasterExportExcelData>(
     "Registrar Masters",
     ExcelRegistrarMastersColumns,
-    registrarMasters
+    excelData
   );
 
   return {

@@ -38,6 +38,7 @@ import {
   ExcelNameChangeCompanyColumns,
   ExcelNameChangeMastersColumns,
   NameChangeMasterExcelData,
+  NameChangeMasterExportExcelData,
 } from "./name_change_master.model";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 import {
@@ -95,12 +96,15 @@ export async function findById(
 }
 
 export async function findByCompanyId(params: GetCompanyIdParam): Promise<
-  NameChangeMasterType & {
-    companyId?: number | null | undefined;
-    CIN?: string | null | undefined;
-    ISIN?: string | null | undefined;
-    faceValue?: number | null | undefined;
-  }
+  | (NameChangeMasterType & {
+      companyMaster: {
+        id: number;
+        CIN: string | null;
+        ISIN: string | null;
+        faceValue: number | null;
+      } | null;
+    })
+  | null
 > {
   const { companyId } = params;
   return await getByCompanyId(companyId);
@@ -204,10 +208,25 @@ export async function exportExcelCompany(querystring: GetSearchQuery): Promise<{
 }> {
   const nameChangeMasters = await getAllCompany(querystring.search);
 
-  const buffer = await generateExcel<NameChangeMasterType>(
+  const excelData = nameChangeMasters.map((companyMaster) => {
+    return {
+      id: companyMaster.currentNameChangeMasters?.id,
+      companyId: companyMaster.id,
+      currentName: companyMaster.currentNameChangeMasters?.currentName,
+      previousName: companyMaster.currentNameChangeMasters?.previousName,
+      dateNameChange: companyMaster.currentNameChangeMasters?.dateNameChange,
+      NSE: companyMaster.currentNameChangeMasters?.NSE,
+      BSE: companyMaster.currentNameChangeMasters?.BSE,
+      ISIN: companyMaster.ISIN,
+      CIN: companyMaster.CIN,
+      faceValue: companyMaster.faceValue,
+    };
+  });
+
+  const buffer = await generateExcel<NameChangeMasterExportExcelData>(
     "Name Change Masters",
     ExcelNameChangeCompanyColumns,
-    nameChangeMasters
+    excelData
   );
 
   return {
@@ -228,7 +247,7 @@ export async function destroy(
 
   const nameChangeMaster = await findById(params);
   const nameChangeMasterCount = await count(
-    nameChangeMaster.companyId ? nameChangeMaster.companyId : 0,
+    nameChangeMaster.companyID ? nameChangeMaster.companyID : 0,
     undefined
   );
   if (nameChangeMasterCount === 1) {
@@ -274,14 +293,14 @@ export async function importExcel(
   worksheet?.eachRow(async function (row, rowNumber) {
     if (rowNumber > 1) {
       const nameChangeMasterData = {
-        NSE: row.getCell(1).value?.toString(),
-        BSE: row.getCell(2).value?.toString(),
-        currentName: row.getCell(3).value?.toString(),
-        previousName: row.getCell(4).value?.toString(),
+        NSE: row.getCell(1).result?.toString(),
+        BSE: row.getCell(2).result?.toString(),
+        currentName: row.getCell(3).result?.toString(),
+        previousName: row.getCell(4).result?.toString(),
         dateNameChange: (
-          row.getCell(5).value as Date | undefined
+          row.getCell(5).result as Date | undefined
         )?.toISOString(),
-        companyId: Number(row.getCell(6).value),
+        companyId: Number(row.getCell(6).result),
       };
       nameChangeMasterInsertData.push(nameChangeMasterData);
     }

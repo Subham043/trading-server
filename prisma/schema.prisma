@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin
+}
+
+enum Status {
+  active
+  blocked
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String  @db.VarChar(256)
+  email     String   @db.VarChar(256) @unique
+  password     String   @db.VarChar(256)
+  role      Role     @default(user)
+  status      Status     @default(active)
+  key      String? @default(uuid()) @db.VarChar(500)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  tokens Token[]
+  failedExcels FailedExcel[]
+  registrarMasters RegistrarMaster[]
+  companyMasters CompanyMaster[]
+
+  @@unique([id, email], map: "idx_email_userkey")
+  @@index([key], map: "key_userkey")
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  token  String @db.Text
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  userId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([token], map: "token_tokenkey")
+  @@index([userId], map: "userId_tokenkey")
+}
+
+model Pincode {
+  id        Int      @id @default(autoincrement())
+  circle_name  String @db.VarChar(256)
+  region_name  String @db.VarChar(256)
+  division_name  String @db.VarChar(256)
+  office_name  String @db.VarChar(256)
+  pincode  String @db.VarChar(256)
+  office_type  String @db.VarChar(256)
+  district  String @db.VarChar(256)
+  state_name  String @db.VarChar(256)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}
+
+model FailedExcel {
+  id        Int      @id @default(autoincrement())
+  file_name  String @db.Text
+  file_of  String @db.VarChar(256)
+  user   User? @relation(fields: [createdBy], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  createdBy Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([createdBy], map: "createdBy_failedExcelkey")
+}
+
+model RegistrarMaster {
+  id        Int      @id @default(autoincrement())
+  registrar_name  String @db.VarChar(256)
+  sebi_regn_id  String @db.VarChar(256)
+  user   User? @relation(fields: [createdBy], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  createdBy Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  registrarMasterBranches RegistrarMasterBranch[]
+
+  @@index([createdBy], map: "createdBy_registrarMasterkey")
+}
+
+model RegistrarMasterBranch {
+  id        Int      @id @default(autoincrement())
+  address  String? @db.VarChar(256)
+  city  String? @db.VarChar(256)
+  state  String? @db.VarChar(256)
+  pincode  String? @db.VarChar(256)
+  telephone1  String? @db.VarChar(256)
+  telephone2  String? @db.VarChar(256)
+  email  String? @db.VarChar(256)
+  website  String? @db.VarChar(256)
+  nameContactPerson  String? @db.VarChar(256)
+  designationContactPerson  String? @db.VarChar(256)
+  emailContactPerson  String? @db.VarChar(256)
+  phoneContactPerson  String? @db.VarChar(256)
+  officerAssigned  String? @db.VarChar(256)
+  branch  String? @db.VarChar(256)
+  registrarMaster   RegistrarMaster? @relation(fields: [registrarMasterID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  registrarMasterID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  companyMasters CompanyMaster[]
+
+  @@index([registrarMasterID], map: "registrarMasterID_registrarMasterBranchkey")
+}
+
+model CompanyMaster {
+  id        Int      @id @default(autoincrement())
+  CIN  String? @db.VarChar(256)
+  ISIN  String? @db.VarChar(256)
+  faceValue  Float? @db.DoublePrecision @default(0.0)
+  closingPriceNSE  Float? @db.DoublePrecision @default(0.0)
+  closingPriceBSE  Float? @db.DoublePrecision @default(0.0)
+  registeredOffice  String? @db.VarChar(256)
+  city  String? @db.VarChar(256)
+  state  String? @db.VarChar(256)
+  pincode  String? @db.VarChar(256)
+  telephone  String? @db.VarChar(256)
+  fax  String? @db.VarChar(256)
+  email  String? @db.VarChar(256)
+  website  String? @db.VarChar(256)
+  nameContactPerson  String? @db.VarChar(256)
+  designationContactPerson  String? @db.VarChar(256)
+  emailContactPerson  String? @db.VarChar(256)
+  phoneContactPerson  String? @db.VarChar(256)
+  user   User? @relation(fields: [createdBy], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  createdBy Int?
+  registrarMasterBranch   RegistrarMasterBranch? @relation(fields: [registrarMasterBranchId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  registrarMasterBranchId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  nameChangeMasters NameChangeMaster[]
+  @@index([createdBy], map: "createdBy_companyMasterkey")
+  @@index([registrarMasterBranchId], map: "registrarMasterBranchId_companyMasterkey")
+}
+
+model NameChangeMaster {
+  id        Int      @id @default(autoincrement())
+  NSE  String? @db.VarChar(256)
+  BSE  String? @db.VarChar(256)
+  previousName  String? @db.VarChar(256)
+  currentName  String? @db.VarChar(256)
+  dateNameChange DateTime @default(now())
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([companyID], map: "companyID_nameChangeMasterkey")
+}

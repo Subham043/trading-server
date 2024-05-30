@@ -63,6 +63,7 @@ export const createCompanyMasterBodySchema = z.object({
       errorMap: () => ({ message: "pincode must be a number" }),
     })
     .positive({ message: "pincode must be a positive number" })
+    .transform((value) => value.toString())
     .optional(),
   telephone: z
     .string({
@@ -132,27 +133,21 @@ export const createCompanyMasterBodySchema = z.object({
       }),
     })
     .optional(),
-  faceValue: z
-    .number({
-      errorMap: () => ({
-        message: "Face Value must be a number",
-      }),
-    })
-    .transform((value) => value.toFixed(2)),
-  closingPriceNSE: z
-    .number({
-      errorMap: () => ({
-        message: "Closing Price in NSE must be a number",
-      }),
-    })
-    .transform((value) => value.toFixed(2)),
-  closingPriceBSE: z
-    .number({
-      errorMap: () => ({
-        message: "Closing Price in BSE must be a number",
-      }),
-    })
-    .transform((value) => value.toFixed(2)),
+  faceValue: z.number({
+    errorMap: () => ({
+      message: "Face Value must be a number",
+    }),
+  }),
+  closingPriceNSE: z.number({
+    errorMap: () => ({
+      message: "Closing Price in NSE must be a number",
+    }),
+  }),
+  closingPriceBSE: z.number({
+    errorMap: () => ({
+      message: "Closing Price in BSE must be a number",
+    }),
+  }),
   registrarMasterBranchId: z
     .number({
       errorMap: () => ({

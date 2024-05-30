@@ -1,21 +1,6 @@
-import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
-import { InferInsertModel } from "drizzle-orm";
-import db from "../../db";
-import { failedExcels } from "../../db/schema/failed_excel";
-
-export type FailedExcel = {
-  id: number;
-  file_name: string;
-  file_of: string;
-  createdAt: Date | null;
-};
-
-const FailedExcelSelect = {
-  id: failedExcels.id,
-  file_name: failedExcels.file_name,
-  file_of: failedExcels.file_of,
-  createdAt: failedExcels.createdAt,
-};
+import { prisma } from "../../db";
+import { Prisma } from "@prisma/client";
+import { FailedExcel, failedExcelModel } from "./failedExcel.model";
 
 /**
  * Create a new user with the provided data.
@@ -24,14 +9,9 @@ const FailedExcelSelect = {
  * @return {Promise<FailedExcel>} a promise that resolves to the newly created user
  */
 export async function createFailedExcel(
-  data: InferInsertModel<typeof failedExcels>
+  data: Prisma.Args<typeof prisma.failedExcel, "create">["data"]
 ): Promise<FailedExcel> {
-  const result = await db
-    .insert(failedExcels)
-    .values(data)
-    .onConflictDoNothing()
-    .returning(FailedExcelSelect);
-  return result[0];
+  return await failedExcelModel.store(data);
 }
 
 /**
@@ -45,12 +25,7 @@ export async function updateFailedExcel(
   data: Omit<FailedExcel, "id" | "createdAt">,
   id: number
 ): Promise<FailedExcel> {
-  const result = await db
-    .update(failedExcels)
-    .set(data)
-    .where(eq(failedExcels.id, id))
-    .returning(FailedExcelSelect);
-  return result[0];
+  return await failedExcelModel.updateById(data, id);
 }
 
 /**
@@ -66,25 +41,7 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<FailedExcel[]> {
-  const data = await db
-    .select(FailedExcelSelect)
-    .from(failedExcels)
-    .where(
-      search
-        ? and(
-            eq(failedExcels.createdBy, userId),
-            or(
-              ilike(failedExcels.file_name, `%${search}%`),
-              ilike(failedExcels.file_of, `%${search}%`)
-            )
-          )
-        : eq(failedExcels.createdBy, userId)
-    )
-    .orderBy(desc(failedExcels.id))
-    .limit(limit)
-    .offset(offset);
-
-  return data;
+  return await failedExcelModel.paginate(userId, limit, offset, search);
 }
 
 /**
@@ -93,24 +50,7 @@ export async function paginate(
  * @return {Promise<number>} The number of records.
  */
 export async function count(userId: number, search?: string): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${failedExcels.id}) as int)`,
-    })
-    .from(failedExcels)
-    .where(
-      search
-        ? and(
-            eq(failedExcels.createdBy, userId),
-            or(
-              ilike(failedExcels.file_name, `%${search}%`),
-              ilike(failedExcels.file_of, `%${search}%`)
-            )
-          )
-        : eq(failedExcels.createdBy, userId)
-    );
-
-  return data[0].count;
+  return await failedExcelModel.totalCount(userId, search);
 }
 
 /**
@@ -120,14 +60,7 @@ export async function count(userId: number, search?: string): Promise<number> {
  * @return {Promise<FailedExcel|null>} The user data if found, otherwise null
  */
 export async function getById(id: number): Promise<FailedExcel | null> {
-  const data = await db
-    .select(FailedExcelSelect)
-    .from(failedExcels)
-    .where(eq(failedExcels.id, id));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await failedExcelModel.findById(id);
 }
 
 /**
@@ -137,19 +70,11 @@ export async function getById(id: number): Promise<FailedExcel | null> {
  * @return {Promise<FailedExcel>} a promise that resolves once the user is removed
  */
 export async function remove(id: number): Promise<FailedExcel> {
-  const result = await db
-    .delete(failedExcels)
-    .where(eq(failedExcels.id, id))
-    .returning(FailedExcelSelect);
-  return result[0];
+  return await failedExcelModel.deleteById(id);
 }
 
 export async function removeByFileName(
   file_name: string
-): Promise<FailedExcel> {
-  const result = await db
-    .delete(failedExcels)
-    .where(eq(failedExcels.file_name, file_name))
-    .returning(FailedExcelSelect);
-  return result[0];
+): Promise<FailedExcel | null> {
+  return await failedExcelModel.deleteByFileName(file_name);
 }

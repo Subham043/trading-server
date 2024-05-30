@@ -1,79 +1,49 @@
-import { InferInsertModel, and, eq } from "drizzle-orm";
 import { UserType } from "../../@types/user.type";
-import db from "../../db";
-import { users } from "../../db/schema/user";
+import { prisma } from "../../db";
 import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
-import { tokens } from "../../db/schema/token";
-import { AuthSelect, AuthTokenSelect } from "./auth.model";
+import { authModel } from "./auth.model";
+import { Prisma } from "@prisma/client";
+import { tokensModel } from "./token.model";
 
 export async function getByEmail(
   email: string
 ): Promise<(UserType & { password: string }) | null> {
-  const data = await db
-    .select(AuthSelect)
-    .from(users)
-    .where(eq(users.email, email));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await authModel.findByEmail(email);
 }
 
 export async function forgotPassword(
   data: ForgotPasswordBody & { key: string }
 ): Promise<void> {
-  await db
-    .update(users)
-    .set({
-      key: data.key,
-    })
-    .where(eq(users.email, data.email));
+  await authModel.forgotPassword(data);
 }
 
 export async function getByKey(key: string): Promise<{ id: number } | null> {
-  const data = await db
-    .select({
-      id: users.id,
-    })
-    .from(users)
-    .where(eq(users.key, key));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await authModel.findByKey(key);
 }
 
 export async function resetPassword(
   data: { password: string; key: string },
   id: number
 ): Promise<void> {
-  await db.update(users).set(data).where(eq(users.id, id));
+  await authModel.resetPassword(data, id);
 }
 
 export async function insertToken(
-  data: InferInsertModel<typeof tokens>
+  data: Prisma.Args<typeof prisma.token, "create">["data"]
 ): Promise<void> {
-  await db.insert(tokens).values(data).onConflictDoNothing();
+  await tokensModel.store(data);
 }
 
 export async function getToken(data: {
   token: string;
   userId: number;
 }): Promise<{ id: number; token: string }[]> {
-  const result = await db
-    .select(AuthTokenSelect)
-    .from(tokens)
-    .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)));
-  return result;
+  return await tokensModel.findManyByTokenAndUserId(data.token, data.userId);
 }
 
 export async function deleteToken(data: {
   token: string;
   userId: number;
-}): Promise<{ id: number; token: string; createdAt: Date | null }> {
-  const result = await db
-    .delete(tokens)
-    .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)))
-    .returning(AuthTokenSelect);
-  return result[0];
+}): Promise<{ id: number; token: string; createdAt: Date | null } | null> {
+  return await tokensModel.deleteByTokenAndUserId(data.token, data.userId);
 }

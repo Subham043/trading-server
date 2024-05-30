@@ -1,3 +1,53 @@
+export type CompanyMasterQueryType = {
+  id: number;
+  registrarMasterBranch: {
+    branch: string | null;
+    city: string | null;
+    pincode: string | null;
+    state: string | null;
+    id: number;
+    registrarMaster: {
+      id: number;
+      registrar_name: string;
+      sebi_regn_id: string;
+    } | null;
+  } | null;
+  nameChangeMasters: {
+    id: number;
+    NSE: string | null;
+    BSE: string | null;
+    dateNameChange: Date | null;
+    currentName: string | null;
+    previousName: string | null;
+  }[];
+  currentNameChangeMasters: {
+    id: number;
+    NSE: string | null;
+    BSE: string | null;
+    dateNameChange: Date | null;
+    currentName: string | null;
+    previousName: string | null;
+  } | null;
+  CIN: string | null;
+  ISIN: string | null;
+  faceValue: number | null;
+  closingPriceNSE: number | null;
+  closingPriceBSE: number | null;
+  registeredOffice: string | null;
+  city: string | null;
+  state: string | null;
+  pincode: string | null;
+  telephone: string | null;
+  fax: string | null;
+  email: string | null;
+  website: string | null;
+  nameContactPerson: string | null;
+  designationContactPerson: string | null;
+  emailContactPerson: string | null;
+  phoneContactPerson: string | null;
+  createdAt: Date | null;
+};
+
 export type CompanyMasterType = {
   id: number;
   NSE?: string | null;

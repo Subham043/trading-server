@@ -72,7 +72,7 @@ export const createNameChangeMasterUniqueSchema = z
   .superRefine(async ({ companyId, BSE, NSE }, ctx) => {
     if (BSE) {
       const nameChangeMaster = await getByBSE(BSE);
-      if (nameChangeMaster && nameChangeMaster.companyId !== companyId) {
+      if (nameChangeMaster && nameChangeMaster.companyID !== companyId) {
         ctx.addIssue({
           code: "custom",
           message: "BSE already exists",
@@ -83,7 +83,7 @@ export const createNameChangeMasterUniqueSchema = z
     }
     if (NSE) {
       const nameChangeMaster = await getByNSE(NSE);
-      if (nameChangeMaster && nameChangeMaster.companyId !== companyId) {
+      if (nameChangeMaster && nameChangeMaster.companyID !== companyId) {
         ctx.addIssue({
           code: "custom",
           message: "NSE already exists",

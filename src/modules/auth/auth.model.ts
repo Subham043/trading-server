@@ -1,23 +1,65 @@
-import db from "../../db";
-import { tokens } from "../../db/schema/token";
-import { users } from "../../db/schema/user";
+import { PrismaClient } from "@prisma/client";
+import { UsersModel } from "../user/user.model";
+import { UserType } from "../../@types/user.type";
+import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
+import { prisma } from "../../db";
 
-export const AuthSelect = {
-  id: users.id,
-  name: users.name,
-  email: users.email,
-  status: users.status,
-  role: users.role,
-  password: users.password,
-  createdAt: users.createdAt,
-};
+export const AuthColumn = {
+  id: true,
+  name: true,
+  email: true,
+  status: true,
+  role: true,
+  password: true,
+  createdAt: true,
+} as const;
 
-export const AuthTokenSelect = {
-  id: tokens.id,
-  token: tokens.token,
-  createdAt: tokens.createdAt,
-};
+export class AuthModel extends UsersModel {
+  constructor(protected readonly prismaUser: PrismaClient["user"]) {
+    super(prismaUser);
+  }
 
-export const Select_Auth_Query = db.select(AuthSelect).from(users);
+  async findByEmail(
+    email: string
+  ): Promise<(UserType & { password: string }) | null> {
+    // do some custom validation...
+    return await this.prismaUser.findFirst({
+      where: { email },
+      select: AuthColumn,
+    });
+  }
 
-export const Select_Auth_Token_Query = db.select(AuthTokenSelect).from(tokens);
+  async forgotPassword(
+    data: ForgotPasswordBody & { key: string }
+  ): Promise<void> {
+    // do some custom validation...
+    await this.prismaUser.update({
+      where: { email: data.email },
+      data: {
+        key: data.key,
+      },
+    });
+  }
+
+  async resetPassword(
+    data: { password: string; key: string },
+    id: number
+  ): Promise<void> {
+    await this.prismaUser.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async findByKey(key: string): Promise<{ id: number } | null> {
+    // do some custom validation...
+    return await this.prismaUser.findFirst({
+      where: { key },
+      select: {
+        id: true,
+      },
+    });
+  }
+}
+
+export const authModel = new AuthModel(prisma.user);

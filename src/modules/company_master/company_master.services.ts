@@ -12,7 +12,7 @@ import {
 import { NotFoundError } from "../../utils/exceptions";
 import {
   CompanyMasterCreateType,
-  CompanyMasterType,
+  CompanyMasterQueryType,
   CompanyMasterUpdateType,
 } from "../../@types/company_master.type";
 import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
@@ -29,6 +29,7 @@ import {
 import {
   CompanyMasterExcelData,
   CompanyMasterExcelUpdateData,
+  CompanyMasterExportExcelData,
   ExcelCompanyMastersColumns,
   ExcelFailedCompanyMasterColumn,
   ExcelFailedCompanyMasterUpdateColumn,
@@ -53,7 +54,7 @@ import {
 export async function create(
   data: CompanyMasterCreateType,
   userId: number
-): Promise<CompanyMasterType | null> {
+): Promise<CompanyMasterQueryType | null> {
   return await createCompanyMaster({ ...data, createdBy: userId });
 }
 
@@ -67,7 +68,7 @@ export async function create(
 export async function update(
   data: CompanyMasterUpdateType,
   param: GetIdParam
-): Promise<CompanyMasterType | null> {
+): Promise<CompanyMasterQueryType | null> {
   return await updateCompanyMaster(data, param.id);
 }
 
@@ -77,7 +78,9 @@ export async function update(
  * @param {GetIdParam} params - the parameters for finding the companyMaster
  * @return {Promise<CompanyMasterType>} the companyMaster found by ID
  */
-export async function findById(params: GetIdParam): Promise<CompanyMasterType> {
+export async function findById(
+  params: GetIdParam
+): Promise<CompanyMasterQueryType> {
   const { id } = params;
 
   const companyMaster = await getById(id);
@@ -91,11 +94,11 @@ export async function findById(params: GetIdParam): Promise<CompanyMasterType> {
  * Find companyMaster by pagination.
  *
  * @param {GetPaginationQuery} querystring - the parameters for finding the companyMaster
- * @return {Promise<{companyMaster:CompanyMasterType[]} & PaginationType>} the companyMaster found by ID
+ * @return {Promise<{companyMaster:CompanyMasterQueryType[]} & PaginationType>} the companyMaster found by ID
  */
 export async function list(querystring: GetPaginationQuery): Promise<
   {
-    companyMaster: CompanyMasterType[];
+    companyMaster: CompanyMasterQueryType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
@@ -125,10 +128,48 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
 }> {
   const companyMasters = await getAll(querystring.search);
 
-  const buffer = await generateExcel<CompanyMasterType>(
+  const excelData = companyMasters.map((companyMaster) => {
+    return {
+      id: companyMaster.id,
+      currentName: companyMaster.currentNameChangeMasters?.currentName,
+      NSE: companyMaster.currentNameChangeMasters?.NSE,
+      BSE: companyMaster.currentNameChangeMasters?.BSE,
+      ISIN: companyMaster.ISIN,
+      CIN: companyMaster.CIN,
+      faceValue: companyMaster.faceValue,
+      closingPriceNSE: companyMaster.closingPriceNSE,
+      closingPriceBSE: companyMaster.closingPriceBSE,
+      registeredOffice: companyMaster.registeredOffice,
+      city: companyMaster.city,
+      state: companyMaster.state,
+      pincode: companyMaster.pincode,
+      telephone: companyMaster.telephone,
+      fax: companyMaster.fax,
+      email: companyMaster.email,
+      website: companyMaster.website,
+      nameContactPerson: companyMaster.nameContactPerson,
+      emailContactPerson: companyMaster.emailContactPerson,
+      phoneContactPerson: companyMaster.phoneContactPerson,
+      designationContactPerson: companyMaster.designationContactPerson,
+      registrarMasterBranchId: companyMaster.registrarMasterBranch?.id,
+      registrar_branch: companyMaster.registrarMasterBranch?.branch,
+      registrar_city: companyMaster.registrarMasterBranch?.city,
+      registrar_state: companyMaster.registrarMasterBranch?.state,
+      registrar_pincode: companyMaster.registrarMasterBranch?.pincode,
+      registrar_name:
+        companyMaster.registrarMasterBranch?.registrarMaster?.registrar_name,
+      sebi_regn_id:
+        companyMaster.registrarMasterBranch?.registrarMaster?.sebi_regn_id,
+      registrarMasterId:
+        companyMaster.registrarMasterBranch?.registrarMaster?.id,
+      createdAt: companyMaster.createdAt,
+    };
+  });
+
+  const buffer = await generateExcel<CompanyMasterExportExcelData>(
     "Company Masters",
     ExcelCompanyMastersColumns,
-    companyMasters
+    excelData
   );
 
   return {
@@ -142,7 +183,9 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
  * @param {GetIdParam} params - the parameters for destroying the companyMaster
  * @return {Promise<CompanyMasterType>} the destroyed companyMaster
  */
-export async function destroy(params: GetIdParam): Promise<CompanyMasterType> {
+export async function destroy(
+  params: GetIdParam
+): Promise<CompanyMasterQueryType> {
   const { id } = params;
 
   const companyMaster = await findById(params);
@@ -189,11 +232,17 @@ export async function importExcel(
           : Number(row.getCell(12).value?.toString()),
         telephone: row.getCell(13).value?.toString(),
         fax: row.getCell(14).value?.toString(),
-        email: row.getCell(15).value?.toString(),
-        website: row.getCell(16).value?.toString(),
+        email: row.getCell(15).isHyperlink
+          ? row.getCell(15).toCsvString().replace("mailto:", "")
+          : row.getCell(15).value?.toString(),
+        website: row.getCell(16).isHyperlink
+          ? row.getCell(16).toCsvString().replace("mailto:", "")
+          : row.getCell(16).value?.toString(),
         nameContactPerson: row.getCell(17).value?.toString(),
         designationContactPerson: row.getCell(20).value?.toString(),
-        emailContactPerson: row.getCell(18).value?.toString(),
+        emailContactPerson: row.getCell(18).isHyperlink
+          ? row.getCell(18).toCsvString().replace("mailto:", "")
+          : row.getCell(18).value?.toString(),
         phoneContactPerson: row.getCell(19).value?.toString(),
         registrarMasterBranchId: isNaN(
           Number(row.getCell(21).value?.toString())
@@ -303,10 +352,16 @@ export async function importUpdateExcel(
           : Number(row.getCell(13).value?.toString()),
         telephone: row.getCell(14).value?.toString(),
         fax: row.getCell(15).value?.toString(),
-        email: row.getCell(16).value?.toString(),
-        website: row.getCell(17).value?.toString(),
+        email: row.getCell(16).isHyperlink
+          ? row.getCell(16).toCsvString().replace("mailto:", "")
+          : row.getCell(16).value?.toString(),
+        website: row.getCell(17).isHyperlink
+          ? row.getCell(17).toCsvString().replace("mailto:", "")
+          : row.getCell(17).value?.toString(),
         nameContactPerson: row.getCell(18).value?.toString(),
-        emailContactPerson: row.getCell(19).value?.toString(),
+        emailContactPerson: row.getCell(19).isHyperlink
+          ? row.getCell(19).toCsvString().replace("mailto:", "")
+          : row.getCell(19).value?.toString(),
         phoneContactPerson: row.getCell(20).value?.toString(),
         designationContactPerson: row.getCell(21).value?.toString(),
         registrarMasterBranchId: isNaN(

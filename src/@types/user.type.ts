@@ -1,3 +1,6 @@
+import { Prisma } from "@prisma/client";
+import { prisma } from "../db";
+
 export type UserType = {
   id: number;
   name: string;
@@ -10,3 +13,6 @@ export type UserType = {
 export type AuthType = UserType & {
   access_token: string;
 };
+
+export type UserCreateType = Prisma.Args<typeof prisma.user, "create">["data"];
+export type UserUpdateType = Prisma.Args<typeof prisma.user, "update">["data"];

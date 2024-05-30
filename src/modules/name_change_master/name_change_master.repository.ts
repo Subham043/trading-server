@@ -1,35 +1,22 @@
-import { and, asc, desc, eq, exists, inArray, max, sql } from "drizzle-orm";
-import { InferInsertModel } from "drizzle-orm";
-import db from "../../db";
-import { nameChangeMasters } from "../../db/schema/name_change_master";
+import { CompanyMasterQueryType } from "../../@types/company_master.type";
 import {
+  NameChangeMasterRepoCreateType,
+  NameChangeMasterRepoUpdateType,
   NameChangeMasterType,
-  NameChangeMasterUpdateType,
 } from "../../@types/name_change_master.type";
-import { companyMasters } from "../../db/schema/company_master";
-import {
-  Descending_NameChangeMaster_ID,
-  MasterSelect,
-  NameChangeMasterSelect,
-  Search_Query,
-  transformData,
-} from "./name_change_master.model";
+import { companyMasterModel } from "../company_master/company_master.model";
+import { nameChangeMasterModel } from "./name_change_master.model";
 
 /**
  * Create a new companyMaster with the provided data.
  *
- * @param {InferInsertModel<typeof nameChangeMasters>} data - the data for creating the companyMaster
+ * @param {NameChangeMasterRepoCreateType} data - the data for creating the companyMaster
  * @return {Promise<NameChangeMasterType>} a promise that resolves to the newly created companyMaster
  */
 export async function createNameChangeMaster(
-  data: InferInsertModel<typeof nameChangeMasters>
+  data: NameChangeMasterRepoCreateType
 ): Promise<NameChangeMasterType> {
-  const result = await db
-    .insert(nameChangeMasters)
-    .values(transformData(data))
-    .onConflictDoNothing()
-    .returning(NameChangeMasterSelect);
-  return result[0];
+  return await nameChangeMasterModel.store(data);
 }
 
 /**
@@ -40,15 +27,10 @@ export async function createNameChangeMaster(
  * @return {Promise<NameChangeMasterType>} the updated companyMaster information
  */
 export async function updateNameChangeMaster(
-  data: NameChangeMasterUpdateType,
+  data: NameChangeMasterRepoUpdateType,
   id: number
 ): Promise<NameChangeMasterType> {
-  const result = await db
-    .update(nameChangeMasters)
-    .set(transformData(data))
-    .where(eq(nameChangeMasters.id, id))
-    .returning(NameChangeMasterSelect);
-  return result[0];
+  return await nameChangeMasterModel.updateById(data, id);
 }
 
 /**
@@ -64,19 +46,12 @@ export async function paginate(
   companyID: number,
   search?: string
 ): Promise<NameChangeMasterType[]> {
-  const data = await db
-    .select(NameChangeMasterSelect)
-    .from(nameChangeMasters)
-    .where(
-      search
-        ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
-        : eq(nameChangeMasters.companyID, companyID)
-    )
-    .orderBy(Descending_NameChangeMaster_ID)
-    .limit(limit)
-    .offset(offset);
-
-  return data;
+  return await nameChangeMasterModel.paginate({
+    limit,
+    offset,
+    companyID,
+    search,
+  });
 }
 
 /**
@@ -89,17 +64,10 @@ export async function getAll(
   companyID: number,
   search?: string
 ): Promise<NameChangeMasterType[]> {
-  const data = await db
-    .select(NameChangeMasterSelect)
-    .from(nameChangeMasters)
-    .where(
-      search
-        ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
-        : eq(nameChangeMasters.companyID, companyID)
-    )
-    .orderBy(Descending_NameChangeMaster_ID);
-
-  return data;
+  return await nameChangeMasterModel.all({
+    companyID,
+    search,
+  });
 }
 
 /**
@@ -111,18 +79,10 @@ export async function count(
   companyID: number,
   search?: string
 ): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${nameChangeMasters.id}) as int)`,
-    })
-    .from(nameChangeMasters)
-    .where(
-      search
-        ? and(eq(nameChangeMasters.companyID, companyID), Search_Query(search))
-        : eq(nameChangeMasters.companyID, companyID)
-    );
-
-  return data[0].count;
+  return await nameChangeMasterModel.totalCount({
+    companyID,
+    search,
+  });
 }
 
 /**
@@ -134,14 +94,7 @@ export async function count(
 export async function getById(
   id: number
 ): Promise<NameChangeMasterType | null> {
-  const data = await db
-    .select(NameChangeMasterSelect)
-    .from(nameChangeMasters)
-    .where(eq(nameChangeMasters.id, id));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await nameChangeMasterModel.findById(id);
 }
 
 /**
@@ -153,18 +106,7 @@ export async function getById(
 export async function getByNSE(
   NSE: string
 ): Promise<NameChangeMasterType | null> {
-  const data = await db
-    .select({
-      id: nameChangeMasters.id,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    })
-    .from(nameChangeMasters)
-    .where(eq(nameChangeMasters.NSE, NSE));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await nameChangeMasterModel.findByNSE(NSE);
 }
 
 /**
@@ -176,18 +118,7 @@ export async function getByNSE(
 export async function getByBSE(
   BSE: string
 ): Promise<NameChangeMasterType | null> {
-  const data = await db
-    .select({
-      id: nameChangeMasters.id,
-      companyId: nameChangeMasters.companyID,
-      createdAt: nameChangeMasters.createdAt,
-    })
-    .from(nameChangeMasters)
-    .where(eq(nameChangeMasters.BSE, BSE));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+  return await nameChangeMasterModel.findByBSE(BSE);
 }
 
 /**
@@ -197,54 +128,14 @@ export async function getByBSE(
  * @return {Promise<NameChangeMasterType>} a promise that resolves once the companyMaster is removed
  */
 export async function remove(id: number): Promise<NameChangeMasterType> {
-  const result = await db
-    .delete(nameChangeMasters)
-    .where(eq(nameChangeMasters.id, id))
-    .returning(NameChangeMasterSelect);
-  return result[0];
+  return await nameChangeMasterModel.deleteById(id);
 }
 
 export async function removeMultiple(
   ids: number[],
   companyID: number
 ): Promise<void> {
-  const data = await db
-    .select(MasterSelect)
-    .from(nameChangeMasters)
-    .leftJoin(
-      companyMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      and(
-        eq(nameChangeMasters.companyID, companyID),
-        eq(
-          nameChangeMasters.id,
-          db
-            .select({
-              id: nameChangeMasters.id,
-            })
-            .from(nameChangeMasters)
-            .where(eq(nameChangeMasters.companyID, companyMasters.id))
-            .orderBy(asc(nameChangeMasters.id))
-            .limit(1)
-        )
-      )
-    )
-    .limit(1);
-  if (data.length > 0) {
-    const filteredIds = ids.filter((id) => id !== data[0].id);
-    if (filteredIds.length === 0) return;
-    await db
-      .delete(nameChangeMasters)
-      .where(inArray(nameChangeMasters.id, filteredIds))
-      .returning(NameChangeMasterSelect);
-    return;
-  }
-  await db
-    .delete(nameChangeMasters)
-    .where(inArray(nameChangeMasters.id, ids))
-    .returning(NameChangeMasterSelect);
+  await nameChangeMasterModel.deleteManyByIds(ids, companyID);
   return;
 }
 
@@ -252,194 +143,42 @@ export async function paginateCompany(
   limit: number,
   offset: number,
   search?: string
-): Promise<
-  (NameChangeMasterType & {
-    CIN?: string | null | undefined;
-    ISIN?: string | null | undefined;
-    faceValue?: number | null | undefined;
-    companyId?: number | null | undefined;
-  })[]
-> {
-  const nameChangeMaxIdQuery = await db
-    .select({
-      id: max(nameChangeMasters.id),
-    })
-    .from(nameChangeMasters)
-    .where(
-      exists(
-        db
-          .select({
-            id: companyMasters.id,
-          })
-          .from(companyMasters)
-          .where(eq(companyMasters.id, nameChangeMasters.companyID))
-      )
-    )
-    .groupBy(nameChangeMasters.companyID);
-  const nameChangeMaxIdArr = nameChangeMaxIdQuery
-    .map((x) => x.id)
-    .filter((x) => x !== null) as number[];
-  const data = await db
-    .select(MasterSelect)
-    .from(nameChangeMasters)
-    .leftJoin(
-      companyMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      search
-        ? and(
-            inArray(
-              nameChangeMasters.id,
-              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
-            ),
-            Search_Query(search, true)
-          )
-        : inArray(
-            nameChangeMasters.id,
-            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
-          )
-    )
-    .orderBy(desc(companyMasters.createdAt))
-    .limit(limit)
-    .offset(offset);
-
-  return data;
+): Promise<CompanyMasterQueryType[]> {
+  return await companyMasterModel.paginate({
+    limit,
+    offset,
+    search,
+    isNameChangeMaster: true,
+  });
 }
 
-export async function getAllCompany(search?: string): Promise<
-  (NameChangeMasterType & {
-    CIN?: string | null | undefined;
-    ISIN?: string | null | undefined;
-    faceValue?: number | null | undefined;
-    companyId?: number | null | undefined;
-  })[]
-> {
-  const nameChangeMaxIdQuery = await db
-    .select({
-      id: max(nameChangeMasters.id),
-    })
-    .from(nameChangeMasters)
-    .where(
-      exists(
-        db
-          .select({
-            id: companyMasters.id,
-          })
-          .from(companyMasters)
-          .where(eq(companyMasters.id, nameChangeMasters.companyID))
-      )
-    )
-    .groupBy(nameChangeMasters.companyID);
-  const nameChangeMaxIdArr = nameChangeMaxIdQuery
-    .map((x) => x.id)
-    .filter((x) => x !== null) as number[];
-  const data = await db
-    .select(MasterSelect)
-    .from(nameChangeMasters)
-    .leftJoin(
-      companyMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      search
-        ? and(
-            inArray(
-              nameChangeMasters.id,
-              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
-            ),
-            Search_Query(search, true)
-          )
-        : inArray(
-            nameChangeMasters.id,
-            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
-          )
-    )
-    .orderBy(desc(companyMasters.createdAt));
-
-  return data;
+export async function getAllCompany(
+  search?: string
+): Promise<CompanyMasterQueryType[]> {
+  return await companyMasterModel.all({ search, isNameChangeMaster: true });
 }
 
 export async function countCompany(search?: string): Promise<number> {
-  const nameChangeMaxIdQuery = await db
-    .select({
-      id: max(nameChangeMasters.id),
-    })
-    .from(nameChangeMasters)
-    .where(
-      exists(
-        db
-          .select({
-            id: companyMasters.id,
-          })
-          .from(companyMasters)
-          .where(eq(companyMasters.id, nameChangeMasters.companyID))
-      )
-    )
-    .groupBy(nameChangeMasters.companyID);
-  const nameChangeMaxIdArr = nameChangeMaxIdQuery
-    .map((x) => x.id)
-    .filter((x) => x !== null) as number[];
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${nameChangeMasters.id}) as int)`,
-    })
-    .from(nameChangeMasters)
-    .leftJoin(
-      companyMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      search
-        ? and(
-            inArray(
-              nameChangeMasters.id,
-              nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
-            ),
-            Search_Query(search, true)
-          )
-        : inArray(
-            nameChangeMasters.id,
-            nameChangeMaxIdArr.length > 0 ? nameChangeMaxIdArr : [0.0]
-          )
-    );
-
-  return data[0].count;
+  return await companyMasterModel.totalCount({
+    search,
+    isNameChangeMaster: true,
+  });
 }
 
 export async function getByCompanyId(companyId: number): Promise<
-  NameChangeMasterType & {
-    CIN?: string | null | undefined;
-    ISIN?: string | null | undefined;
-    faceValue?: number | null | undefined;
-    companyId?: number | null | undefined;
-  }
+  | (NameChangeMasterType & {
+      companyMaster: {
+        CIN: string | null;
+        ISIN: string | null;
+        faceValue: number | null;
+        id: number;
+      } | null;
+    })
+  | null
 > {
-  const data = await db
-    .select(MasterSelect)
-    .from(nameChangeMasters)
-    .leftJoin(
-      companyMasters,
-      eq(nameChangeMasters.companyID, companyMasters.id)
-    )
-    .where(
-      and(
-        eq(nameChangeMasters.companyID, companyId),
-        eq(
-          nameChangeMasters.id,
-          db
-            .select({
-              id: nameChangeMasters.id,
-            })
-            .from(nameChangeMasters)
-            .where(eq(nameChangeMasters.companyID, companyMasters.id))
-            .orderBy(Descending_NameChangeMaster_ID)
-            .limit(1)
-        )
-      )
-    );
-  if (data.length > 0) {
-    return data[0];
+  const data = await nameChangeMasterModel.findByCompanyId(companyId);
+  if (data) {
+    return data;
   }
   return {
     id: 0,
@@ -448,7 +187,8 @@ export async function getByCompanyId(companyId: number): Promise<
     currentName: undefined,
     previousName: undefined,
     dateNameChange: new Date(),
-    companyId: companyId,
+    companyID: companyId,
     createdAt: new Date(),
+    companyMaster: null,
   };
 }

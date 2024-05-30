@@ -1,3 +1,6 @@
+import { Prisma } from "@prisma/client";
+import { prisma } from "../db";
+
 export type RegistrarMasterType = {
   id: number;
   registrar_name: string;
@@ -31,3 +34,12 @@ export interface RegistrarMasterCreateType
   extends Omit<RegistrarMasterType, "id" | "createdAt"> {}
 
 export interface RegistrarMasterUpdateType extends RegistrarMasterCreateType {}
+
+export type RegistrarMasterRepoCreateType = Prisma.Args<
+  typeof prisma.registrarMaster,
+  "create"
+>["data"];
+export type RegistrarMasterRepoUpdateType = Prisma.Args<
+  typeof prisma.registrarMaster,
+  "update"
+>["data"];

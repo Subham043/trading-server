@@ -1,9 +1,11 @@
-import { InferInsertModel, desc, eq, ilike, or } from "drizzle-orm";
-import { companyMasters } from "../../db/schema/company_master";
-import { nameChangeMasters } from "../../db/schema/name_change_master";
-import db from "../../db";
-import { NameChangeMasterUpdateType } from "../../@types/name_change_master.type";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { prisma } from "../../db";
 import { WorksheetColumnsType } from "../../utils/excel";
+import {
+  NameChangeMasterRepoCreateType,
+  NameChangeMasterRepoUpdateType,
+  NameChangeMasterType,
+} from "../../@types/name_change_master.type";
 
 export type NameChangeMasterExcelData = {
   NSE: string | undefined;
@@ -12,6 +14,19 @@ export type NameChangeMasterExcelData = {
   previousName: string | undefined;
   dateNameChange: string | undefined;
   companyId: number;
+};
+
+export type NameChangeMasterExportExcelData = {
+  id: number | null | undefined;
+  currentName: string | null | undefined;
+  previousName: string | null | undefined;
+  NSE: string | null | undefined;
+  BSE: string | null | undefined;
+  ISIN: string | null | undefined;
+  CIN: string | null | undefined;
+  faceValue: number | null;
+  companyId: number;
+  dateNameChange: Date | null | undefined;
 };
 
 export const ExcelFailedNameChangeMasterColumn: WorksheetColumnsType = [
@@ -32,7 +47,6 @@ export const ExcelNameChangeMastersColumns: WorksheetColumnsType = [
   { key: "previousName", header: "Previous Name" },
   { key: "dateNameChange", header: "Date of Name Change" },
   { key: "companyId", header: "Company Master Id" },
-  { key: "createdAt", header: "Created At" },
 ];
 
 export const ExcelNameChangeCompanyColumns: WorksheetColumnsType = [
@@ -42,90 +56,263 @@ export const ExcelNameChangeCompanyColumns: WorksheetColumnsType = [
   { key: "faceValue", header: "Face Value" },
 ];
 
-export const NameChangeMasterSelect = {
-  id: nameChangeMasters.id,
-  NSE: nameChangeMasters.NSE,
-  BSE: nameChangeMasters.BSE,
-  currentName: nameChangeMasters.currentName,
-  previousName: nameChangeMasters.previousName,
-  dateNameChange: nameChangeMasters.dateNameChange,
-  createdAt: nameChangeMasters.createdAt,
-  companyId: nameChangeMasters.companyID,
+export const NameChangeMasterColumn = {
+  id: true,
+  NSE: true,
+  BSE: true,
+  currentName: true,
+  previousName: true,
+  dateNameChange: true,
+  createdAt: true,
 };
 
-export const CompanyMasterSelect = {
-  companyId: companyMasters.id,
-  CIN: companyMasters.CIN,
-  ISIN: companyMasters.ISIN,
-  faceValue: companyMasters.faceValue,
+export const CompanyMasterColumn = {
+  id: true,
+  CIN: true,
+  ISIN: true,
+  faceValue: true,
 };
 
-export const MasterSelect = {
-  ...NameChangeMasterSelect,
-  ...CompanyMasterSelect,
-};
+export class NameChangeMasterModel {
+  constructor(
+    protected readonly prismaNameChangeMaster: PrismaClient["nameChangeMaster"]
+  ) {}
 
-export const Descending_NameChangeMaster_ID = desc(nameChangeMasters.id);
+  searchQuery({
+    companyID,
+    search,
+  }: {
+    companyID?: number;
+    search?: string;
+  }): Prisma.NameChangeMasterWhereInput {
+    const wherecompanyID = companyID ? { companyID: companyID } : {};
 
-export const Select_Name_Change_Master_Query = db
-  .select(NameChangeMasterSelect)
-  .from(nameChangeMasters);
-
-export const Select_Master_Query = db
-  .select(MasterSelect)
-  .from(nameChangeMasters)
-  .leftJoin(companyMasters, eq(nameChangeMasters.companyID, companyMasters.id));
-
-export const Select_NSE_BSE_Query = db
-  .select({
-    id: nameChangeMasters.id,
-    companyId: nameChangeMasters.companyID,
-    createdAt: nameChangeMasters.createdAt,
-  })
-  .from(nameChangeMasters);
-
-export const Select_Sub_Query = db
-  .select({
-    id: nameChangeMasters.id,
-  })
-  .from(nameChangeMasters)
-  .where(eq(nameChangeMasters.companyID, companyMasters.id))
-  .orderBy(Descending_NameChangeMaster_ID)
-  .limit(1);
-
-export const Search_Query = (search: string, include: boolean = false) => {
-  if (include) {
-    return Company_Search_Query(search);
+    return search
+      ? {
+          ...wherecompanyID,
+          OR: [
+            {
+              BSE: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              NSE: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              previousName: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              currentName: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : {
+          ...wherecompanyID,
+        };
   }
-  return Name_Change_Search_Query(search);
-};
 
-const Name_Change_Search_Query = (search: string) => {
-  return or(
-    ilike(nameChangeMasters.NSE, `%${search}%`),
-    ilike(nameChangeMasters.BSE, `%${search}%`),
-    ilike(nameChangeMasters.currentName, `%${search}%`),
-    ilike(nameChangeMasters.previousName, `%${search}%`)
-  );
-};
+  // create a new user
+  async store(
+    data: NameChangeMasterRepoCreateType
+  ): Promise<NameChangeMasterType> {
+    // do some custom validation...
+    return await this.prismaNameChangeMaster.create({
+      data,
+      select: NameChangeMasterColumn,
+    });
+  }
 
-const Company_Search_Query = (search: string) => {
-  return or(
-    ilike(nameChangeMasters.NSE, `%${search}%`),
-    ilike(nameChangeMasters.BSE, `%${search}%`),
-    ilike(nameChangeMasters.currentName, `%${search}%`),
-    ilike(nameChangeMasters.previousName, `%${search}%`),
-    ilike(companyMasters.ISIN, `%${search}%`),
-    ilike(companyMasters.CIN, `%${search}%`),
-    eq(companyMasters.faceValue, Number(search))
-  );
-};
+  async updateById(
+    data: NameChangeMasterRepoUpdateType,
+    id: number
+  ): Promise<NameChangeMasterType> {
+    // do some custom validation...
+    return await this.prismaNameChangeMaster.update({
+      where: { id },
+      data,
+      select: NameChangeMasterColumn,
+    });
+  }
 
-export const transformData = (
-  data: InferInsertModel<typeof nameChangeMasters> | NameChangeMasterUpdateType
-) => ({
-  ...data,
-  dateNameChange: data.dateNameChange
-    ? new Date(data.dateNameChange)
-    : new Date(),
-});
+  async findById(id: number): Promise<NameChangeMasterType | null> {
+    // do some custom validation...
+    return await this.prismaNameChangeMaster.findFirst({
+      where: { id },
+      select: NameChangeMasterColumn,
+    });
+  }
+
+  async findByNSE(NSE: string): Promise<{
+    id: number;
+    companyID: number | null;
+    createdAt: Date;
+  } | null> {
+    return await this.prismaNameChangeMaster.findFirst({
+      where: { NSE },
+      select: {
+        id: true,
+        companyID: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async findByBSE(BSE: string): Promise<{
+    id: number;
+    companyID: number | null;
+    createdAt: Date;
+  } | null> {
+    return await this.prismaNameChangeMaster.findFirst({
+      where: { BSE },
+      select: {
+        id: true,
+        companyID: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async findByCompanyId(companyID: number): Promise<
+    | (NameChangeMasterType & {
+        companyMaster: {
+          CIN: string | null;
+          ISIN: string | null;
+          faceValue: number | null;
+          id: number;
+        } | null;
+      })
+    | null
+  > {
+    return await this.prismaNameChangeMaster.findFirst({
+      where: { companyID },
+      include: {
+        companyMaster: {
+          select: CompanyMasterColumn,
+          where: {
+            id: companyID,
+          },
+        },
+      },
+    });
+  }
+
+  async deleteById(id: number): Promise<NameChangeMasterType> {
+    // do some custom validation...
+    return await this.prismaNameChangeMaster.delete({
+      where: { id },
+      select: NameChangeMasterColumn,
+    });
+  }
+
+  async deleteManyByIds(ids: number[], companyID: number): Promise<void> {
+    // do some custom validation...
+    const nameChangeMaster = await this.prismaNameChangeMaster.findFirst({
+      where: { companyID },
+      select: {
+        id: true,
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+    if (nameChangeMaster) {
+      const filteredIds = ids.filter((id) => id !== nameChangeMaster.id);
+      if (filteredIds.length === 0) return;
+      await this.prismaNameChangeMaster.deleteMany({
+        where: { id: { in: filteredIds } },
+      });
+      return;
+    }
+    await this.prismaNameChangeMaster.deleteMany({
+      where: { id: { in: ids } },
+    });
+    return;
+  }
+
+  async totalCount(params: {
+    companyID?: number;
+    search?: string;
+  }): Promise<number> {
+    // do some custom validation...
+    return await this.prismaNameChangeMaster.count({
+      where: this.searchQuery(params),
+    });
+  }
+
+  async all(params: { companyID?: number; search?: string }): Promise<
+    | (NameChangeMasterType & {
+        CIN?: string | null | undefined;
+        ISIN?: string | null | undefined;
+        faceValue?: number | null | undefined;
+        companyId?: number | null | undefined;
+      })[]
+    | NameChangeMasterType[]
+  > {
+    // do some custom validation...
+    return await this.prismaNameChangeMaster.findMany({
+      where: this.searchQuery(params),
+      select: params.companyID
+        ? NameChangeMasterColumn
+        : {
+            ...NameChangeMasterColumn,
+            companyMaster: {
+              select: CompanyMasterColumn,
+            },
+          },
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+
+  async paginate(params: {
+    limit: number;
+    offset: number;
+    companyID?: number;
+    search?: string;
+  }): Promise<
+    | (NameChangeMasterType & {
+        CIN?: string | null | undefined;
+        ISIN?: string | null | undefined;
+        faceValue?: number | null | undefined;
+        companyId?: number | null | undefined;
+      })[]
+    | NameChangeMasterType[]
+  > {
+    // do some custom validation...
+    return await this.prismaNameChangeMaster.findMany({
+      skip: params.offset,
+      take: params.limit,
+      where: this.searchQuery({
+        search: params.search,
+        companyID: params.companyID,
+      }),
+      select: params.companyID
+        ? NameChangeMasterColumn
+        : {
+            ...NameChangeMasterColumn,
+            companyMaster: {
+              select: CompanyMasterColumn,
+            },
+          },
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+}
+
+export const nameChangeMasterModel = new NameChangeMasterModel(
+  prisma.nameChangeMaster
+);

@@ -16,6 +16,7 @@ const env = zennv({
     DATABASE_NAME: z.string(),
     DATABASE_USER: z.string(),
     DATABASE_PASSWORD: z.string(),
+    DATABASE_URL: z.string(),
     MAIL_HOST: z.string(),
     MAIL_PORT: z.number(),
     MAIL_USERNAME: z.string(),

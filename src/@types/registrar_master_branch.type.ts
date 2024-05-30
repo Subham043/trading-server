@@ -1,7 +1,8 @@
+import { Prisma } from "@prisma/client";
+import { prisma } from "../db";
+
 export type RegistrarMasterBranchType = {
   id: number;
-  registrar_name?: string | null;
-  sebi_regn_id?: string | null;
   address?: string | null | undefined;
   city?: string | null | undefined;
   state?: string | null | undefined;
@@ -17,14 +18,32 @@ export type RegistrarMasterBranchType = {
   officerAssigned?: string | null | undefined;
   branch: string | null | undefined;
   createdAt?: Date | null;
-  registrarMasterId?: number | null | undefined;
+  registrarMasterID?: number | null | undefined;
+  registrarMaster: {
+    registrar_name: string;
+    sebi_regn_id: string;
+  } | null;
 };
 
 export interface RegistrarMasterBranchCreateType
   extends Omit<
     RegistrarMasterBranchType,
-    "id" | "createdAt" | "registrar_name" | "sebi_regn_id" | "registrarMasterId"
+    | "id"
+    | "createdAt"
+    | "registrar_name"
+    | "sebi_regn_id"
+    | "registrarMasterId"
+    | "registrarMaster"
   > {}
 
 export interface RegistrarMasterBranchUpdateType
   extends RegistrarMasterBranchCreateType {}
+
+export type RegistrarMasterBranchRepoCreateType = Prisma.Args<
+  typeof prisma.registrarMasterBranch,
+  "create"
+>["data"];
+export type RegistrarMasterBranchRepoUpdateType = Prisma.Args<
+  typeof prisma.registrarMasterBranch,
+  "update"
+>["data"];

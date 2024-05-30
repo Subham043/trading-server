@@ -70,6 +70,7 @@ export const updateImportCompanyMasterBodySchema = z.object({
       errorMap: () => ({ message: "pincode must be a number" }),
     })
     .positive({ message: "pincode must be a positive number" })
+    .transform((value) => value.toString())
     .optional(),
   telephone: z
     .string({
@@ -145,7 +146,6 @@ export const updateImportCompanyMasterBodySchema = z.object({
         message: "Face Value must be a number",
       }),
     })
-    .transform((value) => value.toFixed(2))
     .optional(),
   closingPriceNSE: z
     .number({
@@ -153,7 +153,6 @@ export const updateImportCompanyMasterBodySchema = z.object({
         message: "Closing Price in NSE must be a number",
       }),
     })
-    .transform((value) => value.toFixed(2))
     .optional(),
   closingPriceBSE: z
     .number({
@@ -161,7 +160,6 @@ export const updateImportCompanyMasterBodySchema = z.object({
         message: "Closing Price in BSE must be a number",
       }),
     })
-    .transform((value) => value.toFixed(2))
     .optional(),
   registrarMasterBranchId: z
     .number({
@@ -266,7 +264,7 @@ export const updateImportCompanyMasterUniqueSchema = z
     }
     if (BSE) {
       const nameChangeMaster = await getByBSE(BSE);
-      if (nameChangeMaster && nameChangeMaster.companyId !== id) {
+      if (nameChangeMaster && nameChangeMaster.companyID !== id) {
         ctx.addIssue({
           code: "custom",
           message: "BSE already exists",
@@ -277,7 +275,7 @@ export const updateImportCompanyMasterUniqueSchema = z
     }
     if (NSE) {
       const nameChangeMaster = await getByNSE(NSE);
-      if (nameChangeMaster && nameChangeMaster.companyId !== id) {
+      if (nameChangeMaster && nameChangeMaster.companyID !== id) {
         ctx.addIssue({
           code: "custom",
           message: "NSE already exists",

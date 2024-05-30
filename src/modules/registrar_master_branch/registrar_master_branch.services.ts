@@ -31,6 +31,7 @@ import {
   RegistrarMasterBranchExcelData,
   ExcelRegistrarMasterBranchesColumns,
   ExcelFailedRegistrarMasterBranchColumn,
+  RegistrarMasterBranchExportExcelData,
 } from "./registrar_master_branch.model";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 import {
@@ -164,10 +165,34 @@ export async function exportExcel(
     querystring.search
   );
 
-  const buffer = await generateExcel<RegistrarMasterBranchType>(
+  const excelData = registrarMasterBranches.map((registrarMasterBranch) => {
+    return {
+      id: registrarMasterBranch.id,
+      registrar_name: registrarMasterBranch.registrarMaster?.registrar_name,
+      sebi_regn_id: registrarMasterBranch.registrarMaster?.sebi_regn_id,
+      address: registrarMasterBranch.address,
+      city: registrarMasterBranch.city,
+      state: registrarMasterBranch.state,
+      pincode: registrarMasterBranch.pincode,
+      telephone1: registrarMasterBranch.telephone1,
+      telephone2: registrarMasterBranch.telephone2,
+      email: registrarMasterBranch.email,
+      website: registrarMasterBranch.website,
+      nameContactPerson: registrarMasterBranch.nameContactPerson,
+      emailContactPerson: registrarMasterBranch.emailContactPerson,
+      phoneContactPerson: registrarMasterBranch.phoneContactPerson,
+      designationContactPerson: registrarMasterBranch.designationContactPerson,
+      officerAssigned: registrarMasterBranch.officerAssigned,
+      branch: registrarMasterBranch.branch,
+      createdAt: registrarMasterBranch.createdAt,
+      registrarMasterID: registrarMasterBranch.registrarMasterID,
+    };
+  });
+
+  const buffer = await generateExcel<RegistrarMasterBranchExportExcelData>(
     "Registrar Master Branches",
     ExcelRegistrarMasterBranchesColumns,
-    registrarMasterBranches
+    excelData
   );
 
   return {
@@ -223,11 +248,17 @@ export async function importExcel(
           : Number(row.getCell(5).value?.toString()),
         telephone1: row.getCell(6).value?.toString(),
         telephone2: row.getCell(7).value?.toString(),
-        email: row.getCell(8).value?.toString(),
-        website: row.getCell(9).value?.toString(),
+        email: row.getCell(8).isHyperlink
+          ? row.getCell(8).toCsvString().replace("mailto:", "")
+          : row.getCell(8).value?.toString(),
+        website: row.getCell(9).isHyperlink
+          ? row.getCell(9).toCsvString().replace("mailto:", "")
+          : row.getCell(9).value?.toString(),
         nameContactPerson: row.getCell(10).value?.toString(),
         designationContactPerson: row.getCell(11).value?.toString(),
-        emailContactPerson: row.getCell(12).value?.toString(),
+        emailContactPerson: row.getCell(12).isHyperlink
+          ? row.getCell(12).toCsvString().replace("mailto:", "")
+          : row.getCell(12).value?.toString(),
         phoneContactPerson: row.getCell(13).value?.toString(),
         officerAssigned: row.getCell(14).value?.toString(),
         registrarMasterId: Number(row.getCell(15).value?.toString()),

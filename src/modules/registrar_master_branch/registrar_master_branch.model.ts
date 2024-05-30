@@ -1,8 +1,11 @@
-import { desc, eq, ilike, or } from "drizzle-orm";
-import db from "../../db";
-import { registrarMasters } from "../../db/schema/registrar_master";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { prisma } from "../../db";
 import { WorksheetColumnsType } from "../../utils/excel";
-import { registrarMasterBranches } from "../../db/schema/registrar_master_branch";
+import {
+  RegistrarMasterBranchCreateType,
+  RegistrarMasterBranchType,
+  RegistrarMasterBranchUpdateType,
+} from "../../@types/registrar_master_branch.type";
 
 export type RegistrarMasterBranchExcelData = {
   address: string | undefined;
@@ -20,6 +23,28 @@ export type RegistrarMasterBranchExcelData = {
   officerAssigned: string | undefined;
   branch: string | undefined;
   registrarMasterId: number;
+};
+
+export type RegistrarMasterBranchExportExcelData = {
+  id: number;
+  registrar_name: string | null | undefined;
+  sebi_regn_id: string | null | undefined;
+  address: string | null | undefined;
+  city: string | null | undefined;
+  state: string | null | undefined;
+  pincode: string | null | undefined;
+  telephone1: string | null | undefined;
+  telephone2: string | null | undefined;
+  email: string | null | undefined;
+  website: string | null | undefined;
+  nameContactPerson: string | null | undefined;
+  emailContactPerson: string | null | undefined;
+  phoneContactPerson: string | null | undefined;
+  designationContactPerson: string | null | undefined;
+  officerAssigned: string | null | undefined;
+  branch: string | null | undefined;
+  createdAt: Date | null | undefined;
+  registrarMasterID: number | null | undefined;
 };
 
 export const ExcelFailedRegistrarMasterBranchColumn: WorksheetColumnsType = [
@@ -79,69 +104,306 @@ export const ExcelRegistrarMasterBranchesColumns: WorksheetColumnsType = [
     key: "branch",
     header: "Branch",
   },
-  { key: "registrarMasterId", header: "Registrar Master Id" },
+  { key: "registrarMasterID", header: "Registrar Master Id" },
   { key: "createdAt", header: "Created At" },
 ];
 
-export const RegistrarMasterSelect = {
-  registrarMasterId: registrarMasters.id,
-  registrar_name: registrarMasters.registrar_name,
-  sebi_regn_id: registrarMasters.sebi_regn_id,
+export const RegistrarMasterColumn = {
+  registrar_name: true,
+  sebi_regn_id: true,
 };
 
-export const RegistrarMasterBranchSelect = {
-  id: registrarMasterBranches.id,
-  address: registrarMasterBranches.address,
-  city: registrarMasterBranches.city,
-  state: registrarMasterBranches.state,
-  pincode: registrarMasterBranches.pincode,
-  telephone1: registrarMasterBranches.telephone1,
-  telephone2: registrarMasterBranches.telephone2,
-  email: registrarMasterBranches.email,
-  website: registrarMasterBranches.website,
-  nameContactPerson: registrarMasterBranches.nameContactPerson,
-  designationContactPerson: registrarMasterBranches.designationContactPerson,
-  emailContactPerson: registrarMasterBranches.emailContactPerson,
-  phoneContactPerson: registrarMasterBranches.phoneContactPerson,
-  officerAssigned: registrarMasterBranches.officerAssigned,
-  branch: registrarMasterBranches.branch,
-  createdAt: registrarMasterBranches.createdAt,
+export const RegistrarMasterBranchColumn = {
+  id: true,
+  address: true,
+  city: true,
+  state: true,
+  pincode: true,
+  telephone1: true,
+  telephone2: true,
+  email: true,
+  website: true,
+  nameContactPerson: true,
+  designationContactPerson: true,
+  emailContactPerson: true,
+  phoneContactPerson: true,
+  officerAssigned: true,
+  branch: true,
+  registrarMasterID: true,
+  createdAt: true,
 };
 
-export const MasterSelect = {
-  ...RegistrarMasterSelect,
-  ...RegistrarMasterBranchSelect,
-};
+export class RegistrarMasterBranchModel {
+  constructor(
+    protected readonly prismaRegistrarMasterBranch: PrismaClient["registrarMasterBranch"]
+  ) {}
 
-export const Descending_RegistrarMasterBranch_CreatedAt = desc(
-  registrarMasterBranches.createdAt
+  searchQuery({
+    registrarMasterId,
+    search,
+  }: {
+    registrarMasterId?: number;
+    search?: string;
+  }): Prisma.RegistrarMasterBranchWhereInput {
+    const whereregistrarMasterId = registrarMasterId
+      ? { registrarMasterID: registrarMasterId }
+      : {};
+
+    return search
+      ? {
+          ...whereregistrarMasterId,
+          OR: [
+            {
+              address: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              city: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              state: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              pincode: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              telephone1: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              telephone2: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              email: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              website: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              nameContactPerson: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              designationContactPerson: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              emailContactPerson: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              phoneContactPerson: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              officerAssigned: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              branch: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              registrarMaster: {
+                sebi_regn_id: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              registrarMaster: {
+                registrar_name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+          ],
+        }
+      : {
+          ...whereregistrarMasterId,
+        };
+  }
+
+  // create a new user
+  async store(
+    data: RegistrarMasterBranchCreateType & { registrarMasterId: number }
+  ): Promise<RegistrarMasterBranchType> {
+    // do some custom validation...
+    const { registrarMasterId, ...rest } = data;
+    return await this.prismaRegistrarMasterBranch.create({
+      data: { ...rest, registrarMasterID: data.registrarMasterId },
+      select: {
+        ...RegistrarMasterBranchColumn,
+        registrarMaster: {
+          select: RegistrarMasterColumn,
+        },
+      },
+    });
+  }
+
+  async updateById(
+    data: RegistrarMasterBranchUpdateType,
+    id: number
+  ): Promise<RegistrarMasterBranchType> {
+    // do some custom validation...
+    return await this.prismaRegistrarMasterBranch.update({
+      where: { id },
+      data,
+      select: {
+        ...RegistrarMasterBranchColumn,
+        registrarMaster: {
+          select: RegistrarMasterColumn,
+        },
+      },
+    });
+  }
+
+  async findById(id: number): Promise<RegistrarMasterBranchType | null> {
+    // do some custom validation...
+    return await this.prismaRegistrarMasterBranch.findFirst({
+      where: { id },
+      select: {
+        ...RegistrarMasterBranchColumn,
+        registrarMaster: {
+          select: RegistrarMasterColumn,
+        },
+      },
+    });
+  }
+
+  async findByRegistrarMasterId(registrarMasterId: number): Promise<{
+    id: number;
+    branch: string | null;
+    registrarMasterID: number | null;
+    createdAt: Date;
+  } | null> {
+    return await this.prismaRegistrarMasterBranch.findFirst({
+      where: { registrarMasterID: registrarMasterId },
+      select: {
+        id: true,
+        branch: true,
+        registrarMasterID: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async deleteById(id: number): Promise<RegistrarMasterBranchType> {
+    // do some custom validation...
+    return await this.prismaRegistrarMasterBranch.delete({
+      where: { id },
+      select: {
+        ...RegistrarMasterBranchColumn,
+        registrarMaster: {
+          select: RegistrarMasterColumn,
+        },
+      },
+    });
+  }
+
+  async deleteManyByIds(ids: number[]): Promise<Prisma.BatchPayload> {
+    // do some custom validation...
+    return await this.prismaRegistrarMasterBranch.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+
+  async totalCount(params: {
+    registrarMasterId?: number;
+    search?: string;
+  }): Promise<number> {
+    // do some custom validation...
+    return await this.prismaRegistrarMasterBranch.count({
+      where: this.searchQuery(params),
+    });
+  }
+
+  async all(params: {
+    registrarMasterId?: number;
+    search?: string;
+  }): Promise<RegistrarMasterBranchType[]> {
+    // do some custom validation...
+    return await this.prismaRegistrarMasterBranch.findMany({
+      where: this.searchQuery(params),
+      select: {
+        ...RegistrarMasterBranchColumn,
+        registrarMaster: {
+          select: RegistrarMasterColumn,
+        },
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+
+  async paginate(params: {
+    limit: number;
+    offset: number;
+    registrarMasterId?: number;
+    search?: string;
+  }): Promise<RegistrarMasterBranchType[]> {
+    // do some custom validation...
+    return await this.prismaRegistrarMasterBranch.findMany({
+      skip: params.offset,
+      take: params.limit,
+      where: this.searchQuery({
+        search: params.search,
+        registrarMasterId: params.registrarMasterId,
+      }),
+      select: {
+        ...RegistrarMasterBranchColumn,
+        registrarMaster: {
+          select: RegistrarMasterColumn,
+        },
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+}
+
+export const registrarMasterBranchModel = new RegistrarMasterBranchModel(
+  prisma.registrarMasterBranch
 );
-export const Descending_RegistrarMaster_ID = desc(registrarMasters.id);
-
-export const Select_Master_Query = db
-  .select(MasterSelect)
-  .from(registrarMasterBranches)
-  .leftJoin(
-    registrarMasters,
-    eq(registrarMasters.id, registrarMasterBranches.registrarMasterID)
-  );
-
-export const Search_Query = (search: string) =>
-  or(
-    ilike(registrarMasters.registrar_name, `%${search}%`),
-    ilike(registrarMasters.sebi_regn_id, `%${search}%`),
-    ilike(registrarMasterBranches.address, `%${search}%`),
-    ilike(registrarMasterBranches.city, `%${search}%`),
-    ilike(registrarMasterBranches.state, `%${search}%`),
-    eq(registrarMasterBranches.pincode, search),
-    ilike(registrarMasterBranches.email, `%${search}%`),
-    ilike(registrarMasterBranches.website, `%${search}%`),
-    ilike(registrarMasterBranches.nameContactPerson, `%${search}%`),
-    ilike(registrarMasterBranches.designationContactPerson, `%${search}%`),
-    ilike(registrarMasterBranches.emailContactPerson, `%${search}%`),
-    ilike(registrarMasterBranches.phoneContactPerson, `%${search}%`),
-    ilike(registrarMasterBranches.telephone1, `%${search}%`),
-    ilike(registrarMasterBranches.telephone2, `%${search}%`),
-    ilike(registrarMasterBranches.branch, `%${search}%`),
-    ilike(registrarMasterBranches.officerAssigned, `%${search}%`)
-  );

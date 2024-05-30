@@ -1,21 +1,16 @@
 import path from "path";
 import fs from "fs";
-import {
-  FailedExcel,
-  count,
-  getById,
-  paginate,
-  removeByFileName,
-} from "./excel.repository";
+import { count, getById, paginate, removeByFileName } from "./excel.repository";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { PaginationType } from "../../@types/pagination.type";
 import { getPaginationParams, getPaginationKeys } from "../../utils/pagination";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { NotFoundError } from "../../utils/exceptions";
+import { FailedExcel } from "./failedExcel.model";
 
 export async function destroyFailedExcelByFileName(
   file_name: string
-): Promise<FailedExcel> {
+): Promise<FailedExcel | null> {
   const data = await removeByFileName(file_name);
   fs.unlinkSync(
     path.resolve(__dirname, `../../../static/failed_excel/${file_name}`)

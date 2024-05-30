@@ -1,3 +1,6 @@
+import { Prisma } from "@prisma/client";
+import { prisma } from "../db";
+
 export type NameChangeMasterType = {
   id: number;
   NSE?: string | null;
@@ -5,14 +8,25 @@ export type NameChangeMasterType = {
   previousName?: string | null;
   currentName?: string | null;
   dateNameChange?: Date | null;
-  companyId?: number | null;
+  companyID?: number | null;
   createdAt?: Date | null;
 };
 
 export type NameChangeMasterCreateType = Omit<
   NameChangeMasterType,
-  "id" | "createdAt"
->;
+  "id" | "dateNameChange" | "createdAt"
+> & {
+  dateNameChange: Date | string | undefined;
+};
 
 export interface NameChangeMasterUpdateType
   extends NameChangeMasterCreateType {}
+
+export type NameChangeMasterRepoCreateType = Prisma.Args<
+  typeof prisma.nameChangeMaster,
+  "create"
+>["data"];
+export type NameChangeMasterRepoUpdateType = Prisma.Args<
+  typeof prisma.nameChangeMaster,
+  "update"
+>["data"];
