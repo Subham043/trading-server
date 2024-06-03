@@ -35,6 +35,7 @@ import { registrarMasterRoutes } from "../modules/registrar_master/registrar_mas
 import { pincodeRoutes } from "../modules/pincodes/pincode.routes";
 import { registrarMasterBranchRoutes } from "../modules/registrar_master_branch/registrar_master_branch.routes";
 import { prisma } from "../db";
+import { securityTypeMasterRoutes } from "../modules/security_type_master/security_type_master.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -121,6 +122,9 @@ export async function buildServer() {
   });
   await server.register(registrarMasterRoutes, {
     prefix: "/api/registrar-masters",
+  });
+  await server.register(securityTypeMasterRoutes, {
+    prefix: "/api/security-type-masters",
   });
 
   // delay is the number of milliseconds for the graceful close to finish

@@ -23,6 +23,16 @@ enum Status {
   blocked
 }
 
+enum IntrumentType {
+  InvIT
+  IDR
+  MFs
+  PreferenceShares
+  REiT
+  Equity
+  Warrant
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String  @db.VarChar(256)
@@ -144,6 +154,7 @@ model CompanyMaster {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   nameChangeMasters NameChangeMaster[]
+  securityTypeMasters SecurityTypeMaster[]
   @@index([createdBy], map: "createdBy_companyMasterkey")
   @@index([registrarMasterBranchId], map: "registrarMasterBranchId_companyMasterkey")
 }
@@ -161,4 +172,31 @@ model NameChangeMaster {
   updatedAt DateTime @updatedAt @default(now())
 
   @@index([companyID], map: "companyID_nameChangeMasterkey")
+}
+
+model SecurityTypeMaster {
+  id        Int      @id @default(autoincrement())
+  instrumentType      IntrumentType     @default(InvIT)
+  Symbol  String? @db.VarChar(256)
+  Series  String? @db.VarChar(256)
+  securityName  String? @db.VarChar(256)
+  dateOfListing DateTime @default(now())
+  dateOfAllotment DateTime @default(now())
+  redemptionDate DateTime @default(now())
+  conversionDate DateTime @default(now())
+  paidUpValue  Float? @db.DoublePrecision @default(0.0)
+  faceValue  Float? @db.DoublePrecision @default(0.0)
+  dividend  Float? @db.DoublePrecision @default(0.0)
+  redemptionAmount  Float? @db.DoublePrecision @default(0.0)
+  conversionAmount  Float? @db.DoublePrecision @default(0.0)
+  marketLot  String? @db.VarChar(256)
+  isinNumber  String? @db.VarChar(256)
+  distinctiveNosFrom  String? @db.VarChar(256)
+  distinctiveNosTo  String? @db.VarChar(256)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([companyID], map: "companyID_securityTypeMasterkey")
 }

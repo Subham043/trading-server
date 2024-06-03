@@ -293,14 +293,14 @@ export async function importExcel(
   worksheet?.eachRow(async function (row, rowNumber) {
     if (rowNumber > 1) {
       const nameChangeMasterData = {
-        NSE: row.getCell(1).result?.toString(),
-        BSE: row.getCell(2).result?.toString(),
-        currentName: row.getCell(3).result?.toString(),
-        previousName: row.getCell(4).result?.toString(),
+        NSE: row.getCell(1).value?.toString(),
+        BSE: row.getCell(2).value?.toString(),
+        currentName: row.getCell(3).value?.toString(),
+        previousName: row.getCell(4).value?.toString(),
         dateNameChange: (
-          row.getCell(5).result as Date | undefined
+          row.getCell(5).value as Date | undefined
         )?.toISOString(),
-        companyId: Number(row.getCell(6).result),
+        companyId: Number(row.getCell(6).value),
       };
       nameChangeMasterInsertData.push(nameChangeMasterData);
     }
