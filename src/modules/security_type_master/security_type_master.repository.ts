@@ -6,10 +6,10 @@ import {
 import { securityTypeMasterModel } from "./security_type_master.model";
 
 /**
- * Create a new companyMaster with the provided data.
+ * Create a new securityTypeMaster with the provided data.
  *
- * @param {SecurityTypeMasterRepoCreateType} data - the data for creating the companyMaster
- * @return {Promise<SecurityTypeMasterType>} a promise that resolves to the newly created companyMaster
+ * @param {SecurityTypeMasterRepoCreateType} data - the data for creating the securityTypeMaster
+ * @return {Promise<SecurityTypeMasterType>} a promise that resolves to the newly created securityTypeMaster
  */
 export async function createSecurityTypeMaster(
   data: SecurityTypeMasterRepoCreateType
@@ -18,11 +18,11 @@ export async function createSecurityTypeMaster(
 }
 
 /**
- * Update companyMaster information in the database.
+ * Update securityTypeMaster information in the database.
  *
- * @param {UpdateSecurityTypeMasterBody} data - the data to update the companyMaster with
- * @param {number} id - the id of the companyMaster to update
- * @return {Promise<SecurityTypeMasterType>} the updated companyMaster information
+ * @param {UpdateSecurityTypeMasterBody} data - the data to update the securityTypeMaster with
+ * @param {number} id - the id of the securityTypeMaster to update
+ * @return {Promise<SecurityTypeMasterType>} the updated securityTypeMaster information
  */
 export async function updateSecurityTypeMaster(
   data: SecurityTypeMasterRepoUpdateType,
@@ -36,7 +36,7 @@ export async function updateSecurityTypeMaster(
  *
  * @param {number} limit - the maximum number of items to retrieve
  * @param {number} offset - the number of items to skip before starting to return data
- * @return {Promise<SecurityTypeMasterType[]>} the paginated companyMaster data as a promise
+ * @return {Promise<SecurityTypeMasterType[]>} the paginated securityTypeMaster data as a promise
  */
 export async function paginate(
   limit: number,
@@ -54,7 +54,7 @@ export async function paginate(
  * Asynchronously get all the data from the database.
  *
  * @param {string} search - the maximum number of items to retrieve
- * @return {Promise<SecurityTypeMasterType[]>} the paginated companyMaster data as a promise
+ * @return {Promise<SecurityTypeMasterType[]>} the paginated securityTypeMaster data as a promise
  */
 export async function getAll(
   search?: string
@@ -76,10 +76,10 @@ export async function count(search?: string): Promise<number> {
 }
 
 /**
- * Retrieves companyMaster data by the given ID.
+ * Retrieves securityTypeMaster data by the given ID.
  *
- * @param {number} id - The ID of the companyMaster to retrieve
- * @return {Promise<SecurityTypeMasterType|null>} The companyMaster data if found, otherwise null
+ * @param {number} id - The ID of the securityTypeMaster to retrieve
+ * @return {Promise<SecurityTypeMasterType|null>} The securityTypeMaster data if found, otherwise null
  */
 export async function getById(
   id: number
@@ -88,10 +88,10 @@ export async function getById(
 }
 
 /**
- * Removes a companyMaster from the database by their ID.
+ * Removes a securityTypeMaster from the database by their ID.
  *
- * @param {number} id - the ID of the companyMaster to be removed
- * @return {Promise<SecurityTypeMasterType>} a promise that resolves once the companyMaster is removed
+ * @param {number} id - the ID of the securityTypeMaster to be removed
+ * @return {Promise<SecurityTypeMasterType>} a promise that resolves once the securityTypeMaster is removed
  */
 export async function remove(
   id: number

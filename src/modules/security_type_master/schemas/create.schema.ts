@@ -25,7 +25,7 @@ export const createSecurityTypeMasterBodySchema = z.object({
     .optional(),
   securityName: z
     .string({
-      errorMap: () => ({ message: "Series must be a string" }),
+      errorMap: () => ({ message: "Security Name must be a string" }),
     })
     .trim()
     .optional(),

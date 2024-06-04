@@ -8,19 +8,19 @@ import {
   importExcel,
   list,
   update,
-} from "./security_type_master.services";
+} from "./security_master.services";
 import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import {
-  SecurityTypeMasterCreateType,
-  SecurityTypeMasterUpdateType,
-} from "../../@types/security_type_master.type";
-import { createSecurityTypeMasterUniqueSchema } from "./schemas/create.schema";
-import { updateSecurityTypeMasterUniqueSchema } from "./schemas/update.schema";
+  SecurityMasterCreateType,
+  SecurityMasterUpdateType,
+} from "../../@types/security_master.type";
+import { createSecurityMasterUniqueSchema } from "./schemas/create.schema";
+import { updateSecurityMasterUniqueSchema } from "./schemas/update.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 
-export async function listSecurityTypeMaster(
+export async function listSecurityMaster(
   request: FastifyRequest<{
     Querystring: GetPaginationQuery;
   }>,
@@ -30,12 +30,12 @@ export async function listSecurityTypeMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Type Masters Fetched",
+    message: "Security Masters Fetched",
     data: result,
   });
 }
 
-export async function exportSecurityTypeMaster(
+export async function exportSecurityMaster(
   request: FastifyRequest<{
     Querystring: GetSearchQuery;
   }>,
@@ -45,19 +45,19 @@ export async function exportSecurityTypeMaster(
   return reply
     .header(
       "Content-Disposition",
-      'attachment; filename="security_type_masters.xlsx"'
+      'attachment; filename="security_masters.xlsx"'
     )
     .send(result.file);
 }
 
 /**
- * Retrieves a securityTypeMaster based on the provided parameters.
+ * Retrieves a securityMaster based on the provided parameters.
  *
  * @param {FastifyRequest} request - the request object containing the parameters
  * @param {FastifyReply} reply - the reply object for sending the response
- * @return {Promise<void>} a promise resolving to the fetched securityTypeMaster data
+ * @return {Promise<void>} a promise resolving to the fetched securityMaster data
  */
-export async function getSecurityTypeMaster(
+export async function getSecurityMaster(
   request: FastifyRequest<{
     Params: GetIdParam;
   }>,
@@ -67,51 +67,51 @@ export async function getSecurityTypeMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Type Master Fetched",
+    message: "Security Master Fetched",
     data: result,
   });
 }
 
 /**
- * Creates a new securityTypeMaster using the request body and sends back the result with a 201 status code.
+ * Creates a new securityMaster using the request body and sends back the result with a 201 status code.
  *
- * @param {FastifyRequest} request - the request object containing the securityTypeMaster information
+ * @param {FastifyRequest} request - the request object containing the securityMaster information
  * @param {FastifyReply} reply - the reply object for sending the response
- * @return {Promise<void>} A promise that resolves when the securityTypeMaster is successfully created
+ * @return {Promise<void>} A promise that resolves when the securityMaster is successfully created
  */
-export async function createSecurityTypeMaster(
+export async function createSecurityMaster(
   request: FastifyRequest<{
-    Body: SecurityTypeMasterCreateType;
+    Body: SecurityMasterCreateType;
   }>,
   reply: FastifyReply
 ): Promise<void> {
-  await createSecurityTypeMasterUniqueSchema.parseAsync({
+  await createSecurityMasterUniqueSchema.parseAsync({
     companyID: request.body.companyID,
   });
   const result = await create(request.body);
   return reply.code(201).type("application/json").send({
     code: 201,
     success: true,
-    message: "Security Type Master Created",
+    message: "Security Master Created",
     data: result,
   });
 }
 
 /**
- * Update securityTypeMaster information based on the request body and parameters.
+ * Update securityMaster information based on the request body and parameters.
  *
  * @param {FastifyRequest} request - The request object containing the body and parameters
  * @param {FastifyReply} reply - The reply object for sending the response
- * @return {Promise<void>} A promise that resolves when the securityTypeMaster is successfully updated
+ * @return {Promise<void>} A promise that resolves when the securityMaster is successfully updated
  */
-export async function updateSecurityTypeMaster(
+export async function updateSecurityMaster(
   request: FastifyRequest<{
-    Body: SecurityTypeMasterUpdateType;
+    Body: SecurityMasterUpdateType;
     Params: GetIdParam;
   }>,
   reply: FastifyReply
 ): Promise<void> {
-  await updateSecurityTypeMasterUniqueSchema.parseAsync({
+  await updateSecurityMasterUniqueSchema.parseAsync({
     id: request.params.id,
     companyID: request.body.companyID,
   });
@@ -119,19 +119,19 @@ export async function updateSecurityTypeMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Type Master Updated",
+    message: "Security Master Updated",
     data: result,
   });
 }
 
 /**
- * Remove a securityTypeMaster based on the request parameter.
+ * Remove a securityMaster based on the request parameter.
  *
- * @param {FastifyRequest<{ Params: GetIdParam }>} request - The request object containing securityTypeMaster parameters
+ * @param {FastifyRequest<{ Params: GetIdParam }>} request - The request object containing securityMaster parameters
  * @param {FastifyReply} reply - The reply object for sending the response
- * @return {Promise<void>} A promise that resolves after removing the securityTypeMaster
+ * @return {Promise<void>} A promise that resolves after removing the securityMaster
  */
-export async function removeSecurityTypeMaster(
+export async function removeSecurityMaster(
   request: FastifyRequest<{
     Params: GetIdParam;
   }>,
@@ -141,12 +141,12 @@ export async function removeSecurityTypeMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Type Master Removed",
+    message: "Security Master Removed",
     data: result,
   });
 }
 
-export async function removeMultipleSecurityTypeMaster(
+export async function removeMultipleSecurityMaster(
   request: FastifyRequest<{
     Body: GetIdsBody;
   }>,
@@ -156,11 +156,11 @@ export async function removeMultipleSecurityTypeMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Type Masters Removed",
+    message: "Security Masters Removed",
   });
 }
 
-export async function importSecurityTypeMasters(
+export async function importSecurityMasters(
   request: FastifyRequest<{
     Body: PostExcelBody;
   }>,
@@ -170,7 +170,7 @@ export async function importSecurityTypeMasters(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Type Masters Imported",
+    message: "Security Masters Imported",
     data: result,
   });
 }
