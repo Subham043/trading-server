@@ -8,19 +8,19 @@ import {
   importExcel,
   list,
   update,
-} from "./security_master.services";
+} from "./share_certificate_master.services";
 import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import {
-  SecurityMasterCreateType,
-  SecurityMasterUpdateType,
-} from "../../@types/security_master.type";
-import { createSecurityMasterUniqueSchema } from "./schemas/create.schema";
-import { updateSecurityMasterUniqueSchema } from "./schemas/update.schema";
+  ShareCertificateMasterCreateType,
+  ShareCertificateMasterUpdateType,
+} from "../../@types/share_certificate_master.type";
+import { createShareCertificateMasterUniqueSchema } from "./schemas/create.schema";
+import { updateShareCertificateMasterUniqueSchema } from "./schemas/update.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 
-export async function listSecurityMaster(
+export async function listShareCertificateMaster(
   request: FastifyRequest<{
     Querystring: GetPaginationQuery;
   }>,
@@ -30,12 +30,12 @@ export async function listSecurityMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Masters Fetched",
+    message: "Share Certificate Masters Fetched",
     data: result,
   });
 }
 
-export async function exportSecurityMaster(
+export async function exportShareCertificateMaster(
   request: FastifyRequest<{
     Querystring: GetSearchQuery;
   }>,
@@ -45,19 +45,19 @@ export async function exportSecurityMaster(
   return reply
     .header(
       "Content-Disposition",
-      'attachment; filename="security_masters.xlsx"'
+      'attachment; filename="share_certificate_masters.xlsx"'
     )
     .send(result.file);
 }
 
 /**
- * Retrieves a securityMaster based on the provided parameters.
+ * Retrieves a shareCertificateMaster based on the provided parameters.
  *
  * @param {FastifyRequest} request - the request object containing the parameters
  * @param {FastifyReply} reply - the reply object for sending the response
- * @return {Promise<void>} a promise resolving to the fetched securityMaster data
+ * @return {Promise<void>} a promise resolving to the fetched shareCertificateMaster data
  */
-export async function getSecurityMaster(
+export async function getShareCertificateMaster(
   request: FastifyRequest<{
     Params: GetIdParam;
   }>,
@@ -67,51 +67,51 @@ export async function getSecurityMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Master Fetched",
+    message: "Share Certificate Master Fetched",
     data: result,
   });
 }
 
 /**
- * Creates a new securityMaster using the request body and sends back the result with a 201 status code.
+ * Creates a new shareCertificateMaster using the request body and sends back the result with a 201 status code.
  *
- * @param {FastifyRequest} request - the request object containing the securityMaster information
+ * @param {FastifyRequest} request - the request object containing the shareCertificateMaster information
  * @param {FastifyReply} reply - the reply object for sending the response
- * @return {Promise<void>} A promise that resolves when the securityMaster is successfully created
+ * @return {Promise<void>} A promise that resolves when the shareCertificateMaster is successfully created
  */
-export async function createSecurityMaster(
+export async function createShareCertificateMaster(
   request: FastifyRequest<{
-    Body: SecurityMasterCreateType;
+    Body: ShareCertificateMasterCreateType;
   }>,
   reply: FastifyReply
 ): Promise<void> {
-  await createSecurityMasterUniqueSchema.parseAsync({
+  await createShareCertificateMasterUniqueSchema.parseAsync({
     companyID: request.body.companyID,
   });
   const result = await create(request.body);
   return reply.code(201).type("application/json").send({
     code: 201,
     success: true,
-    message: "Security Master Created",
+    message: "Share Certificate Master Created",
     data: result,
   });
 }
 
 /**
- * Update securityMaster information based on the request body and parameters.
+ * Update shareCertificateMaster information based on the request body and parameters.
  *
  * @param {FastifyRequest} request - The request object containing the body and parameters
  * @param {FastifyReply} reply - The reply object for sending the response
- * @return {Promise<void>} A promise that resolves when the securityMaster is successfully updated
+ * @return {Promise<void>} A promise that resolves when the shareCertificateMaster is successfully updated
  */
-export async function updateSecurityMaster(
+export async function updateShareCertificateMaster(
   request: FastifyRequest<{
-    Body: SecurityMasterUpdateType;
+    Body: ShareCertificateMasterUpdateType;
     Params: GetIdParam;
   }>,
   reply: FastifyReply
 ): Promise<void> {
-  await updateSecurityMasterUniqueSchema.parseAsync({
+  await updateShareCertificateMasterUniqueSchema.parseAsync({
     id: request.params.id,
     companyID: request.body.companyID,
   });
@@ -119,19 +119,19 @@ export async function updateSecurityMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Master Updated",
+    message: "Share Certificate Master Updated",
     data: result,
   });
 }
 
 /**
- * Remove a securityMaster based on the request parameter.
+ * Remove a shareCertificateMaster based on the request parameter.
  *
- * @param {FastifyRequest<{ Params: GetIdParam }>} request - The request object containing securityMaster parameters
+ * @param {FastifyRequest<{ Params: GetIdParam }>} request - The request object containing shareCertificateMaster parameters
  * @param {FastifyReply} reply - The reply object for sending the response
- * @return {Promise<void>} A promise that resolves after removing the securityMaster
+ * @return {Promise<void>} A promise that resolves after removing the shareCertificateMaster
  */
-export async function removeSecurityMaster(
+export async function removeShareCertificateMaster(
   request: FastifyRequest<{
     Params: GetIdParam;
   }>,
@@ -141,12 +141,12 @@ export async function removeSecurityMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Master Removed",
+    message: "Share Certificate Master Removed",
     data: result,
   });
 }
 
-export async function removeMultipleSecurityMaster(
+export async function removeMultipleShareCertificateMaster(
   request: FastifyRequest<{
     Body: GetIdsBody;
   }>,
@@ -156,11 +156,11 @@ export async function removeMultipleSecurityMaster(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Masters Removed",
+    message: "Share Certificate Masters Removed",
   });
 }
 
-export async function importSecurityMasters(
+export async function importShareCertificateMasters(
   request: FastifyRequest<{
     Body: PostExcelBody;
   }>,
@@ -170,7 +170,7 @@ export async function importSecurityMasters(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Security Masters Imported",
+    message: "Share Certificate Masters Imported",
     data: result,
   });
 }

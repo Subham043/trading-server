@@ -45,7 +45,6 @@ export type SecurityTypeMasterType = {
   redemptionDate?: Date | null;
   conversionDate?: Date | null;
   paidUpValue: number | null;
-  faceValue: number | null;
   dividend: number | null;
   redemptionAmount: number | null;
   conversionAmount: number | null;

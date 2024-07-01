@@ -1,25 +1,25 @@
 import { FastifyInstance } from "fastify";
 import {
-  createSecurityMaster,
-  exportSecurityMaster,
-  getSecurityMaster,
-  importSecurityMasters,
-  listSecurityMaster,
-  removeMultipleSecurityMaster,
-  removeSecurityMaster,
-  updateSecurityMaster,
-} from "./security_master.controller";
-import { updateSecurityMasterBodySchema } from "./schemas/update.schema";
+  createShareCertificateMaster,
+  exportShareCertificateMaster,
+  getShareCertificateMaster,
+  importShareCertificateMasters,
+  listShareCertificateMaster,
+  removeMultipleShareCertificateMaster,
+  removeShareCertificateMaster,
+  updateShareCertificateMaster,
+} from "./share_certificate_master.controller";
+import { updateShareCertificateMasterBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
 import {
   getIdParamSchema,
   getIdsBodySchema,
 } from "../../common/schemas/id_param.schema";
-import { createSecurityMasterBodySchema } from "./schemas/create.schema";
+import { createShareCertificateMasterBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
 import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
-export async function securityMasterRoutes(app: FastifyInstance) {
+export async function shareCertificateMasterRoutes(app: FastifyInstance) {
   app.post(
     "/import",
     {
@@ -28,7 +28,7 @@ export async function securityMasterRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    importSecurityMasters
+    importShareCertificateMasters
   );
   app.get(
     "/",
@@ -38,7 +38,7 @@ export async function securityMasterRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    listSecurityMaster
+    listShareCertificateMaster
   );
   app.get(
     "/export",
@@ -48,7 +48,7 @@ export async function securityMasterRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    exportSecurityMaster
+    exportShareCertificateMaster
   );
   app.get(
     "/:id",
@@ -58,28 +58,28 @@ export async function securityMasterRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    getSecurityMaster
+    getShareCertificateMaster
   );
   app.post(
     "/",
     {
       schema: {
-        body: createSecurityMasterBodySchema,
+        body: createShareCertificateMasterBodySchema,
       },
       preHandler: app.verifyJwt,
     },
-    createSecurityMaster
+    createShareCertificateMaster
   );
   app.put(
     "/:id",
     {
       schema: {
-        body: updateSecurityMasterBodySchema,
+        body: updateShareCertificateMasterBodySchema,
         params: getIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
-    updateSecurityMaster
+    updateShareCertificateMaster
   );
   app.delete(
     "/:id",
@@ -89,7 +89,7 @@ export async function securityMasterRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    removeSecurityMaster
+    removeShareCertificateMaster
   );
   app.post(
     "/delete-multiple",
@@ -99,6 +99,6 @@ export async function securityMasterRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    removeMultipleSecurityMaster
+    removeMultipleShareCertificateMaster
   );
 }

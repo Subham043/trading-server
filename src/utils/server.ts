@@ -36,7 +36,8 @@ import { pincodeRoutes } from "../modules/pincodes/pincode.routes";
 import { registrarMasterBranchRoutes } from "../modules/registrar_master_branch/registrar_master_branch.routes";
 import { prisma } from "../db";
 import { securityTypeMasterRoutes } from "../modules/security_type_master/security_type_master.routes";
-import { securityMasterRoutes } from "../modules/security_master/security_master.routes";
+import { shareCertificateMasterRoutes } from "../modules/share_certificate_master/share_certificate_master.routes";
+import { folioRoutes } from "../modules/folio/folio.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -127,8 +128,11 @@ export async function buildServer() {
   await server.register(securityTypeMasterRoutes, {
     prefix: "/api/security-type-masters",
   });
-  await server.register(securityMasterRoutes, {
-    prefix: "/api/security-masters",
+  await server.register(shareCertificateMasterRoutes, {
+    prefix: "/api/share-certificate-masters",
+  });
+  await server.register(folioRoutes, {
+    prefix: "/api/folios",
   });
 
   // delay is the number of milliseconds for the graceful close to finish

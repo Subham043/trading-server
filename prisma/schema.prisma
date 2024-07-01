@@ -167,7 +167,7 @@ model CompanyMaster {
   updatedAt DateTime @updatedAt @default(now())
   nameChangeMasters NameChangeMaster[]
   securityTypeMasters SecurityTypeMaster[]
-  securityMasters SecurityMaster[]
+  shareCertificateMasters ShareCertificateMaster[]
   @@index([createdBy], map: "createdBy_companyMasterkey")
   @@index([registrarMasterBranchId], map: "registrarMasterBranchId_companyMasterkey")
 }
@@ -198,7 +198,6 @@ model SecurityTypeMaster {
   redemptionDate DateTime @default(now())
   conversionDate DateTime @default(now())
   paidUpValue  Float? @db.DoublePrecision @default(0.0)
-  faceValue  Float? @db.DoublePrecision @default(0.0)
   dividend  Float? @db.DoublePrecision @default(0.0)
   redemptionAmount  Float? @db.DoublePrecision @default(0.0)
   conversionAmount  Float? @db.DoublePrecision @default(0.0)
@@ -214,11 +213,28 @@ model SecurityTypeMaster {
   @@index([companyID], map: "companyID_securityTypeMasterkey")
 }
 
-model SecurityMaster {
+model ShareCertificateMaster {
   id        Int      @id @default(autoincrement())
   instrumentType      IntrumentType     @default(InvIT)
   equityType      EquityType     @default(Bonus)
-  Folio  String? @db.VarChar(256)
+  endorsement      TruthType     @default(No)
+  endorsementFolio  String? @db.VarChar(256)
+  endorsementDate DateTime @default(now())
+  endorsementShareholderName1  String? @db.VarChar(256)
+  endorsementShareholderName2  String? @db.VarChar(256)
+  endorsementShareholderName3  String? @db.VarChar(256)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  folios Folio[]
+
+  @@index([companyID], map: "companyID_shareCertificateMasterkey")
+}
+
+model Folio {
+  id        Int      @id @default(autoincrement())
+  Folio  String @db.VarChar(256)
   certificateNumber  String? @db.VarChar(256)
   certificateSerialNumber  String? @db.VarChar(256)
   shareholderName1  String? @db.VarChar(256)
@@ -230,16 +246,10 @@ model SecurityMaster {
   faceValue  Float? @db.DoublePrecision @default(0.0)
   distinctiveNosFrom  String? @db.VarChar(256)
   distinctiveNosTo  String? @db.VarChar(256)
-  endorsement      TruthType     @default(No)
-  endorsementFolio  String? @db.VarChar(256)
-  endorsementDate DateTime @default(now())
-  endorsementShareholderName1  String? @db.VarChar(256)
-  endorsementShareholderName2  String? @db.VarChar(256)
-  endorsementShareholderName3  String? @db.VarChar(256)
-  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
-  companyID Int?
+  shareCertificateMaster   ShareCertificateMaster? @relation(fields: [shareCertificateID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  shareCertificateID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
-  @@index([companyID], map: "companyID_securityMasterkey")
+  @@index([shareCertificateID], map: "shareCertificateID_foliokey")
 }

@@ -27,7 +27,7 @@ type CompanyMasterQueryType = {
   createdAt?: Date | null | undefined;
 };
 
-export type SecurityMasterType = {
+export type ShareCertificateMasterType = {
   id: number;
   instrumentType:
     | "InvIT"
@@ -38,18 +38,6 @@ export type SecurityMasterType = {
     | "Equity"
     | "Warrant";
   equityType: "Bonus" | "Shares" | "Splits" | "Rights";
-  Folio?: string | null;
-  certificateNumber?: string | null;
-  certificateSerialNumber?: string | null;
-  shareholderName1?: string | null;
-  shareholderName2?: string | null;
-  shareholderName3?: string | null;
-  noOfShares?: string | null;
-  noOfSharesWords?: string | null;
-  dateOfAllotment?: Date | null;
-  faceValue: number | null;
-  distinctiveNosFrom?: string | null;
-  distinctiveNosTo?: string | null;
   endorsement: "Yes" | "No";
   endorsementFolio?: string | null;
   endorsementDate?: Date | null;
@@ -61,21 +49,21 @@ export type SecurityMasterType = {
   createdAt?: Date | null;
 };
 
-export type SecurityMasterCreateType = Omit<
-  SecurityMasterType,
-  "id" | "dateOfAllotment" | "endorsementDate" | "createdAt" | "companyMaster"
+export type ShareCertificateMasterCreateType = Omit<
+  ShareCertificateMasterType,
+  "id" | "endorsementDate" | "createdAt" | "companyMaster"
 > & {
   endorsementDate: Date | string | undefined;
-  dateOfAllotment: Date | string | undefined;
 };
 
-export interface SecurityMasterUpdateType extends SecurityMasterCreateType {}
+export interface ShareCertificateMasterUpdateType
+  extends ShareCertificateMasterCreateType {}
 
-export type SecurityMasterRepoCreateType = Prisma.Args<
-  typeof prisma.securityMaster,
+export type ShareCertificateMasterRepoCreateType = Prisma.Args<
+  typeof prisma.shareCertificateMaster,
   "create"
 >["data"];
-export type SecurityMasterRepoUpdateType = Prisma.Args<
-  typeof prisma.securityMaster,
+export type ShareCertificateMasterRepoUpdateType = Prisma.Args<
+  typeof prisma.shareCertificateMaster,
   "update"
 >["data"];

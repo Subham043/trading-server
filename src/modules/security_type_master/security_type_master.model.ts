@@ -25,7 +25,6 @@ export type SecurityTypeMasterExcelData = {
   redemptionDate?: string | undefined;
   conversionDate?: string | undefined;
   paidUpValue: number | undefined;
-  faceValue: number | undefined;
   dividend: number | undefined;
   redemptionAmount: number | undefined;
   conversionAmount: number | undefined;
@@ -55,7 +54,6 @@ export type SecurityTypeMasterExportExcelData = {
   redemptionDate?: Date | null | undefined;
   conversionDate?: Date | null | undefined;
   paidUpValue: number | null | undefined;
-  faceValue: number | null | undefined;
   dividend: number | null | undefined;
   redemptionAmount: number | null | undefined;
   conversionAmount: number | null | undefined;
@@ -75,7 +73,6 @@ export const ExcelFailedSecurityTypeMasterColumn: WorksheetColumnsType = [
   { key: "redemptionDate", header: "Redemption Date" },
   { key: "conversionDate", header: "Conversion Date" },
   { key: "paidUpValue", header: "Paid Up Value" },
-  { key: "faceValue", header: "Face Value" },
   { key: "dividend", header: "Dividend" },
   { key: "redemptionAmount", header: "Redemption Amount" },
   { key: "conversionAmount", header: "Conversion Amount" },
@@ -98,7 +95,6 @@ export const ExcelSecurityTypeMastersColumns: WorksheetColumnsType = [
   { key: "redemptionDate", header: "Redemption Date" },
   { key: "conversionDate", header: "Conversion Date" },
   { key: "paidUpValue", header: "Paid Up Value" },
-  { key: "faceValue", header: "Face Value" },
   { key: "dividend", header: "Dividend" },
   { key: "redemptionAmount", header: "Redemption Amount" },
   { key: "conversionAmount", header: "Conversion Amount" },
@@ -120,7 +116,6 @@ export const SecurityTypeMasterColumn = {
   redemptionDate: true,
   conversionDate: true,
   paidUpValue: true,
-  faceValue: true,
   dividend: true,
   redemptionAmount: true,
   conversionAmount: true,

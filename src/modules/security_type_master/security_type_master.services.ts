@@ -122,7 +122,7 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
   const securityTypeMasters = await getAll(querystring.search);
 
   const buffer = await generateExcel<SecurityTypeMasterType>(
-    "Name Change Masters",
+    "Security Type Masters",
     ExcelSecurityTypeMastersColumns,
     securityTypeMasters
   );
@@ -195,23 +195,20 @@ export async function importExcel(
         paidUpValue: isNaN(Number(row.getCell(9).value?.toString()))
           ? undefined
           : Number(row.getCell(9).value?.toString()),
-        faceValue: isNaN(Number(row.getCell(10).value?.toString()))
+        dividend: isNaN(Number(row.getCell(10).value?.toString()))
           ? undefined
           : Number(row.getCell(10).value?.toString()),
-        dividend: isNaN(Number(row.getCell(11).value?.toString()))
+        redemptionAmount: isNaN(Number(row.getCell(11).value?.toString()))
           ? undefined
           : Number(row.getCell(11).value?.toString()),
-        redemptionAmount: isNaN(Number(row.getCell(12).value?.toString()))
+        conversionAmount: isNaN(Number(row.getCell(12).value?.toString()))
           ? undefined
           : Number(row.getCell(12).value?.toString()),
-        conversionAmount: isNaN(Number(row.getCell(13).value?.toString()))
-          ? undefined
-          : Number(row.getCell(13).value?.toString()),
-        marketLot: row.getCell(14).value?.toString(),
-        isinNumber: row.getCell(15).value?.toString(),
-        distinctiveNosFrom: row.getCell(16).value?.toString(),
-        distinctiveNosTo: row.getCell(17).value?.toString(),
-        companyID: Number(row.getCell(18).value?.toString()),
+        marketLot: row.getCell(13).value?.toString(),
+        isinNumber: row.getCell(14).value?.toString(),
+        distinctiveNosFrom: row.getCell(15).value?.toString(),
+        distinctiveNosTo: row.getCell(16).value?.toString(),
+        companyID: Number(row.getCell(17).value?.toString()),
       };
       securityTypeMasterInsertData.push(securityTypeMasterData);
     }
@@ -230,7 +227,6 @@ export async function importExcel(
         Series: securityTypeMasterInsertData[i].Series,
         securityName: securityTypeMasterInsertData[i].securityName,
         paidUpValue: securityTypeMasterInsertData[i].paidUpValue,
-        faceValue: securityTypeMasterInsertData[i].faceValue,
         dividend: securityTypeMasterInsertData[i].dividend,
         redemptionAmount: securityTypeMasterInsertData[i].redemptionAmount,
         conversionAmount: securityTypeMasterInsertData[i].conversionAmount,

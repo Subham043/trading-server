@@ -73,14 +73,6 @@ export const createSecurityTypeMasterBodySchema = z.object({
     })
     .optional()
     .catch(() => 0.0),
-  faceValue: z
-    .number({
-      errorMap: () => ({
-        message: "Face Value must be a number",
-      }),
-    })
-    .optional()
-    .catch(() => 0.0),
   dividend: z
     .number({
       errorMap: () => ({
