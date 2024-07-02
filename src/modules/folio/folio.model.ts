@@ -53,8 +53,6 @@ export type FolioExportExcelData = {
 };
 
 export const ExcelFailedFolioColumn: WorksheetColumnsType = [
-  { key: "instrumentType", header: "Instrument Type" },
-  { key: "equityType", header: "Equity Type" },
   { key: "Folio", header: "Folio" },
   { key: "certificateNumber", header: "Certificate Number" },
   { key: "certificateSerialNumber", header: "Certificate Serial Number" },

@@ -15,7 +15,7 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import {
   getIdParamSchema,
   getIdsBodySchema,
-  getRegistrarMasterIdParamSchema,
+  getShareCertificateMasterIdParamSchema,
 } from "../../common/schemas/id_param.schema";
 import { createFolioBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
@@ -37,7 +37,7 @@ export async function folioRoutes(app: FastifyInstance) {
     {
       schema: {
         querystring: getPaginationQuerySchema,
-        params: getRegistrarMasterIdParamSchema,
+        params: getShareCertificateMasterIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
@@ -48,7 +48,7 @@ export async function folioRoutes(app: FastifyInstance) {
     {
       schema: {
         querystring: getSearchQuerySchema,
-        params: getRegistrarMasterIdParamSchema,
+        params: getShareCertificateMasterIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
@@ -59,7 +59,7 @@ export async function folioRoutes(app: FastifyInstance) {
     {
       schema: {
         body: createFolioBodySchema,
-        params: getRegistrarMasterIdParamSchema,
+        params: getShareCertificateMasterIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },

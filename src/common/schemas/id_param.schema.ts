@@ -70,3 +70,18 @@ export const getCompanyIdAndIdParamSchema = z
 export type GetCompanyIdAndIdParam = z.infer<
   typeof getCompanyIdAndIdParamSchema
 >;
+
+export const getShareCertificateMasterIdParamSchema = z
+  .object({
+    shareCertificateId: z
+      .string({
+        errorMap: () => ({
+          message: "Share Certificate Master ID must be a number",
+        }),
+      })
+      .regex(/^\d+$/, {
+        message: "Share Certificate Master ID must be a number",
+      })
+      .transform((value) => parseInt(value)),
+  })
+  .required();
