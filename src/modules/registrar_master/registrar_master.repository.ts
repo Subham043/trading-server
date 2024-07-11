@@ -60,6 +60,21 @@ export async function getAll(
   return await registrarMasterModel.all(search);
 }
 
+export async function excel(search?: string): Promise<
+  (RegistrarMasterType & {
+    registrarMasterBranches: {
+      id: number;
+      branch: string | null;
+      city: string | null;
+      state: string | null;
+      pincode: string | null;
+      address: string | null;
+    }[];
+  })[]
+> {
+  return await registrarMasterModel.excelQuery(search);
+}
+
 /**
  * Asynchronously counts the number of records.
  *

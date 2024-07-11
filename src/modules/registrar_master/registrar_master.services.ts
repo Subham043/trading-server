@@ -1,6 +1,7 @@
 import {
   count,
   createRegistrarMaster,
+  excel,
   getById,
   paginate,
   remove,
@@ -33,7 +34,6 @@ import {
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 import { createRegistrarMasterBodySchema } from "./schemas/create.schema";
 import { ZodError } from "zod";
-import { registrarMasterBranchModel } from "../registrar_master_branch/registrar_master_branch.model";
 
 /**
  * Create a new registrarMaster with the provided registrarMaster information.
@@ -116,24 +116,41 @@ export async function list(querystring: GetPaginationQuery): Promise<
 export async function exportExcel(querystring: GetSearchQuery): Promise<{
   file: ExcelBuffer;
 }> {
-  const registrarMasterBranches = await registrarMasterBranchModel.all({
-    search: querystring.search,
-  });
+  const registrarMasters = await excel(querystring.search);
 
-  const excelData = registrarMasterBranches.map((registrarMasterBranch) => {
-    return {
-      id: registrarMasterBranch.id,
-      registrar_name: registrarMasterBranch.registrarMaster?.registrar_name,
-      sebi_regn_id: registrarMasterBranch.registrarMaster?.sebi_regn_id,
-      registrarMasterID: registrarMasterBranch.registrarMasterID,
-      branch: registrarMasterBranch.branch,
-      city: registrarMasterBranch.city,
-      state: registrarMasterBranch.state,
-      pincode: registrarMasterBranch.pincode,
-      address: registrarMasterBranch.address,
-    };
-  });
-
+  const excelData = registrarMasters
+    .map((registrarMaster) => {
+      if (registrarMaster.registrarMasterBranches.length > 0) {
+        const data = registrarMaster.registrarMasterBranches.map(
+          (registrarMasterBranch) => {
+            return {
+              id: registrarMasterBranch.id,
+              registrar_name: registrarMaster.registrar_name,
+              sebi_regn_id: registrarMaster.sebi_regn_id,
+              registrarMasterID: registrarMaster.id,
+              branch: registrarMasterBranch.branch,
+              city: registrarMasterBranch.city,
+              state: registrarMasterBranch.state,
+              pincode: registrarMasterBranch.pincode,
+              address: registrarMasterBranch.address,
+            };
+          }
+        );
+        return data.flat(1);
+      }
+      return {
+        id: null,
+        registrar_name: registrarMaster.registrar_name,
+        sebi_regn_id: registrarMaster.sebi_regn_id,
+        registrarMasterID: registrarMaster.id,
+        branch: null,
+        city: null,
+        state: null,
+        pincode: null,
+        address: null,
+      };
+    })
+    .flat(1);
   const buffer = await generateExcel<RegistrarMasterExportExcelData>(
     "Registrar Masters",
     ExcelRegistrarMastersColumns,

@@ -157,7 +157,7 @@ export async function exportExcel(
     return {
       id: folio.id,
       instrumentType: folio.shareCertificateMaster?.instrumentType,
-      equityType: folio.shareCertificateMaster?.equityType,
+      equityType: folio.equityType,
       Folio: folio.Folio,
       certificateNumber: folio.certificateNumber,
       certificateSerialNumber: folio.certificateSerialNumber,
@@ -225,21 +225,26 @@ export async function importExcel(
       const folioData = {
         faceValue: isNaN(Number(row.getCell(10).value?.toString()))
           ? undefined
-          : Number(row.getCell(10).value?.toString()),
-        Folio: row.getCell(1).value?.toString() as string,
-        certificateNumber: row.getCell(2).value?.toString(),
-        certificateSerialNumber: row.getCell(3).value?.toString(),
-        shareholderName1: row.getCell(4).value?.toString(),
-        shareholderName2: row.getCell(5).value?.toString(),
-        shareholderName3: row.getCell(6).value?.toString(),
-        noOfShares: row.getCell(7).value?.toString(),
-        noOfSharesWords: row.getCell(8).value?.toString(),
+          : Number(row.getCell(11).value?.toString()),
+        equityType: row.getCell(1).value?.toString() as
+          | "Bonus"
+          | "Shares"
+          | "Splits"
+          | "Rights",
+        Folio: row.getCell(2).value?.toString() as string,
+        certificateNumber: row.getCell(3).value?.toString(),
+        certificateSerialNumber: row.getCell(4).value?.toString(),
+        shareholderName1: row.getCell(5).value?.toString(),
+        shareholderName2: row.getCell(6).value?.toString(),
+        shareholderName3: row.getCell(7).value?.toString(),
+        noOfShares: row.getCell(8).value?.toString(),
+        noOfSharesWords: row.getCell(9).value?.toString(),
         dateOfAllotment: (
-          row.getCell(9).value as Date | undefined
+          row.getCell(10).value as Date | undefined
         )?.toISOString(),
-        distinctiveNosFrom: row.getCell(11).value?.toString(),
-        distinctiveNosTo: row.getCell(12).value?.toString(),
-        shareCertificateID: Number(row.getCell(13).value?.toString()),
+        distinctiveNosFrom: row.getCell(12).value?.toString(),
+        distinctiveNosTo: row.getCell(13).value?.toString(),
+        shareCertificateID: Number(row.getCell(14).value?.toString()),
       };
       folioInsertData.push(folioData);
     }

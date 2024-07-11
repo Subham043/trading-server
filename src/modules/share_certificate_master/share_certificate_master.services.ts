@@ -182,18 +182,13 @@ export async function importExcel(
           | "REiT"
           | "Equity"
           | "Warrant",
-        equityType: row.getCell(2).value?.toString() as
-          | "Bonus"
-          | "Shares"
-          | "Splits"
-          | "Rights",
-        endorsement: row.getCell(3).value?.toString() as "Yes" | "No",
-        endorsementFolio: row.getCell(4).value?.toString(),
-        endorsementDate: row.getCell(5).value?.toString(),
-        endorsementShareholderName1: row.getCell(6).value?.toString(),
-        endorsementShareholderName2: row.getCell(7).value?.toString(),
-        endorsementShareholderName3: row.getCell(8).value?.toString(),
-        companyID: Number(row.getCell(9).value?.toString()),
+        endorsement: row.getCell(2).value?.toString() as "Yes" | "No",
+        endorsementFolio: row.getCell(3).value?.toString(),
+        endorsementDate: row.getCell(4).value?.toString(),
+        endorsementShareholderName1: row.getCell(5).value?.toString(),
+        endorsementShareholderName2: row.getCell(6).value?.toString(),
+        endorsementShareholderName3: row.getCell(7).value?.toString(),
+        companyID: Number(row.getCell(8).value?.toString()),
       };
       shareCertificateMasterInsertData.push(shareCertificateMasterData);
     }
@@ -208,7 +203,6 @@ export async function importExcel(
       });
       const validatedShareCertificateMasterData = {
         instrumentType: shareCertificateMasterInsertData[i].instrumentType,
-        equityType: shareCertificateMasterInsertData[i].equityType,
         endorsement: shareCertificateMasterInsertData[i].endorsement,
         endorsementFolio: shareCertificateMasterInsertData[i].endorsementFolio,
         endorsementDate:

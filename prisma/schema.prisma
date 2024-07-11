@@ -40,6 +40,15 @@ enum EquityType {
   Shares
 }
 
+enum CorporateActionType {
+  Equity
+  Bonus
+  RightsSubscribed
+  RightsUnsubscribed
+  Splits
+  ShareBought
+}
+
 enum TruthType {
   Yes
   No
@@ -168,6 +177,7 @@ model CompanyMaster {
   nameChangeMasters NameChangeMaster[]
   securityTypeMasters SecurityTypeMaster[]
   shareCertificateMasters ShareCertificateMaster[]
+  corporateMasters CorporateMaster[]
   @@index([createdBy], map: "createdBy_companyMasterkey")
   @@index([registrarMasterBranchId], map: "registrarMasterBranchId_companyMasterkey")
 }
@@ -216,7 +226,6 @@ model SecurityTypeMaster {
 model ShareCertificateMaster {
   id        Int      @id @default(autoincrement())
   instrumentType      IntrumentType     @default(InvIT)
-  equityType      EquityType     @default(Bonus)
   endorsement      TruthType     @default(No)
   endorsementFolio  String? @db.VarChar(256)
   endorsementDate DateTime @default(now())
@@ -234,6 +243,7 @@ model ShareCertificateMaster {
 
 model Folio {
   id        Int      @id @default(autoincrement())
+  equityType      EquityType     @default(Bonus)
   Folio  String @db.VarChar(256)
   certificateNumber  String? @db.VarChar(256)
   certificateSerialNumber  String? @db.VarChar(256)
@@ -252,4 +262,19 @@ model Folio {
   updatedAt DateTime @updatedAt @default(now())
 
   @@index([shareCertificateID], map: "shareCertificateID_foliokey")
+}
+
+model CorporateMaster {
+  id        Int      @id @default(autoincrement())
+  date DateTime @default(now())
+  type      CorporateActionType     @default(Bonus)
+  numerator  String? @db.VarChar(256)
+  denominator  String? @db.VarChar(256)
+  originalHolding  String? @db.VarChar(256)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([companyID], map: "companyID_corporate_master")
 }

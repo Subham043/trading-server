@@ -11,11 +11,6 @@ export const createShareCertificateMasterBodySchema = z.object({
       }),
     }
   ),
-  equityType: z.enum(["Bonus", "Shares", "Splits", "Rights"], {
-    errorMap: () => ({
-      message: "Equity Type must be one of [Bonus , Shares , Splits , Rights]",
-    }),
-  }),
   endorsement: z.enum(["Yes", "No"], {
     errorMap: () => ({
       message: "Endorsement must be one of [Yes , No]",

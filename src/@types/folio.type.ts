@@ -10,11 +10,11 @@ type ShareCertificateMasterQueryType = {
     | "REiT"
     | "Equity"
     | "Warrant";
-  equityType: "Bonus" | "Shares" | "Splits" | "Rights";
 };
 
 export type FolioType = {
   id: number;
+  equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   Folio: string;
   certificateNumber?: string | null | undefined;
   certificateSerialNumber?: string | null | undefined;

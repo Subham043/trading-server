@@ -13,10 +13,10 @@ export type RegistrarMasterExcelData = {
   createdBy: number;
 };
 export type RegistrarMasterExportExcelData = {
-  id: number;
+  id: number | null | undefined;
   registrar_name: string | undefined;
   sebi_regn_id: string | undefined;
-  registrarMasterID: number | null | undefined;
+  registrarMasterID: number;
   branch: string | null | undefined;
   city: string | null | undefined;
   state: string | null | undefined;
@@ -140,6 +140,40 @@ export class RegistrarMasterModel {
     return await this.prismaRegistrarMaster.findMany({
       where: this.searchQuery(search),
       select: RegistrarMasterColumn,
+      orderBy: {
+        id: "desc",
+      },
+    });
+  }
+
+  async excelQuery(search?: string): Promise<
+    (RegistrarMasterType & {
+      registrarMasterBranches: {
+        id: number;
+        branch: string | null;
+        city: string | null;
+        state: string | null;
+        pincode: string | null;
+        address: string | null;
+      }[];
+    })[]
+  > {
+    // do some custom validation...
+    return await this.prismaRegistrarMaster.findMany({
+      where: this.searchQuery(search),
+      select: {
+        ...RegistrarMasterColumn,
+        registrarMasterBranches: {
+          select: {
+            id: true,
+            branch: true,
+            city: true,
+            state: true,
+            pincode: true,
+            address: true,
+          },
+        },
+      },
       orderBy: {
         id: "desc",
       },

@@ -2,6 +2,11 @@ import { z } from "zod";
 import { getById } from "../../share_certificate_master/share_certificate_master.repository";
 
 export const createFolioBodySchema = z.object({
+  equityType: z.enum(["Bonus", "Shares", "Splits", "Rights"], {
+    errorMap: () => ({
+      message: "Equity Type must be one of [Bonus , Shares , Splits , Rights]",
+    }),
+  }),
   Folio: z
     .string({
       errorMap: () => ({ message: "Folio must be a string" }),

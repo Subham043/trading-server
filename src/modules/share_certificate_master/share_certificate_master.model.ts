@@ -17,7 +17,6 @@ export type ShareCertificateMasterExcelData = {
     | "REiT"
     | "Equity"
     | "Warrant";
-  equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   endorsement: "Yes" | "No";
   endorsementFolio?: string | undefined;
   endorsementDate?: string | undefined;
@@ -38,7 +37,6 @@ export type ShareCertificateMasterExportExcelData = {
     | "REiT"
     | "Equity"
     | "Warrant";
-  equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   endorsement: "Yes" | "No";
   endorsementFolio?: string | null | undefined;
   endorsementDate?: string | null | undefined;
@@ -49,7 +47,6 @@ export type ShareCertificateMasterExportExcelData = {
 
 export const ExcelFailedShareCertificateMasterColumn: WorksheetColumnsType = [
   { key: "instrumentType", header: "Instrument Type" },
-  { key: "equityType", header: "Equity Type" },
   { key: "endorsement", header: "Endorsement" },
   { key: "endorsementFolio", header: "Endorsement Folio" },
   { key: "endorsementDate", header: "Endorsement Date" },
@@ -72,7 +69,6 @@ export const ExcelFailedShareCertificateMasterColumn: WorksheetColumnsType = [
 export const ExcelShareCertificateMastersColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "instrumentType", header: "Instrument Type" },
-  { key: "equityType", header: "Equity Type" },
   { key: "endorsement", header: "Endorsement" },
   { key: "endorsementFolio", header: "Endorsement Folio" },
   { key: "endorsementDate", header: "Endorsement Date" },
@@ -94,7 +90,6 @@ export const ExcelShareCertificateMastersColumns: WorksheetColumnsType = [
 export const ShareCertificateMasterColumn = {
   id: true,
   instrumentType: true,
-  equityType: true,
   endorsement: true,
   endorsementFolio: true,
   endorsementDate: true,

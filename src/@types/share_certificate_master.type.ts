@@ -37,7 +37,6 @@ export type ShareCertificateMasterType = {
     | "REiT"
     | "Equity"
     | "Warrant";
-  equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   endorsement: "Yes" | "No";
   endorsementFolio?: string | null;
   endorsementDate?: Date | null;

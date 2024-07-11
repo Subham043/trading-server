@@ -38,6 +38,7 @@ import { prisma } from "../db";
 import { securityTypeMasterRoutes } from "../modules/security_type_master/security_type_master.routes";
 import { shareCertificateMasterRoutes } from "../modules/share_certificate_master/share_certificate_master.routes";
 import { folioRoutes } from "../modules/folio/folio.routes";
+import { corporateMasterRoutes } from "../modules/corporate_master/corporate_master.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -133,6 +134,9 @@ export async function buildServer() {
   });
   await server.register(folioRoutes, {
     prefix: "/api/folios",
+  });
+  await server.register(corporateMasterRoutes, {
+    prefix: "/api/corporate-masters",
   });
 
   // delay is the number of milliseconds for the graceful close to finish

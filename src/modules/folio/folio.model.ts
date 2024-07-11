@@ -8,6 +8,7 @@ import {
 } from "../../@types/folio.type";
 
 export type FolioExcelData = {
+  equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   Folio: string;
   certificateNumber: string | undefined;
   certificateSerialNumber: string | undefined;
@@ -35,7 +36,7 @@ export type FolioExportExcelData = {
     | "Warrant"
     | null
     | undefined;
-  equityType: "Bonus" | "Shares" | "Splits" | "Rights" | null | undefined;
+  equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   Folio: string;
   certificateNumber: string | null | undefined;
   certificateSerialNumber: string | null | undefined;
@@ -53,6 +54,7 @@ export type FolioExportExcelData = {
 };
 
 export const ExcelFailedFolioColumn: WorksheetColumnsType = [
+  { key: "equityType", header: "Equity Type" },
   { key: "Folio", header: "Folio" },
   { key: "certificateNumber", header: "Certificate Number" },
   { key: "certificateSerialNumber", header: "Certificate Serial Number" },
@@ -91,11 +93,11 @@ export const ExcelFolioesColumns: WorksheetColumnsType = [
 
 export const ShareCertificateMasterColumn = {
   instrumentType: true,
-  equityType: true,
 };
 
 export const FolioColumn = {
   id: true,
+  equityType: true,
   Folio: true,
   certificateNumber: true,
   certificateSerialNumber: true,
