@@ -14,6 +14,7 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import {
   getIdParamSchema,
   getIdsBodySchema,
+  getProjectIdParamSchema,
 } from "../../common/schemas/id_param.schema";
 import { createShareCertificateMasterBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
@@ -21,30 +22,33 @@ import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function shareCertificateMasterRoutes(app: FastifyInstance) {
   app.post(
-    "/import",
+    "/import/:projectId",
     {
       schema: {
         body: postExcelBodySchema,
+        params: getProjectIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
     importShareCertificateMasters
   );
   app.get(
-    "/",
+    "/list/:projectId",
     {
       schema: {
         querystring: getPaginationQuerySchema,
+        params: getProjectIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
     listShareCertificateMaster
   );
   app.get(
-    "/export",
+    "/export/:projectId",
     {
       schema: {
         querystring: getSearchQuerySchema,
+        params: getProjectIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
@@ -61,10 +65,11 @@ export async function shareCertificateMasterRoutes(app: FastifyInstance) {
     getShareCertificateMaster
   );
   app.post(
-    "/",
+    "/create/:projectId",
     {
       schema: {
         body: createShareCertificateMasterBodySchema,
+        params: getProjectIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },

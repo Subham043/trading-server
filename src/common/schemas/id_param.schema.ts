@@ -85,3 +85,20 @@ export const getShareCertificateMasterIdParamSchema = z
       .transform((value) => parseInt(value)),
   })
   .required();
+
+export const getProjectIdParamSchema = z
+  .object({
+    projectId: z
+      .string({
+        errorMap: () => ({
+          message: "Share Certificate Master ID must be a number",
+        }),
+      })
+      .regex(/^\d+$/, {
+        message: "Share Certificate Master ID must be a number",
+      })
+      .transform((value) => parseInt(value)),
+  })
+  .required();
+
+export type GetProjectIdParam = z.infer<typeof getProjectIdParamSchema>;

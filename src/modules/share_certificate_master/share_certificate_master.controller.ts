@@ -9,24 +9,32 @@ import {
   list,
   update,
 } from "./share_certificate_master.services";
-import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
+import {
+  GetIdParam,
+  GetIdsBody,
+  GetProjectIdParam,
+} from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import {
   ShareCertificateMasterCreateType,
   ShareCertificateMasterUpdateType,
 } from "../../@types/share_certificate_master.type";
-import { createShareCertificateMasterUniqueSchema } from "./schemas/create.schema";
+import {
+  createShareCertificateMasterUniqueSchema,
+  projectIdSchema,
+} from "./schemas/create.schema";
 import { updateShareCertificateMasterUniqueSchema } from "./schemas/update.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 export async function listShareCertificateMaster(
   request: FastifyRequest<{
+    Params: GetProjectIdParam;
     Querystring: GetPaginationQuery;
   }>,
   reply: FastifyReply
 ) {
-  const result = await list(request.query);
+  const result = await list(request.query, request.params.projectId);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
@@ -37,11 +45,12 @@ export async function listShareCertificateMaster(
 
 export async function exportShareCertificateMaster(
   request: FastifyRequest<{
+    Params: GetProjectIdParam;
     Querystring: GetSearchQuery;
   }>,
   reply: FastifyReply
 ) {
-  const result = await exportExcel(request.query);
+  const result = await exportExcel(request.query, request.params.projectId);
   return reply
     .header(
       "Content-Disposition",
@@ -81,6 +90,7 @@ export async function getShareCertificateMaster(
  */
 export async function createShareCertificateMaster(
   request: FastifyRequest<{
+    Params: GetProjectIdParam;
     Body: ShareCertificateMasterCreateType;
   }>,
   reply: FastifyReply
@@ -88,7 +98,10 @@ export async function createShareCertificateMaster(
   await createShareCertificateMasterUniqueSchema.parseAsync({
     companyID: request.body.companyID,
   });
-  const result = await create(request.body);
+  await projectIdSchema.parseAsync({
+    projectId: request.params.projectId,
+  });
+  const result = await create(request.body, request.params.projectId);
   return reply.code(201).type("application/json").send({
     code: 201,
     success: true,
@@ -162,11 +175,19 @@ export async function removeMultipleShareCertificateMaster(
 
 export async function importShareCertificateMasters(
   request: FastifyRequest<{
+    Params: GetProjectIdParam;
     Body: PostExcelBody;
   }>,
   reply: FastifyReply
 ) {
-  const result = await importExcel(request.body, request.authenticatedUser!.id);
+  await projectIdSchema.parseAsync({
+    projectId: request.params.projectId,
+  });
+  const result = await importExcel(
+    request.body,
+    request.authenticatedUser!.id,
+    request.params.projectId
+  );
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

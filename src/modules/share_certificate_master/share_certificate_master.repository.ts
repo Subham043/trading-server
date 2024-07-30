@@ -41,11 +41,13 @@ export async function updateShareCertificateMaster(
 export async function paginate(
   limit: number,
   offset: number,
+  projectID: number,
   search?: string
 ): Promise<ShareCertificateMasterType[]> {
   return await shareCertificateMasterModel.paginate({
     limit,
     offset,
+    projectID,
     search,
   });
 }
@@ -57,9 +59,11 @@ export async function paginate(
  * @return {Promise<ShareCertificateMasterType[]>} the paginated shareCertificateMaster data as a promise
  */
 export async function getAll(
+  projectID: number,
   search?: string
 ): Promise<ShareCertificateMasterType[]> {
   return await shareCertificateMasterModel.all({
+    projectID,
     search,
   });
 }
@@ -69,9 +73,13 @@ export async function getAll(
  *
  * @return {Promise<number>} The number of records.
  */
-export async function count(search?: string): Promise<number> {
+export async function count(
+  projectID: number,
+  search?: string
+): Promise<number> {
   return await shareCertificateMasterModel.totalCount({
     search,
+    projectID,
   });
 }
 

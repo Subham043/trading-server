@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { getById } from "../../company_master/company_master.repository";
+import { getById as getByProjectId } from "../../project/project.repository";
 
 export const createShareCertificateMasterBodySchema = z.object({
   instrumentType: z.enum(
@@ -80,3 +81,23 @@ export const createShareCertificateMasterUniqueSchema = z.object({
       }
     }),
 });
+
+export const projectIdSchema = z
+  .object({
+    projectId: z
+      .number({
+        errorMap: () => ({ message: "project ID must be a number" }),
+      })
+      .superRefine(async (projectId, ctx) => {
+        const project = await getByProjectId(projectId);
+        if (!project) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Invalid project master Id",
+            path: ["projectId"],
+          });
+          return false;
+        }
+      }),
+  })
+  .required();

@@ -3,26 +3,17 @@ import { prisma } from "../db";
 
 export type CorporateMasterType = {
   id: number;
-  type:
-    | "Equity"
-    | "Bonus"
-    | "Splits"
-    | "RightsSubscribed"
-    | "RightsUnsubscribed"
-    | "ShareBought";
+  type: "Equity" | "Bonus" | "Splits" | "Rights" | "ShareBought";
   date: Date;
   numerator?: string | null;
   denominator?: string | null;
-  originalHolding?: string | null;
-  exchange?: string | null;
-  consolidatedHolding?: string | null;
   companyID?: number | null;
   createdAt?: Date | null;
 };
 
 export type CorporateMasterCreateType = Omit<
   CorporateMasterType,
-  "id" | "date" | "exchange" | "consolidatedHolding" | "createdAt"
+  "id" | "date" | "createdAt"
 > & {
   date: Date | string | undefined;
 };

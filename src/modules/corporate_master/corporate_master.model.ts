@@ -8,35 +8,19 @@ import {
 } from "../../@types/corporate_master.type";
 
 export type CorporateMasterExcelData = {
-  type:
-    | "Equity"
-    | "Bonus"
-    | "Splits"
-    | "RightsSubscribed"
-    | "RightsUnsubscribed"
-    | "ShareBought";
+  type: "Equity" | "Bonus" | "Splits" | "Rights" | "ShareBought";
   date: Date;
   numerator: string | undefined;
   denominator: string | undefined;
-  originalHolding: string | undefined;
   companyID: number;
 };
 
 export type CorporateMasterExportExcelData = {
   id: number;
-  type:
-    | "Equity"
-    | "Bonus"
-    | "Splits"
-    | "RightsSubscribed"
-    | "RightsUnsubscribed"
-    | "ShareBought";
+  type: "Equity" | "Bonus" | "Splits" | "Rights" | "ShareBought";
   date: Date;
   numerator?: string | null | undefined;
   denominator?: string | null | undefined;
-  originalHolding?: string | null | undefined;
-  exchange?: string | null | undefined;
-  consolidatedHolding?: string | null | undefined;
   companyID?: number | null | undefined;
 };
 
@@ -45,9 +29,6 @@ export const ExcelFailedCorporateMasterColumn: WorksheetColumnsType = [
   { key: "date", header: "Date" },
   { key: "numerator", header: "Numerator" },
   { key: "denominator", header: "Denominator" },
-  { key: "originalHolding", header: "Original Holding" },
-  { key: "exchange", header: "Bonus / Split/ Rights/Share exchange" },
-  { key: "consolidatedHolding", header: "Consolidated Holding" },
   { key: "companyID", header: "Company Master Id" },
   { key: "error", header: "Error" },
 ];
@@ -58,9 +39,6 @@ export const ExcelCorporateMasteresColumns: WorksheetColumnsType = [
   { key: "date", header: "Date" },
   { key: "numerator", header: "Numerator" },
   { key: "denominator", header: "Denominator" },
-  { key: "originalHolding", header: "Original Holding" },
-  { key: "exchange", header: "Bonus / Split/ Rights/Share exchange" },
-  { key: "consolidatedHolding", header: "Consolidated Holding" },
   { key: "companyID", header: "Company Master Id" },
   { key: "createdAt", header: "Created At" },
 ];
@@ -71,7 +49,6 @@ export const CorporateMasterColumn = {
   date: true,
   numerator: true,
   denominator: true,
-  originalHolding: true,
   companyID: true,
   createdAt: true,
 };
@@ -104,12 +81,6 @@ export class CorporateMasterModel {
             },
             {
               denominator: {
-                contains: search,
-                mode: "insensitive",
-              },
-            },
-            {
-              originalHolding: {
                 contains: search,
                 mode: "insensitive",
               },

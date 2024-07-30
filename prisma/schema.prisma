@@ -43,8 +43,7 @@ enum EquityType {
 enum CorporateActionType {
   Equity
   Bonus
-  RightsSubscribed
-  RightsUnsubscribed
+  Rights
   Splits
   ShareBought
 }
@@ -68,6 +67,7 @@ model User {
   failedExcels FailedExcel[]
   registrarMasters RegistrarMaster[]
   companyMasters CompanyMaster[]
+  projects Project[]
 
   @@unique([id, email], map: "idx_email_userkey")
   @@index([key], map: "key_userkey")
@@ -234,11 +234,13 @@ model ShareCertificateMaster {
   endorsementShareholderName3  String? @db.VarChar(256)
   companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
   companyID Int?
+  project   Project? @relation(fields: [projectID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  projectID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   folios Folio[]
 
-  @@index([companyID], map: "companyID_shareCertificateMasterkey")
+  @@index([companyID, projectID], map: "companyID_shareCertificateMasterkey")
 }
 
 model Folio {
@@ -270,11 +272,22 @@ model CorporateMaster {
   type      CorporateActionType     @default(Bonus)
   numerator  String? @db.VarChar(256)
   denominator  String? @db.VarChar(256)
-  originalHolding  String? @db.VarChar(256)
   companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
   companyID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
   @@index([companyID], map: "companyID_corporate_master")
+}
+
+model Project {
+  id        Int      @id @default(autoincrement())
+  name  String @db.VarChar(256)
+  createdBy   User? @relation(fields: [userID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  userID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  shareCertificateMasters ShareCertificateMaster[]
+
+  @@index([userID], map: "userID_project")
 }

@@ -50,17 +50,8 @@ export async function create(
   companyMasterId: number
 ): Promise<CorporateMasterType> {
   const result = await createCorporateMaster({ ...data, companyMasterId });
-  const exchange = Math.floor(
-    Number(result.numerator) !== 0 && Number(result.denominator) !== 0
-      ? (Number(result.originalHolding) * Number(result.numerator)) /
-          Number(result.denominator)
-      : 0
-  );
-  const consolidatedHolding = Number(result.originalHolding) + exchange;
   return {
     ...result,
-    exchange: exchange.toString(),
-    consolidatedHolding: consolidatedHolding.toString(),
   };
 }
 
@@ -76,17 +67,8 @@ export async function update(
   param: GetIdParam
 ): Promise<CorporateMasterType> {
   const result = await updateCorporateMaster(data, param.id);
-  const exchange = Math.floor(
-    Number(result.numerator) !== 0 && Number(result.denominator) !== 0
-      ? (Number(result.originalHolding) * Number(result.numerator)) /
-          Number(result.denominator)
-      : 0
-  );
-  const consolidatedHolding = Number(result.originalHolding) + exchange;
   return {
     ...result,
-    exchange: exchange.toString(),
-    consolidatedHolding: consolidatedHolding.toString(),
   };
 }
 
@@ -105,20 +87,8 @@ export async function findById(
   if (!corporateMaster) {
     throw new NotFoundError();
   }
-  const exchange = Math.floor(
-    Number(corporateMaster.numerator) !== 0 &&
-      Number(corporateMaster.denominator) !== 0
-      ? (Number(corporateMaster.originalHolding) *
-          Number(corporateMaster.numerator)) /
-          Number(corporateMaster.denominator)
-      : 0
-  );
-  const consolidatedHolding =
-    Number(corporateMaster.originalHolding) + exchange;
   return {
     ...corporateMaster,
-    exchange: exchange.toString(),
-    consolidatedHolding: consolidatedHolding.toString(),
   };
 }
 
@@ -136,21 +106,7 @@ export async function list(
     corporateMaster: CorporateMasterType[];
   } & PaginationType
 > {
-  const corporateMasterData = await getAll(companyMasterId, querystring.search);
-  const corporateMaster = corporateMasterData.map((item) => {
-    const exchange = Math.floor(
-      Number(item.numerator) !== 0 && Number(item.denominator) !== 0
-        ? (Number(item.originalHolding) * Number(item.numerator)) /
-            Number(item.denominator)
-        : 0
-    );
-    const consolidatedHolding = Number(item.originalHolding) + exchange;
-    return {
-      ...item,
-      exchange: exchange.toString(),
-      consolidatedHolding: consolidatedHolding.toString(),
-    };
-  });
+  const corporateMaster = await getAll(companyMasterId, querystring.search);
   const corporateMasterCount = await count(companyMasterId, querystring.search);
   return {
     corporateMaster,
@@ -169,26 +125,8 @@ export async function listAll(querystring: GetPaginationQuery): Promise<
     page: querystring.page,
     size: querystring.limit,
   });
-  const corporateMasterData = await paginateAll(
-    limit,
-    offset,
-    querystring.search
-  );
+  const corporateMaster = await paginateAll(limit, offset, querystring.search);
   const corporateMasterCount = await countAll(querystring.search);
-  const corporateMaster = corporateMasterData.map((item) => {
-    const exchange = Math.floor(
-      Number(item.numerator) !== 0 && Number(item.denominator) !== 0
-        ? (Number(item.originalHolding) * Number(item.numerator)) /
-            Number(item.denominator)
-        : 0
-    );
-    const consolidatedHolding = Number(item.originalHolding) + exchange;
-    return {
-      ...item,
-      exchange: exchange.toString(),
-      consolidatedHolding: consolidatedHolding.toString(),
-    };
-  });
   return {
     corporateMaster,
     ...getPaginationKeys({
@@ -211,25 +149,7 @@ export async function exportExcel(
 ): Promise<{
   file: ExcelBuffer;
 }> {
-  const corporateMasters = await getAll(companyMasterId, querystring.search);
-
-  const excelData = corporateMasters.map((corporateMaster) => {
-    const exchange = Math.floor(
-      Number(corporateMaster.numerator) !== 0 &&
-        Number(corporateMaster.denominator) !== 0
-        ? (Number(corporateMaster.originalHolding) *
-            Number(corporateMaster.numerator)) /
-            Number(corporateMaster.denominator)
-        : 0
-    );
-    const consolidatedHolding =
-      Number(corporateMaster.originalHolding) + exchange;
-    return {
-      ...corporateMaster,
-      exchange: exchange.toString(),
-      consolidatedHolding: consolidatedHolding.toString(),
-    };
-  });
+  const excelData = await getAll(companyMasterId, querystring.search);
 
   const buffer = await generateExcel<CorporateMasterExportExcelData>(
     "Corporate Masters",
@@ -285,8 +205,7 @@ export async function importExcel(
           | "Equity"
           | "Bonus"
           | "Splits"
-          | "RightsSubscribed"
-          | "RightsUnsubscribed"
+          | "Rights"
           | "ShareBought",
         date: row.getCell(2).value?.toString()
           ? (new Date(row.getCell(2).value!.toString()) as Date)

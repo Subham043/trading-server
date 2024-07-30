@@ -24,11 +24,13 @@ export type ShareCertificateMasterExcelData = {
   endorsementShareholderName2?: string | undefined;
   endorsementShareholderName3?: string | undefined;
   companyID: number;
+  projectID: number;
 };
 
 export type ShareCertificateMasterExportExcelData = {
   id: number;
   companyID: number | null | undefined;
+  projectID: number | null | undefined;
   instrumentType:
     | "InvIT"
     | "IDR"
@@ -63,6 +65,7 @@ export const ExcelFailedShareCertificateMasterColumn: WorksheetColumnsType = [
     header: "Endorsement Shareholder Name 3",
   },
   { key: "companyID", header: "Company Master Id" },
+  { key: "projectID", header: "Project Id" },
   { key: "error", header: "Error" },
 ];
 
@@ -85,6 +88,7 @@ export const ExcelShareCertificateMastersColumns: WorksheetColumnsType = [
     header: "Endorsement Shareholder Name 3",
   },
   { key: "companyID", header: "Company Master Id" },
+  { key: "projectID", header: "Project Id" },
 ];
 
 export const ShareCertificateMasterColumn = {
@@ -96,6 +100,7 @@ export const ShareCertificateMasterColumn = {
   endorsementShareholderName1: true,
   endorsementShareholderName2: true,
   endorsementShareholderName3: true,
+  projectID: true,
   createdAt: true,
 };
 
@@ -106,16 +111,20 @@ export class ShareCertificateMasterModel {
 
   searchQuery({
     companyID,
+    projectID,
     search,
   }: {
     companyID?: number;
+    projectID?: number;
     search?: string;
   }): Prisma.ShareCertificateMasterWhereInput {
     const wherecompanyID = companyID ? { companyID: companyID } : {};
+    const whereProjectID = projectID ? { projectID: projectID } : {};
 
     return search
       ? {
           ...wherecompanyID,
+          ...whereProjectID,
           OR: [
             {
               endorsementFolio: {
@@ -145,6 +154,7 @@ export class ShareCertificateMasterModel {
         }
       : {
           ...wherecompanyID,
+          ...whereProjectID,
         };
   }
 
@@ -247,6 +257,7 @@ export class ShareCertificateMasterModel {
 
   async totalCount(params: {
     companyID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<number> {
     // do some custom validation...
@@ -257,6 +268,7 @@ export class ShareCertificateMasterModel {
 
   async all(params: {
     companyID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<ShareCertificateMasterType[]> {
     // do some custom validation...
@@ -294,6 +306,7 @@ export class ShareCertificateMasterModel {
     limit: number;
     offset: number;
     companyID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<ShareCertificateMasterType[]> {
     // do some custom validation...
@@ -303,6 +316,7 @@ export class ShareCertificateMasterModel {
       where: this.searchQuery({
         search: params.search,
         companyID: params.companyID,
+        projectID: params.projectID,
       }),
       include: {
         companyMaster: {

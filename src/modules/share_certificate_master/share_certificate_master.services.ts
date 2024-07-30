@@ -44,10 +44,12 @@ import { ZodError } from "zod";
  * @return {Promise<ShareCertificateMasterType>} a promise that resolves with the created shareCertificateMaster data
  */
 export async function create(
-  data: ShareCertificateMasterCreateType
+  data: ShareCertificateMasterCreateType,
+  projectID: number
 ): Promise<ShareCertificateMasterType | null> {
   return await createShareCertificateMaster({
     ...data,
+    projectID,
   });
 }
 
@@ -89,7 +91,10 @@ export async function findById(
  * @param {GetPaginationQuery} querystring - the parameters for finding the shareCertificateMaster
  * @return {Promise<{shareCertificateMaster:ShareCertificateMasterType[]} & PaginationType>} the shareCertificateMaster found by ID
  */
-export async function list(querystring: GetPaginationQuery): Promise<
+export async function list(
+  querystring: GetPaginationQuery,
+  projectID: number
+): Promise<
   {
     shareCertificateMaster: ShareCertificateMasterType[];
   } & PaginationType
@@ -101,9 +106,13 @@ export async function list(querystring: GetPaginationQuery): Promise<
   const shareCertificateMaster = await paginate(
     limit,
     offset,
+    projectID,
     querystring.search
   );
-  const shareCertificateMasterCount = await count(querystring.search);
+  const shareCertificateMasterCount = await count(
+    projectID,
+    querystring.search
+  );
   return {
     shareCertificateMaster,
     ...getPaginationKeys({
@@ -120,10 +129,13 @@ export async function list(querystring: GetPaginationQuery): Promise<
  * @param {GetSearchQuery} querystring - the parameters for finding the shareCertificateMaster
  * @return {Promise<{file: ExcelBuffer}>} the shareCertificateMaster found by ID
  */
-export async function exportExcel(querystring: GetSearchQuery): Promise<{
+export async function exportExcel(
+  querystring: GetSearchQuery,
+  projectID: number
+): Promise<{
   file: ExcelBuffer;
 }> {
-  const shareCertificateMasters = await getAll(querystring.search);
+  const shareCertificateMasters = await getAll(projectID, querystring.search);
 
   const buffer = await generateExcel<ShareCertificateMasterType>(
     "Share Certificate Masters",
@@ -157,7 +169,8 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
 
 export async function importExcel(
   data: PostExcelBody,
-  createdBy: number
+  createdBy: number,
+  projectID: number
 ): Promise<{
   successCount: number;
   errorCount: number;
@@ -189,6 +202,7 @@ export async function importExcel(
         endorsementShareholderName2: row.getCell(6).value?.toString(),
         endorsementShareholderName3: row.getCell(7).value?.toString(),
         companyID: Number(row.getCell(8).value?.toString()),
+        projectID,
       };
       shareCertificateMasterInsertData.push(shareCertificateMasterData);
     }
@@ -218,6 +232,7 @@ export async function importExcel(
         endorsementShareholderName3:
           shareCertificateMasterInsertData[i].endorsementShareholderName3,
         companyID: Number(shareCertificateMasterInsertData[i].companyID),
+        projectID,
       };
       await createShareCertificateMaster(validatedShareCertificateMasterData);
       successCount = successCount + 1;

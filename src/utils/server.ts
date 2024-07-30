@@ -39,6 +39,7 @@ import { securityTypeMasterRoutes } from "../modules/security_type_master/securi
 import { shareCertificateMasterRoutes } from "../modules/share_certificate_master/share_certificate_master.routes";
 import { folioRoutes } from "../modules/folio/folio.routes";
 import { corporateMasterRoutes } from "../modules/corporate_master/corporate_master.routes";
+import { projectRoutes } from "../modules/project/project.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -137,6 +138,9 @@ export async function buildServer() {
   });
   await server.register(corporateMasterRoutes, {
     prefix: "/api/corporate-masters",
+  });
+  await server.register(projectRoutes, {
+    prefix: "/api/projects",
   });
 
   // delay is the number of milliseconds for the graceful close to finish

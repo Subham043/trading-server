@@ -3,19 +3,11 @@ import { getById } from "../../company_master/company_master.repository";
 
 export const createCorporateMasterBodySchema = z.object({
   type: z.enum(
-    [
-      "Equity",
-      "Bonus",
-      "Shares",
-      "Splits",
-      "RightsSubscribed",
-      "RightsUnsubscribed",
-      "ShareBought",
-    ],
+    ["Equity", "Bonus", "Shares", "Splits", "Rights", "ShareBought"],
     {
       errorMap: () => ({
         message:
-          "Equity Type must be one of [Equity, Bonus , Shares , Splits , RightsSubscribed, RightsUnsubscribed, ShareBought]",
+          "Equity Type must be one of [Equity, Bonus , Shares , Splits , Rights, ShareBought]",
       }),
     }
   ),
@@ -35,11 +27,6 @@ export const createCorporateMasterBodySchema = z.object({
   denominator: z
     .number({
       errorMap: () => ({ message: "denominator must be a number" }),
-    })
-    .transform((value) => value.toString()),
-  originalHolding: z
-    .number({
-      errorMap: () => ({ message: "Original Holding must be a number" }),
     })
     .transform((value) => value.toString()),
 });

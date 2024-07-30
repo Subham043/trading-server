@@ -45,12 +45,13 @@ export type ShareCertificateMasterType = {
   endorsementShareholderName3?: string | null;
   companyMaster?: CompanyMasterQueryType | null;
   companyID?: number | null;
+  projectID?: number | null;
   createdAt?: Date | null;
 };
 
 export type ShareCertificateMasterCreateType = Omit<
   ShareCertificateMasterType,
-  "id" | "endorsementDate" | "createdAt" | "companyMaster"
+  "id" | "endorsementDate" | "createdAt" | "projectID" | "companyMaster"
 > & {
   endorsementDate: Date | string | undefined;
 };
