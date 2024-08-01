@@ -5,6 +5,7 @@ import {
   destroyMultiple,
   exportExcel,
   findById,
+  getCorporateMaster,
   importExcel,
   list,
   listAll,
@@ -82,6 +83,21 @@ export async function getFolio(
   reply: FastifyReply
 ): Promise<void> {
   const result = await findById(request.params);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Folio Fetched",
+    data: result,
+  });
+}
+
+export async function listCorporateMaster(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await getCorporateMaster(request.params);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

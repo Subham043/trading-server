@@ -9,6 +9,7 @@ import {
   removeMultipleFolios,
   removeFolio,
   updateFolio,
+  listCorporateMaster,
 } from "./folio.controller";
 import { updateFolioBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
@@ -64,6 +65,16 @@ export async function folioRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     createFolio
+  );
+  app.get(
+    "/list-corporate-master/:id",
+    {
+      schema: {
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    listCorporateMaster
   );
   app.post(
     "/import",

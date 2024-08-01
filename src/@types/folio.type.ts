@@ -49,3 +49,13 @@ export type FolioRepoUpdateType = Prisma.Args<
   typeof prisma.folio,
   "update"
 >["data"];
+
+export type FolioCorporateMasterType = {
+  type: "Equity" | "Bonus" | "Splits" | "Rights" | "ShareBought";
+  date: Date;
+  numerator?: string | null;
+  denominator?: string | null;
+  originalHolding?: string | null;
+  exchange?: string | null;
+  consolidatedHolding?: string | null;
+};

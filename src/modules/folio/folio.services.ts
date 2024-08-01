@@ -12,6 +12,7 @@ import {
 } from "./folio.repository";
 import { NotFoundError } from "../../utils/exceptions";
 import {
+  FolioCorporateMasterType,
   FolioCreateType,
   FolioType,
   FolioUpdateType,
@@ -39,6 +40,8 @@ import {
   shareCertificateIdSchema,
 } from "./schemas/create.schema";
 import { ZodError } from "zod";
+import { prisma } from "../../db";
+import { CorporateMasterColumn } from "../corporate_master/corporate_master.model";
 
 /**
  * Create a new folio with the provided folio information.
@@ -293,4 +296,96 @@ export async function importExcel(
     errorCount,
     fileName: null,
   };
+}
+
+export async function getCorporateMaster(
+  params: GetIdParam
+): Promise<FolioCorporateMasterType[]> {
+  const folio = await findById(params);
+  if (folio.shareCertificateID) {
+    const shareCertificateMaster =
+      await prisma.shareCertificateMaster.findUnique({
+        where: {
+          id: folio.shareCertificateID,
+        },
+      });
+    if (shareCertificateMaster) {
+      if (shareCertificateMaster.companyID) {
+        const corporateMasterData = await prisma.corporateMaster.findMany({
+          where: {
+            companyID: shareCertificateMaster.companyID,
+            date: folio.dateOfAllotment
+              ? {
+                  gte: folio.dateOfAllotment,
+                }
+              : undefined,
+          },
+          select: {
+            ...CorporateMasterColumn,
+          },
+          orderBy: {
+            date: "asc",
+          },
+        });
+        const test: FolioCorporateMasterType[] = [];
+        corporateMasterData.map((corporateMaster, i) => {
+          if (i === 0) {
+            const originalHolding = folio.noOfShares;
+            const exchange = Math.floor(
+              Number(corporateMaster.numerator) !== 0 &&
+                Number(corporateMaster.denominator) !== 0
+                ? (Number(originalHolding ?? 0) *
+                    Number(corporateMaster.numerator ?? 0)) /
+                    Number(corporateMaster.denominator ?? 0)
+                : 0
+            );
+            const consolidatedHolding = Number(originalHolding) + exchange;
+            test.push({
+              type: corporateMaster.type,
+              date: corporateMaster.date,
+              numerator: corporateMaster.numerator,
+              denominator: corporateMaster.denominator,
+              originalHolding,
+              exchange: exchange.toString(),
+              consolidatedHolding: consolidatedHolding.toString(),
+            });
+          } else {
+            const originalHolding = test[i - 1].consolidatedHolding;
+            const exchange = Math.floor(
+              Number(corporateMaster.numerator) !== 0 &&
+                Number(corporateMaster.denominator) !== 0
+                ? (Number(originalHolding ?? 0) *
+                    Number(corporateMaster.numerator ?? 0)) /
+                    Number(corporateMaster.denominator ?? 0)
+                : 0
+            );
+            const consolidatedHolding = Number(originalHolding) + exchange;
+            test.push({
+              type: corporateMaster.type,
+              date: corporateMaster.date,
+              numerator: corporateMaster.numerator,
+              denominator: corporateMaster.denominator,
+              originalHolding,
+              exchange: exchange.toString(),
+              consolidatedHolding: consolidatedHolding.toString(),
+            });
+          }
+        });
+        return [
+          {
+            type:
+              folio.equityType === "Shares" ? "ShareBought" : folio.equityType,
+            date: folio.dateOfAllotment ?? new Date(),
+            numerator: "0",
+            denominator: "0",
+            originalHolding: folio.noOfShares ?? "0",
+            exchange: "0",
+            consolidatedHolding: folio.noOfShares ?? "0",
+          },
+          ...test,
+        ];
+      }
+    }
+  }
+  return [];
 }
