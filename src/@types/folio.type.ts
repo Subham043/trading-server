@@ -59,3 +59,12 @@ export type FolioCorporateMasterType = {
   exchange?: string | null;
   consolidatedHolding?: string | null;
 };
+
+export type FolioDividendMasterType = {
+  recorded_date: string;
+  financial_year?: string | null;
+  dividend_per_share?: string | null;
+  no_of_shares?: string | null;
+  total_dividend?: string | null;
+  cumulative_dividend?: string | null;
+};

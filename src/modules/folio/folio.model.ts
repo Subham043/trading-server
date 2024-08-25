@@ -296,7 +296,7 @@ export class FolioModel {
         },
       },
       orderBy: {
-        id: "desc",
+        dateOfAllotment: "asc",
       },
     });
   }
@@ -322,7 +322,7 @@ export class FolioModel {
         },
       },
       orderBy: {
-        id: "desc",
+        dateOfAllotment: "asc",
       },
     });
   }

@@ -6,6 +6,7 @@ import {
   exportExcel,
   findById,
   getCorporateMaster,
+  getDividendMaster,
   importExcel,
   list,
   listAll,
@@ -98,6 +99,21 @@ export async function listCorporateMaster(
   reply: FastifyReply
 ): Promise<void> {
   const result = await getCorporateMaster(request.params);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Folio Fetched",
+    data: result,
+  });
+}
+
+export async function listDividendMaster(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await getDividendMaster(request.params);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

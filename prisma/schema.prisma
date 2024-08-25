@@ -178,6 +178,7 @@ model CompanyMaster {
   securityTypeMasters SecurityTypeMaster[]
   shareCertificateMasters ShareCertificateMaster[]
   corporateMasters CorporateMaster[]
+  dividendMasters DividendMaster[]
   @@index([createdBy], map: "createdBy_companyMasterkey")
   @@index([registrarMasterBranchId], map: "registrarMasterBranchId_companyMasterkey")
 }
@@ -290,4 +291,18 @@ model Project {
   shareCertificateMasters ShareCertificateMaster[]
 
   @@index([userID], map: "userID_project")
+}
+
+
+model DividendMaster {
+  id        Int      @id @default(autoincrement())
+  recorded_date String @db.VarChar(256)
+  financial_year String? @db.VarChar(256)
+  dividend_per_share  String? @db.VarChar(256)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([companyID], map: "companyID_dividend_master")
 }

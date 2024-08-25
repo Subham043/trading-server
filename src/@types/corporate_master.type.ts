@@ -21,10 +21,10 @@ export type CorporateMasterCreateType = Omit<
 export interface CorporateMasterUpdateType extends CorporateMasterCreateType {}
 
 export type CorporateMasterRepoCreateType = Prisma.Args<
-  typeof prisma.securityTypeMaster,
+  typeof prisma.corporateMaster,
   "create"
 >["data"];
 export type CorporateMasterRepoUpdateType = Prisma.Args<
-  typeof prisma.securityTypeMaster,
+  typeof prisma.corporateMaster,
   "update"
 >["data"];

@@ -1,29 +1,27 @@
 import { FastifyInstance } from "fastify";
 import {
-  createFolio,
-  exportFolios,
-  getFolio,
-  importFolios,
-  listAllFolios,
-  listFolios,
-  removeMultipleFolios,
-  removeFolio,
-  updateFolio,
-  listCorporateMaster,
-  listDividendMaster,
-} from "./folio.controller";
-import { updateFolioBodySchema } from "./schemas/update.schema";
+  createDividendMaster,
+  exportDividendMasters,
+  getDividendMaster,
+  importDividendMasters,
+  listAllDividendMasters,
+  listDividendMasters,
+  removeMultipleDividendMasters,
+  removeDividendMaster,
+  updateDividendMaster,
+} from "./dividend_master.controller";
+import { updateDividendMasterBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
 import {
   getIdParamSchema,
   getIdsBodySchema,
-  getShareCertificateMasterIdParamSchema,
+  getCompanyIdParamSchema,
 } from "../../common/schemas/id_param.schema";
-import { createFolioBodySchema } from "./schemas/create.schema";
+import { createDividendMasterBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
 import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
-export async function folioRoutes(app: FastifyInstance) {
+export async function dividendMasterRoutes(app: FastifyInstance) {
   app.get(
     "/list-all",
     {
@@ -32,60 +30,40 @@ export async function folioRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    listAllFolios
+    listAllDividendMasters
   );
   app.get(
-    "/list/:shareCertificateId",
+    "/list/:companyId",
     {
       schema: {
         querystring: getPaginationQuerySchema,
-        params: getShareCertificateMasterIdParamSchema,
+        params: getCompanyIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
-    listFolios
+    listDividendMasters
   );
   app.get(
-    "/export/:shareCertificateId",
+    "/export/:companyId",
     {
       schema: {
         querystring: getSearchQuerySchema,
-        params: getShareCertificateMasterIdParamSchema,
+        params: getCompanyIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
-    exportFolios
+    exportDividendMasters
   );
   app.post(
-    "/create/:shareCertificateId",
+    "/create/:companyId",
     {
       schema: {
-        body: createFolioBodySchema,
-        params: getShareCertificateMasterIdParamSchema,
+        body: createDividendMasterBodySchema,
+        params: getCompanyIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
-    createFolio
-  );
-  app.get(
-    "/list-corporate-master/:id",
-    {
-      schema: {
-        params: getIdParamSchema,
-      },
-      preHandler: app.verifyJwt,
-    },
-    listCorporateMaster
-  );
-  app.get(
-    "/list-dividend-master/:id",
-    {
-      schema: {
-        params: getIdParamSchema,
-      },
-      preHandler: app.verifyJwt,
-    },
-    listDividendMaster
+    createDividendMaster
   );
   app.post(
     "/import",
@@ -93,7 +71,7 @@ export async function folioRoutes(app: FastifyInstance) {
       schema: { body: postExcelBodySchema },
       preHandler: app.verifyJwt,
     },
-    importFolios
+    importDividendMasters
   );
   app.post(
     "/delete-multiple",
@@ -103,7 +81,7 @@ export async function folioRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    removeMultipleFolios
+    removeMultipleDividendMasters
   );
   app.get(
     "/:id",
@@ -113,18 +91,18 @@ export async function folioRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    getFolio
+    getDividendMaster
   );
   app.put(
     "/:id",
     {
       schema: {
-        body: updateFolioBodySchema,
+        body: updateDividendMasterBodySchema,
         params: getIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
-    updateFolio
+    updateDividendMaster
   );
   app.delete(
     "/:id",
@@ -134,6 +112,6 @@ export async function folioRoutes(app: FastifyInstance) {
       },
       preHandler: app.verifyJwt,
     },
-    removeFolio
+    removeDividendMaster
   );
 }
