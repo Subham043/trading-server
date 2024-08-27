@@ -43,7 +43,7 @@ import {
 import { ZodError } from "zod";
 import { prisma } from "../../db";
 import { CorporateMasterColumn } from "../corporate_master/corporate_master.model";
-// import { DividendMasterColumn } from "../dividend_master/dividend_master.model";
+import { Prisma } from "@prisma/client";
 
 /**
  * Create a new folio with the provided folio information.
@@ -99,18 +99,31 @@ export async function list(
   querystring: GetPaginationQuery
 ): Promise<
   {
-    folio: FolioType[];
+    folio: (FolioType & { consolidatedHolding: string; totalMarketValue: number })[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const folio = await paginate(
+  const folioData = await paginate(
     shareCertificateId,
     limit,
     offset,
     querystring.search
+  );
+  const company_master = await getCompanyMaster(shareCertificateId);
+  const folio = await Promise.all(
+    folioData.map(async (data) => {
+      const consolidatedHolding = await getConsolidatedHolding(data);
+      const totalMarketValue =
+        Number(consolidatedHolding) * Number(company_master?.faceValue ?? 0);
+      return {
+        ...data,
+        consolidatedHolding,
+        totalMarketValue,
+      };
+    })
   );
   const folioCount = await count(shareCertificateId, querystring.search);
   return {
@@ -466,3 +479,103 @@ export async function getDividendMaster(
   }
   return [];
 }
+
+
+export async function getConsolidatedHolding(
+  folio: FolioType
+): Promise<string> {
+  const shareCertificateMaster = await prisma.shareCertificateMaster.findUnique(
+    {
+      where: {
+        id: folio.shareCertificateID ?? 0,
+      },
+    }
+  );
+  if (shareCertificateMaster) {
+    if (shareCertificateMaster.companyID) {
+      const corporateMasterData = await prisma.corporateMaster.findMany({
+        where: {
+          companyID: shareCertificateMaster.companyID,
+          date: folio.dateOfAllotment
+            ? {
+                gte: folio.dateOfAllotment,
+              }
+            : undefined,
+        },
+        select: {
+          ...CorporateMasterColumn,
+        },
+        orderBy: {
+          date: "asc",
+        },
+      });
+      const test = corporateMasterData.reduce(
+        (acc, corporateMaster, i) => {
+          const originalHolding =
+            i === 0 ? folio.noOfShares : acc[i - 1].consolidatedHolding;
+
+          const exchange = Math.floor(
+            Number(corporateMaster.numerator) !== 0 &&
+              Number(corporateMaster.denominator) !== 0
+              ? (Number(originalHolding ?? 0) *
+                  Number(corporateMaster.numerator ?? 0)) /
+                  Number(corporateMaster.denominator ?? 0)
+              : 0
+          );
+
+          const consolidatedHolding = Number(originalHolding) + exchange;
+
+          acc.push({
+            type: corporateMaster.type,
+            date: corporateMaster.date,
+            numerator: corporateMaster.numerator,
+            denominator: corporateMaster.denominator,
+            originalHolding,
+            exchange: exchange.toString(),
+            consolidatedHolding: consolidatedHolding.toString(),
+          });
+
+          return acc;
+        },
+        [] as Array<{
+          type: string;
+          date: Date;
+          numerator: string | null | undefined;
+          denominator: string | null | undefined;
+          originalHolding: string | null | undefined;
+          exchange: string;
+          consolidatedHolding: string;
+        }>
+      );
+
+      // Final consolidated holding
+      const finalConsolidatedHolding =
+        test[test.length - 1]?.consolidatedHolding;
+      return finalConsolidatedHolding;
+    }
+  }
+  return "0";
+}
+
+export async function getCompanyMaster(
+  shareCertificateId: number
+): Promise<
+  Prisma.Args<typeof prisma.companyMaster, "create">["data"] | null
+> {
+  const shareCertificateMaster = await prisma.shareCertificateMaster.findUnique(
+    {
+      where: {
+        id: shareCertificateId,
+      },
+    }
+  );
+  if (shareCertificateMaster && shareCertificateMaster.companyID) {
+    const companyMaster = await prisma.companyMaster.findUnique({
+      where: {
+        id: shareCertificateMaster.companyID,
+      },
+    });
+    return companyMaster;
+  }
+  return null;
+};

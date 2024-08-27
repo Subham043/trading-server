@@ -36,6 +36,7 @@ import {
   createShareCertificateMasterUniqueSchema,
 } from "./schemas/create.schema";
 import { ZodError } from "zod";
+import { prisma } from "../../db";
 
 /**
  * Create a new shareCertificateMaster with the provided shareCertificateMaster information.
@@ -103,12 +104,37 @@ export async function list(
     page: querystring.page,
     size: querystring.limit,
   });
-  const shareCertificateMaster = await paginate(
+  const shareCertificateMasterData = await paginate(
     limit,
     offset,
     projectID,
     querystring.search
   );
+  const shareCertificateMaster = await Promise.all(shareCertificateMasterData.map(async (data) => {
+    const getFolioCount = await prisma.folio.count({
+      where: {
+        shareCertificateID: data.id
+      }
+    })
+    const shares = await prisma.folio.findMany({
+      where: {
+        shareCertificateID: data.id
+      },
+      select: {
+        noOfShares: true
+      }
+    })
+    const sum = shares.reduce(
+      (acc, record) => acc + Number(record.noOfShares ?? 0),
+      0
+    );
+    return {
+      ...data,
+      totalFolioCount: getFolioCount,
+      totalShares: sum,
+      totalValuation: sum * Number(data.companyMaster?.faceValue ?? 0)
+    };
+  }));
   const shareCertificateMasterCount = await count(
     projectID,
     querystring.search
