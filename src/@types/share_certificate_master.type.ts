@@ -24,6 +24,8 @@ type CompanyMasterQueryType = {
   CIN?: string | null | undefined;
   ISIN?: string | null | undefined;
   faceValue?: number | null | undefined;
+  closingPriceNSE?: number | null | undefined;
+  closingPriceBSE?: number | null | undefined;
   createdAt?: Date | null | undefined;
 };
 

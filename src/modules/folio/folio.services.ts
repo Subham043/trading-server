@@ -117,7 +117,7 @@ export async function list(
     folioData.map(async (data) => {
       const consolidatedHolding = await getConsolidatedHolding(data);
       const totalMarketValue =
-        Number(consolidatedHolding) * Number(company_master?.faceValue ?? 0);
+        Number(consolidatedHolding) * Number(company_master?.closingPriceNSE ?? 0);
       return {
         ...data,
         consolidatedHolding,
@@ -427,9 +427,9 @@ export async function getDividendMaster(
         }, {});
         const folio_year = folios.map((folio) => "'" +folio.year+"'" ).join(",");
         const query = `
-          SELECT "recorded_date", "financial_year", "dividend_per_share"
+          SELECT "recorded_date", EXTRACT(YEAR FROM "recorded_date") as recorded_year, "financial_year", "dividend_per_share"
           FROM public."DividendMaster"
-          WHERE "recorded_date" IN (${folio_year}) AND "companyID" = ${shareCertificateMaster.companyID}
+          WHERE EXTRACT(YEAR FROM "recorded_date") IN (${folio_year}) AND "companyID" = ${shareCertificateMaster.companyID}
           ORDER BY "recorded_date" ASC;
         `;
         const dividend_master: FolioDividendMasterType[] = await prisma.$queryRawUnsafe(
@@ -439,13 +439,16 @@ export async function getDividendMaster(
         const test: FolioDividendMasterType[] = [];
         dividend_master.map((dividendMaster, i) => {
           if (i === 0) {
-            const no_of_shares = Number(folio_collection[dividendMaster.recorded_date] ?? 0);
+            const no_of_shares = Number(
+              folio_collection[dividendMaster.recorded_year] ?? 0
+            );
             const total_dividend = Math.floor(
               no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
             );
             const cumulative_dividend = total_dividend;
             test.push({
               recorded_date: dividendMaster.recorded_date,
+              recorded_year: dividendMaster.recorded_year,
               financial_year: dividendMaster.financial_year,
               dividend_per_share: dividendMaster.dividend_per_share,
               no_of_shares: no_of_shares.toString(),
@@ -455,7 +458,7 @@ export async function getDividendMaster(
           } else {
             const old_cumulative_dividend = Number(test[i - 1].cumulative_dividend ?? 0);
             const no_of_shares = Number(
-              folio_collection[dividendMaster.recorded_date] ?? 0
+              folio_collection[dividendMaster.recorded_year] ?? 0
             );
             const total_dividend = Math.floor(
               no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
@@ -463,6 +466,7 @@ export async function getDividendMaster(
             const cumulative_dividend = total_dividend + old_cumulative_dividend;
             test.push({
               recorded_date: dividendMaster.recorded_date,
+              recorded_year: dividendMaster.recorded_year,
               financial_year: dividendMaster.financial_year,
               dividend_per_share: dividendMaster.dividend_per_share,
               no_of_shares: no_of_shares.toString(),

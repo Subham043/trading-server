@@ -61,7 +61,8 @@ export type FolioCorporateMasterType = {
 };
 
 export type FolioDividendMasterType = {
-  recorded_date: string;
+  recorded_date: Date;
+  recorded_year: number;
   financial_year?: string | null;
   dividend_per_share?: string | null;
   no_of_shares?: string | null;

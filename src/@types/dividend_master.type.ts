@@ -3,7 +3,7 @@ import { prisma } from "../db";
 
 export type DividendMasterType = {
   id: number;
-  recorded_date: string;
+  recorded_date: Date;
   financial_year?: string | null;
   dividend_per_share?: string | null;
   companyID?: number | null;
@@ -12,8 +12,10 @@ export type DividendMasterType = {
 
 export type DividendMasterCreateType = Omit<
   DividendMasterType,
-  "id" | "date" | "createdAt"
->;
+  "id" | "recorded_date" | "createdAt"
+> & {
+  recorded_date: Date | string | undefined;
+};
 
 export interface DividendMasterUpdateType extends DividendMasterCreateType {}
 

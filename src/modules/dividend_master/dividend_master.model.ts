@@ -16,7 +16,7 @@ export type DividendMasterExcelData = {
 
 export type DividendMasterExportExcelData = {
   id: number;
-  recorded_date: string;
+  recorded_date: Date;
   financial_year?: string | null | undefined;
   dividend_per_share?: string | null | undefined;
   companyID?: number | null | undefined;
@@ -68,12 +68,6 @@ export class DividendMasterModel {
       ? {
           ...wherecompanyMasterId,
           OR: [
-            {
-              recorded_date: {
-                contains: search,
-                mode: "insensitive",
-              },
-            },
             {
               financial_year: {
                 contains: search,

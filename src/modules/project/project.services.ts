@@ -34,6 +34,7 @@ import {
 import { PostExcelBody } from "../../common/schemas/excel.schema";
 import { createProjectBodySchema } from "./schemas/create.schema";
 import { ZodError } from "zod";
+import { prisma } from "../../db";
 
 /**
  * Create a new project with the provided project information.
@@ -93,7 +94,23 @@ export async function list(querystring: GetPaginationQuery): Promise<
     page: querystring.page,
     size: querystring.limit,
   });
-  const project = await paginate(limit, offset, querystring.search);
+  const projectData = await paginate(limit, offset, querystring.search);
+  const project = await Promise.all(projectData.map(async (project) => {
+    const share_certificate_master = await prisma.shareCertificateMaster.findMany({
+      where: {
+        projectID: project.id
+      },
+      select: {
+        id: true,
+        companyID: true,
+      },
+    })
+    const noOfCompanies = [...new Set(share_certificate_master.map((x) => x.companyID))].length ?? 0;
+    return {
+      ...project,
+      noOfCompanies,
+    };
+  }));
   const projectCount = await count(querystring.search);
   return {
     project,

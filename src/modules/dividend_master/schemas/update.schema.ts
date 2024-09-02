@@ -3,13 +3,15 @@ import { getById } from "../dividend_master.repository";
 
 export const updateDividendMasterBodySchema = z.object({
   recorded_date: z
-    .number({
-      errorMap: () => ({ message: "Recorded Date in Year must be a number" }),
+    .string({
+      errorMap: () => ({ message: "Recorder Date must be a string" }),
     })
-    .transform((value) => value.toString()),
+    .datetime({
+      message: "Recorder Date must be a valid date",
+    }),
   financial_year: z
-    .number({
-      errorMap: () => ({ message: "Financial year must be a number" }),
+    .string({
+      errorMap: () => ({ message: "Financial year must be a string" }),
     })
     .transform((value) => value.toString())
     .optional(),

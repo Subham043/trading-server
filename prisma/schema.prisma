@@ -296,7 +296,7 @@ model Project {
 
 model DividendMaster {
   id        Int      @id @default(autoincrement())
-  recorded_date String @db.VarChar(256)
+  recorded_date DateTime @default(now())
   financial_year String? @db.VarChar(256)
   dividend_per_share  String? @db.VarChar(256)
   companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)

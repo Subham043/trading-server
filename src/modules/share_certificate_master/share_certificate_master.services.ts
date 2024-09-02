@@ -121,9 +121,11 @@ export async function list(
         shareCertificateID: data.id
       },
       select: {
-        noOfShares: true
+        noOfShares: true,
+        Folio: true
       }
     })
+    const folios = shares.map((share) => share.Folio);
     const sum = shares.reduce(
       (acc, record) => acc + Number(record.noOfShares ?? 0),
       0
@@ -132,7 +134,11 @@ export async function list(
       ...data,
       totalFolioCount: getFolioCount,
       totalShares: sum,
-      totalValuation: sum * Number(data.companyMaster?.faceValue ?? 0)
+      folios: folios,
+      totalValuationInNse:
+        sum * Number(data.companyMaster?.closingPriceNSE ?? 0),
+      totalValuationInBse:
+        sum * Number(data.companyMaster?.closingPriceBSE ?? 0),
     };
   }));
   const shareCertificateMasterCount = await count(
