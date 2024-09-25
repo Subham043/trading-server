@@ -53,6 +53,16 @@ enum TruthType {
   No
 }
 
+enum CaseType {
+  ClaimSuspense
+  ClaimSuspenseTransmission
+  ClaimSuspenseTransmissionIssueDuplicate
+  ClaimSuspenseTransmissionIssueDuplicateTransposition
+  Transmission
+  TransmissionIssueDuplicate
+  TransmissionIssueDuplicateTransposition
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String  @db.VarChar(256)
@@ -289,6 +299,7 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   shareCertificateMasters ShareCertificateMaster[]
+  shareHolderMasters ShareHolderMaster[]
 
   @@index([userID], map: "userID_project")
 }
@@ -305,4 +316,82 @@ model DividendMaster {
   updatedAt DateTime @updatedAt @default(now())
 
   @@index([companyID], map: "companyID_dividend_master")
+}
+
+model ShareHolderMaster {
+  id        Int      @id @default(autoincrement())
+  caseType      CaseType     @default(ClaimSuspense)
+  noOfLegalHeir  String @db.VarChar(256)
+  transpositionOrder  String? @db.Text
+  project   Project? @relation(fields: [projectID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  projectID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  shareHolderDetails ShareHolderDetail[]
+
+  @@index([projectID], map: "projectID_shareHolderMasterkey")
+}
+
+model ShareHolderDetail {
+  id        Int      @id @default(autoincrement())
+  shareholderName  String? @db.VarChar(256)
+  shareholderNamePan  String? @db.VarChar(256)
+  shareholderNameAadhar  String? @db.VarChar(256)
+  shareholderNameAadharCertificate  String? @db.VarChar(256)
+  shareholderNameAadharCml  String? @db.VarChar(256)
+  namePan  String? @db.VarChar(256)
+  nameAadhar  String? @db.VarChar(256)
+  nameCml  String? @db.VarChar(256)
+  phone  String? @db.VarChar(256)
+  email  String? @db.VarChar(256)
+  aadhar  String? @db.VarChar(256)
+  pan  String? @db.VarChar(256)
+  dob  String? @db.VarChar(256)
+  age  String? @db.VarChar(256)
+  nationality  String? @db.VarChar(256)
+  placeOfBirth  String? @db.VarChar(256)
+  city  String? @db.VarChar(256)
+  state  String? @db.VarChar(256)
+  countryOfBirth  String? @db.VarChar(256)
+  DPID  String? @db.VarChar(256)
+  dematAccountNo  String? @db.VarChar(256)
+  nameBank  String? @db.VarChar(256)
+  bankName  String? @db.VarChar(256)
+  bankAddress  String? @db.Text
+  bankEmail  String? @db.VarChar(256)
+  bankPhone  String? @db.VarChar(256)
+  bankMICR  String? @db.VarChar(256)
+  bankIFS  String? @db.VarChar(256)
+  bankAccountNo  String? @db.VarChar(256)
+  bankAccountType  String? @db.VarChar(256)
+  addressBank  String? @db.Text
+  emailBank  String? @db.VarChar(256)
+  phoneBank  String? @db.VarChar(256)
+  pincodeBank  String? @db.VarChar(256)
+  isDeceased      TruthType     @default(No)
+  shareholderNameDeath  String? @db.VarChar(256)
+  dod  String? @db.VarChar(256)
+  isTestate      TruthType     @default(No)
+  proofOfSucession      TruthType     @default(No)
+  document  String? @db.Text
+  dateOfDocument  String? @db.VarChar(256)
+  isMinor      TruthType     @default(No)
+  dobMinor  String? @db.VarChar(256)
+  guardianName  String? @db.VarChar(256)
+  guardianRelationship  String? @db.VarChar(256)
+  guardianPan  String? @db.VarChar(256)
+  deceasedRelationship  String? @db.VarChar(256)
+  taxStatus  String? @db.VarChar(256)
+  selectClaimant  String? @db.VarChar(256)
+  statusClaimant  String? @db.VarChar(256)
+  percentageClaimant  String? @db.VarChar(256)
+  occupationClaimant  String? @db.VarChar(256)
+  politicalExposureClaimant  String? @db.VarChar(256)
+  annualIncomeClaimant  String? @db.VarChar(256)
+  shareHolderMaster   ShareHolderMaster? @relation(fields: [shareHolderMasterID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  shareHolderMasterID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([shareHolderMasterID], map: "shareHolderMasterID_shareHolderDetailkey")
 }

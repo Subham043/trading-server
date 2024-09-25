@@ -41,6 +41,7 @@ import { folioRoutes } from "../modules/folio/folio.routes";
 import { corporateMasterRoutes } from "../modules/corporate_master/corporate_master.routes";
 import { projectRoutes } from "../modules/project/project.routes";
 import { dividendMasterRoutes } from "../modules/dividend_master/dividend_master.routes";
+import { shareHolderMasterRoutes } from "../modules/share_holder_master/share_holder_master.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -133,6 +134,9 @@ export async function buildServer() {
   });
   await server.register(shareCertificateMasterRoutes, {
     prefix: "/api/share-certificate-masters",
+  });
+  await server.register(shareHolderMasterRoutes, {
+    prefix: "/api/share-holder-masters",
   });
   await server.register(folioRoutes, {
     prefix: "/api/folios",
