@@ -102,3 +102,20 @@ export const getProjectIdParamSchema = z
   .required();
 
 export type GetProjectIdParam = z.infer<typeof getProjectIdParamSchema>;
+
+export const getShareHolderMasterIdParamSchema = z
+  .object({
+    shareHolderMasterId: z
+      .string({
+        errorMap: () => ({
+          message: "Share Holder Master ID must be a number",
+        }),
+      })
+      .regex(/^\d+$/, {
+        message: "Share Holder Master ID must be a number",
+      })
+      .transform((value) => parseInt(value)),
+  })
+  .required();
+
+export type GetShareHolderMasterIdParam = z.infer<typeof getShareHolderMasterIdParamSchema>;

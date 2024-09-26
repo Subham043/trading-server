@@ -21,10 +21,10 @@ import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 
 /**
- * Create a new shareCertificateMaster with the provided shareCertificateMaster information.
+ * Create a new shareHolderMaster with the provided shareHolderMaster information.
  *
- * @param {ShareHolderMasterCreateType} shareCertificateMaster - the shareCertificateMaster information
- * @return {Promise<ShareHolderMasterType>} a promise that resolves with the created shareCertificateMaster data
+ * @param {ShareHolderMasterCreateType} shareHolderMaster - the shareHolderMaster information
+ * @return {Promise<ShareHolderMasterType>} a promise that resolves with the created shareHolderMaster data
  */
 export async function create(
   data: ShareHolderMasterCreateType,
@@ -51,21 +51,21 @@ export async function update(
 }
 
 /**
- * Find a shareCertificateMaster by ID.
+ * Find a shareHolderMaster by ID.
  *
- * @param {GetIdParam} params - the parameters for finding the shareCertificateMaster
- * @return {Promise<ShareHolderMasterType>} the shareCertificateMaster found by ID
+ * @param {GetIdParam} params - the parameters for finding the shareHolderMaster
+ * @return {Promise<ShareHolderMasterType>} the shareHolderMaster found by ID
  */
 export async function findById(
   params: GetIdParam
 ): Promise<ShareHolderMasterType> {
   const { id } = params;
 
-  const shareCertificateMaster = await getById(id);
-  if (!shareCertificateMaster) {
+  const shareHolderMaster = await getById(id);
+  if (!shareHolderMaster) {
     throw new NotFoundError();
   }
-  return shareCertificateMaster;
+  return shareHolderMaster;
 }
 
 export async function findInfoById(
@@ -73,45 +73,45 @@ export async function findInfoById(
 ): Promise<ShareHolderMasterMainType> {
   const { id } = params;
 
-  const shareCertificateMaster = await getInfoById(id);
-  if (!shareCertificateMaster) {
+  const shareHolderMaster = await getInfoById(id);
+  if (!shareHolderMaster) {
     throw new NotFoundError();
   }
-  return shareCertificateMaster;
+  return shareHolderMaster;
 }
 
 /**
- * Find shareCertificateMaster by pagination.
+ * Find shareHolderMaster by pagination.
  *
- * @param {GetPaginationQuery} querystring - the parameters for finding the shareCertificateMaster
- * @return {Promise<{shareCertificateMaster:ShareHolderMasterType[]} & PaginationType>} the shareCertificateMaster found by ID
+ * @param {GetPaginationQuery} querystring - the parameters for finding the shareHolderMaster
+ * @return {Promise<{shareHolderMaster:ShareHolderMasterType[]} & PaginationType>} the shareHolderMaster found by ID
  */
 export async function list(
   querystring: GetPaginationQuery,
   projectID: number
 ): Promise<
   {
-    shareCertificateMaster: ShareHolderMasterType[];
+    shareHolderMaster: ShareHolderMasterType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const shareCertificateMaster = await paginate(
+  const shareHolderMaster = await paginate(
     limit,
     offset,
     projectID,
     querystring.search
   );
-  const shareCertificateMasterCount = await count(
+  const shareHolderMasterCount = await count(
     projectID,
     querystring.search
   );
   return {
-    shareCertificateMaster,
+    shareHolderMaster,
     ...getPaginationKeys({
-      count: shareCertificateMasterCount,
+      count: shareHolderMasterCount,
       page: querystring.page,
       size: querystring.limit,
     }),
@@ -119,10 +119,10 @@ export async function list(
 }
 
 /**
- * Destroys a shareCertificateMaster based on the provided parameters.
+ * Destroys a shareHolderMaster based on the provided parameters.
  *
- * @param {GetIdParam} params - the parameters for destroying the shareCertificateMaster
- * @return {Promise<ShareHolderMasterType>} the destroyed shareCertificateMaster
+ * @param {GetIdParam} params - the parameters for destroying the shareHolderMaster
+ * @return {Promise<ShareHolderMasterType>} the destroyed shareHolderMaster
  */
 export async function destroy(
   params: GetIdParam
