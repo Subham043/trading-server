@@ -86,7 +86,7 @@ model User {
 model Token {
   id        Int      @id @default(autoincrement())
   token  String @db.Text
-  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: SetNull)
   userId Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -113,7 +113,7 @@ model FailedExcel {
   id        Int      @id @default(autoincrement())
   file_name  String @db.Text
   file_of  String @db.VarChar(256)
-  user   User? @relation(fields: [createdBy], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  user   User? @relation(fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: SetNull)
   createdBy Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -125,7 +125,7 @@ model RegistrarMaster {
   id        Int      @id @default(autoincrement())
   registrar_name  String @db.VarChar(256)
   sebi_regn_id  String @db.VarChar(256)
-  user   User? @relation(fields: [createdBy], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  user   User? @relation(fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: SetNull)
   createdBy Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -150,7 +150,7 @@ model RegistrarMasterBranch {
   phoneContactPerson  String? @db.VarChar(256)
   officerAssigned  String? @db.VarChar(256)
   branch  String? @db.VarChar(256)
-  registrarMaster   RegistrarMaster? @relation(fields: [registrarMasterID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  registrarMaster   RegistrarMaster? @relation(fields: [registrarMasterID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   registrarMasterID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -178,9 +178,9 @@ model CompanyMaster {
   designationContactPerson  String? @db.VarChar(256)
   emailContactPerson  String? @db.VarChar(256)
   phoneContactPerson  String? @db.VarChar(256)
-  user   User? @relation(fields: [createdBy], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  user   User? @relation(fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: SetNull)
   createdBy Int?
-  registrarMasterBranch   RegistrarMasterBranch? @relation(fields: [registrarMasterBranchId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  registrarMasterBranch   RegistrarMasterBranch? @relation(fields: [registrarMasterBranchId], references: [id], onDelete: Cascade, onUpdate: SetNull)
   registrarMasterBranchId Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -200,7 +200,7 @@ model NameChangeMaster {
   previousName  String? @db.VarChar(256)
   currentName  String? @db.VarChar(256)
   dateNameChange DateTime @default(now())
-  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   companyID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -226,7 +226,7 @@ model SecurityTypeMaster {
   isinNumber  String? @db.VarChar(256)
   distinctiveNosFrom  String? @db.VarChar(256)
   distinctiveNosTo  String? @db.VarChar(256)
-  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   companyID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -243,9 +243,9 @@ model ShareCertificateMaster {
   endorsementShareholderName1  String? @db.VarChar(256)
   endorsementShareholderName2  String? @db.VarChar(256)
   endorsementShareholderName3  String? @db.VarChar(256)
-  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   companyID Int?
-  project   Project? @relation(fields: [projectID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  project   Project? @relation(fields: [projectID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   projectID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -269,7 +269,7 @@ model Folio {
   faceValue  Float? @db.DoublePrecision @default(0.0)
   distinctiveNosFrom  String? @db.VarChar(256)
   distinctiveNosTo  String? @db.VarChar(256)
-  shareCertificateMaster   ShareCertificateMaster? @relation(fields: [shareCertificateID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  shareCertificateMaster   ShareCertificateMaster? @relation(fields: [shareCertificateID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   shareCertificateID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -283,7 +283,7 @@ model CorporateMaster {
   type      CorporateActionType     @default(Bonus)
   numerator  String? @db.VarChar(256)
   denominator  String? @db.VarChar(256)
-  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   companyID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -294,7 +294,7 @@ model CorporateMaster {
 model Project {
   id        Int      @id @default(autoincrement())
   name  String @db.VarChar(256)
-  createdBy   User? @relation(fields: [userID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  createdBy   User? @relation(fields: [userID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   userID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -310,7 +310,7 @@ model DividendMaster {
   recorded_date DateTime @default(now())
   financial_year String? @db.VarChar(256)
   dividend_per_share  String? @db.VarChar(256)
-  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  companyMaster   CompanyMaster? @relation(fields: [companyID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   companyID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -323,7 +323,7 @@ model ShareHolderMaster {
   caseType      CaseType     @default(ClaimSuspense)
   noOfLegalHeir  String @db.VarChar(256)
   transpositionOrder  String? @db.Text
-  project   Project? @relation(fields: [projectID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  project   Project? @relation(fields: [projectID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   projectID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
@@ -337,8 +337,8 @@ model ShareHolderDetail {
   shareholderName  String? @db.VarChar(256)
   shareholderNamePan  String? @db.VarChar(256)
   shareholderNameAadhar  String? @db.VarChar(256)
-  shareholderNameAadharCertificate  String? @db.VarChar(256)
-  shareholderNameAadharCml  String? @db.VarChar(256)
+  shareholderNameCertificate  String? @db.VarChar(256)
+  shareholderNameCml  String? @db.VarChar(256)
   namePan  String? @db.VarChar(256)
   nameAadhar  String? @db.VarChar(256)
   nameCml  String? @db.VarChar(256)
@@ -388,7 +388,7 @@ model ShareHolderDetail {
   occupationClaimant  String? @db.VarChar(256)
   politicalExposureClaimant  String? @db.VarChar(256)
   annualIncomeClaimant  String? @db.VarChar(256)
-  shareHolderMaster   ShareHolderMaster? @relation(fields: [shareHolderMasterID], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  shareHolderMaster   ShareHolderMaster? @relation(fields: [shareHolderMasterID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   shareHolderMasterID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())

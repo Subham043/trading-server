@@ -24,7 +24,7 @@ export const createShareHolderDetailBodySchema = z.object({
     })
     .trim()
     .optional(),
-  shareholderNameAadharCertificate: z
+  shareholderNameCertificate: z
     .string({
       errorMap: () => ({
         message: "shareholder name as per certificate must be a string",
@@ -32,7 +32,7 @@ export const createShareHolderDetailBodySchema = z.object({
     })
     .trim()
     .optional(),
-  shareholderNameAadharCml: z
+  shareholderNameCml: z
     .string({
       errorMap: () => ({
         message: "shareholder name as per cml must be a string",
@@ -172,6 +172,14 @@ export const createShareHolderDetailBodySchema = z.object({
     .string({
       errorMap: () => ({
         message: "name as per bank must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  bankName: z
+    .string({
+      errorMap: () => ({
+        message: "bank name must be a string",
       }),
     })
     .trim()
