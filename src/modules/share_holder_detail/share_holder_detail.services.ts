@@ -19,10 +19,10 @@ import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 
 /**
- * Create a new shareCertificateMaster with the provided shareCertificateMaster information.
+ * Create a new shareHolderDetail with the provided shareHolderDetail information.
  *
- * @param {ShareHolderDetailRepoCreateType} shareCertificateMaster - the shareCertificateMaster information
- * @return {Promise<ShareHolderDetailType>} a promise that resolves with the created shareCertificateMaster data
+ * @param {ShareHolderDetailRepoCreateType} shareHolderDetail - the shareHolderDetail information
+ * @return {Promise<ShareHolderDetailType>} a promise that resolves with the created shareHolderDetail data
  */
 export async function create(
   data: Omit<ShareHolderDetailRepoCreateType, "shareHolderMasterID">,
@@ -49,55 +49,55 @@ export async function update(
 }
 
 /**
- * Find a shareCertificateMaster by ID.
+ * Find a shareHolderDetail by ID.
  *
- * @param {GetIdParam} params - the parameters for finding the shareCertificateMaster
- * @return {Promise<ShareHolderDetailType>} the shareCertificateMaster found by ID
+ * @param {GetIdParam} params - the parameters for finding the shareHolderDetail
+ * @return {Promise<ShareHolderDetailType>} the shareHolderDetail found by ID
  */
 export async function findById(
   params: GetIdParam
 ): Promise<ShareHolderDetailType> {
   const { id } = params;
 
-  const shareCertificateMaster = await getById(id);
-  if (!shareCertificateMaster) {
+  const shareHolderDetail = await getById(id);
+  if (!shareHolderDetail) {
     throw new NotFoundError();
   }
-  return shareCertificateMaster;
+  return shareHolderDetail;
 }
 
 /**
- * Find shareCertificateMaster by pagination.
+ * Find shareHolderDetail by pagination.
  *
- * @param {GetPaginationQuery} querystring - the parameters for finding the shareCertificateMaster
- * @return {Promise<{shareCertificateMaster:ShareHolderDetailType[]} & PaginationType>} the shareCertificateMaster found by ID
+ * @param {GetPaginationQuery} querystring - the parameters for finding the shareHolderDetail
+ * @return {Promise<{shareHolderDetail:ShareHolderDetailType[]} & PaginationType>} the shareHolderDetail found by ID
  */
 export async function list(
   querystring: GetPaginationQuery,
   shareHolderMasterID: number
 ): Promise<
   {
-    shareCertificateMaster: ShareHolderDetailType[];
+    shareHolderDetail: ShareHolderDetailType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const shareCertificateMaster = await paginate(
+  const shareHolderDetail = await paginate(
     limit,
     offset,
     shareHolderMasterID,
     querystring.search
   );
-  const shareCertificateMasterCount = await count(
+  const shareHolderDetailCount = await count(
     shareHolderMasterID,
     querystring.search
   );
   return {
-    shareCertificateMaster,
+    shareHolderDetail,
     ...getPaginationKeys({
-      count: shareCertificateMasterCount,
+      count: shareHolderDetailCount,
       page: querystring.page,
       size: querystring.limit,
     }),
@@ -105,10 +105,10 @@ export async function list(
 }
 
 /**
- * Destroys a shareCertificateMaster based on the provided parameters.
+ * Destroys a shareHolderDetail based on the provided parameters.
  *
- * @param {GetIdParam} params - the parameters for destroying the shareCertificateMaster
- * @return {Promise<ShareHolderDetailType>} the destroyed shareCertificateMaster
+ * @param {GetIdParam} params - the parameters for destroying the shareHolderDetail
+ * @return {Promise<ShareHolderDetailType>} the destroyed shareHolderDetail
  */
 export async function destroy(
   params: GetIdParam

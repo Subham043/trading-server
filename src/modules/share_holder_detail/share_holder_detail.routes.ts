@@ -12,7 +12,7 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import {
   getIdParamSchema,
   getIdsBodySchema,
-  getProjectIdParamSchema,
+  getShareHolderMasterIdParamSchema,
 } from "../../common/schemas/id_param.schema";
 import { createShareHolderDetailBodySchema } from "./schemas/create.schema";
 
@@ -22,7 +22,7 @@ export async function shareHolderDetailRoutes(app: FastifyInstance) {
     {
       schema: {
         querystring: getPaginationQuerySchema,
-        params: getProjectIdParamSchema,
+        params: getShareHolderMasterIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
@@ -43,7 +43,7 @@ export async function shareHolderDetailRoutes(app: FastifyInstance) {
     {
       schema: {
         body: createShareHolderDetailBodySchema,
-        params: getProjectIdParamSchema,
+        params: getShareHolderMasterIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
