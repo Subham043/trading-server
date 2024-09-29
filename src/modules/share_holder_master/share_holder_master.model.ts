@@ -24,6 +24,7 @@ export const ShareHolderMasterColumn = {
   id: true,
   caseType: true,
   noOfLegalHeir: true,
+  transpositionOrder: true,
   projectID: true,
   createdAt: true,
 };

@@ -4,6 +4,7 @@ import {
   downloadFailedExcelByFileName,
   downloadFailedExcelById,
   listFailedExcels,
+  sendImageStream,
 } from "./upload.controller";
 import { getIdParamSchema } from "../../common/schemas/id_param.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
@@ -36,5 +37,15 @@ export async function uploadRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     listFailedExcels
+  );
+  app.get(
+    "/images/:id",
+    {
+      schema: {
+        params: getUuidParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    sendImageStream
   );
 }

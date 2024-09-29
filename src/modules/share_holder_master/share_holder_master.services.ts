@@ -50,6 +50,13 @@ export async function update(
   return await updateShareHolderMaster(data, param.id);
 }
 
+export async function updateTransposition(
+  data: { transpositionOrder: string },
+  param: GetIdParam
+): Promise<ShareHolderMasterType | null> {
+  return await updateShareHolderMaster(data, param.id);
+}
+
 /**
  * Find a shareHolderMaster by ID.
  *

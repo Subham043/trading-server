@@ -7,6 +7,7 @@ import {
   removeMultipleShareHolderMaster,
   removeShareHolderMaster,
   updateShareHolderMaster,
+  updateShareHolderMasterTransposition,
 } from "./share_holder_master.controller";
 import { updateShareHolderMasterBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
@@ -16,6 +17,7 @@ import {
   getProjectIdParamSchema,
 } from "../../common/schemas/id_param.schema";
 import { createShareHolderMasterBodySchema } from "./schemas/create.schema";
+import { updateShareHolderMasterTranspositionBodySchema } from "./schemas/transposition.schema";
 
 export async function shareHolderMasterRoutes(app: FastifyInstance) {
   app.get(
@@ -70,6 +72,17 @@ export async function shareHolderMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     updateShareHolderMaster
+  );
+  app.put(
+    "/transposition/:id",
+    {
+      schema: {
+        body: updateShareHolderMasterTranspositionBodySchema,
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    updateShareHolderMasterTransposition
   );
   app.delete(
     "/:id",

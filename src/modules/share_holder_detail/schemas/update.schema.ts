@@ -1,5 +1,14 @@
 import { z } from "zod";
 import { getById } from "../share_holder_detail.repository";
+import { MultipartFile } from "../../../@types/multipart_file.type";
+
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 5; // 5MB
+const ACCEPTED_FILE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/jpg",
+  "image/webp",
+];
 
 export const updateShareHolderDetailBodySchema = z.object({
   shareholderName: z
@@ -309,14 +318,6 @@ export const updateShareHolderDetailBodySchema = z.object({
       }),
     })
     .optional(),
-  document: z
-    .string({
-      errorMap: () => ({
-        message: "document must be a string",
-      }),
-    })
-    .trim()
-    .optional(),
   dateOfDocument: z
     .string({
       errorMap: () => ({
@@ -428,6 +429,21 @@ export const updateShareHolderDetailBodySchema = z.object({
     })
     .trim()
     .optional(),
+  document: z
+    .any()
+    .refine((document) => {
+      if (document) {
+        return ACCEPTED_FILE_TYPES.includes(document.mimetype);
+      }
+      return true;
+    }, "Invalid photo file type")
+    .refine(
+      (document) => (document ? document.size <= MAX_UPLOAD_SIZE : true),
+      "File size must be less than 3MB"
+    )
+    .transform((document) =>
+      document ? (document as MultipartFile) : undefined
+    ),
 });
 
 export const updateShareHolderDetailUniqueSchema = z.object({

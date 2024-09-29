@@ -19,6 +19,7 @@ import {
 import {
   shareHolderMasterIdSchema,
 } from "./schemas/create.schema";
+import { MultipartFile } from "../../@types/multipart_file.type";
 
 export async function listShareHolderDetail(
   request: FastifyRequest<{
@@ -68,7 +69,12 @@ export async function getShareHolderDetail(
 export async function createShareHolderDetail(
   request: FastifyRequest<{
     Params: GetShareHolderMasterIdParam;
-    Body: Omit<ShareHolderDetailRepoUpdateType, "shareHolderMasterID" | "id" | "createdAt">;
+    Body: Omit<
+      ShareHolderDetailRepoUpdateType,
+      "shareHolderMasterID" | "document" | "id" | "createdAt"
+    > & {
+      document?: MultipartFile | null | undefined;
+    };
   }>,
   reply: FastifyReply
 ): Promise<void> {
@@ -93,7 +99,9 @@ export async function createShareHolderDetail(
  */
 export async function updateShareHolderDetail(
   request: FastifyRequest<{
-    Body: ShareHolderDetailRepoUpdateType;
+    Body: ShareHolderDetailRepoUpdateType & {
+      document?: MultipartFile | null | undefined;
+    };
     Params: GetIdParam;
   }>,
   reply: FastifyReply

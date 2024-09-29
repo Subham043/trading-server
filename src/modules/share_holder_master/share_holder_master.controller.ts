@@ -7,6 +7,7 @@ import {
   findInfoById,
   list,
   update,
+  updateTransposition,
 } from "./share_holder_master.services";
 import {
   GetIdParam,
@@ -116,6 +117,22 @@ export async function updateShareHolderMaster(
   reply: FastifyReply
 ): Promise<void> {
   const result = await update(request.body, request.params);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Share Holder Master Updated",
+    data: result,
+  });
+}
+
+export async function updateShareHolderMasterTransposition(
+  request: FastifyRequest<{
+    Body: { transpositionOrder: string };
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await updateTransposition(request.body, request.params);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
