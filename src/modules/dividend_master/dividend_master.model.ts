@@ -8,9 +8,9 @@ import {
 } from "../../@types/dividend_master.type";
 
 export type DividendMasterExcelData = {
-  recorded_date: string;
+  recorded_date: string | undefined;
   financial_year: string | undefined;
-  dividend_per_share: string | undefined;
+  dividend_per_share: number | undefined;
   companyID: number;
 };
 

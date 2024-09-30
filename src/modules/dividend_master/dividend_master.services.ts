@@ -201,9 +201,11 @@ export async function importExcel(
   worksheet?.eachRow(async function (row, rowNumber) {
     if (rowNumber > 1) {
       const dividendMasterData = {
-        recorded_date: row.getCell(1).value?.toString() || '',
+        recorded_date: (
+          row.getCell(1).value as Date | undefined
+        )?.toISOString(),
         financial_year: row.getCell(2).value?.toString(),
-        dividend_per_share: row.getCell(3).value?.toString(),
+        dividend_per_share: Number(row.getCell(3).value?.toString()),
         companyID: Number(row.getCell(4).value?.toString()),
       };
       dividendMasterInsertData.push(dividendMasterData);
@@ -219,6 +221,7 @@ export async function importExcel(
       });
       await createDividendMaster({
         ...dividendMasterInsertData[i],
+        dividend_per_share: dividendMasterInsertData[i].dividend_per_share?.toString(),
         companyMasterId: dividendMasterInsertData[i].companyID,
       });
       successCount = successCount + 1;

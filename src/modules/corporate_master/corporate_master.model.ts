@@ -9,9 +9,9 @@ import {
 
 export type CorporateMasterExcelData = {
   type: "Equity" | "Bonus" | "Splits" | "Rights" | "ShareBought";
-  date: Date;
-  numerator: string | undefined;
-  denominator: string | undefined;
+  date: string | undefined;
+  numerator: number | undefined;
+  denominator: number | undefined;
   companyID: number;
 };
 

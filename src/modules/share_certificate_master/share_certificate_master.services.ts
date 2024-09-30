@@ -229,7 +229,9 @@ export async function importExcel(
           | "Warrant",
         endorsement: row.getCell(2).value?.toString() as "Yes" | "No",
         endorsementFolio: row.getCell(3).value?.toString(),
-        endorsementDate: row.getCell(4).value?.toString(),
+        endorsementDate: (
+          row.getCell(4).value as Date | undefined
+        )?.toISOString(),
         endorsementShareholderName1: row.getCell(5).value?.toString(),
         endorsementShareholderName2: row.getCell(6).value?.toString(),
         endorsementShareholderName3: row.getCell(7).value?.toString(),

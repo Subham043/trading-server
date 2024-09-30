@@ -207,13 +207,10 @@ export async function importExcel(
           | "Splits"
           | "Rights"
           | "ShareBought",
-        date: row.getCell(2).value?.toString()
-          ? (new Date(row.getCell(2).value!.toString()) as Date)
-          : (new Date() as Date),
-        numerator: row.getCell(3).value?.toString(),
-        denominator: row.getCell(4).value?.toString(),
-        originalHolding: row.getCell(5).value?.toString(),
-        companyID: Number(row.getCell(6).value?.toString()),
+        date: (row.getCell(2).value as Date | undefined)?.toISOString(),
+        numerator: Number(row.getCell(3).value?.toString()),
+        denominator: Number(row.getCell(4).value?.toString()),
+        companyID: Number(row.getCell(5).value?.toString()),
       };
       corporateMasterInsertData.push(corporateMasterData);
     }
@@ -228,6 +225,8 @@ export async function importExcel(
       });
       await createCorporateMaster({
         ...corporateMasterInsertData[i],
+        numerator: corporateMasterInsertData[i].numerator?.toString(),
+        denominator: corporateMasterInsertData[i].denominator?.toString(),
         companyMasterId: corporateMasterInsertData[i].companyID,
       });
       successCount = successCount + 1;
