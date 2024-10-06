@@ -4,21 +4,29 @@ import { getById as getByProjectId } from "../../project/project.repository";
 export const createShareHolderMasterBodySchema = z.object({
   caseType: z.enum(
     [
-      "ClaimSuspense",
-      "ClaimSuspenseTransmission",
-      "ClaimSuspenseTransmissionIssueDuplicate",
-      "ClaimSuspenseTransmissionIssueDuplicateTransposition",
+      "Claim",
+      "ClaimTransposition",
+      "ClaimIssueDuplicate",
       "Transmission",
       "TransmissionIssueDuplicate",
       "TransmissionIssueDuplicateTransposition",
+      "Deletion",
+      "DeletionIssueDuplicate",
+      "DeletionIssueDuplicateTransposition",
     ],
     {
       errorMap: () => ({
         message:
-          "Case Type must be one of [ClaimSuspense, ClaimSuspenseTransmission, ClaimSuspenseTransmissionIssueDuplicate, ClaimSuspenseTransmissionIssueDuplicateTransposition, Transmission, TransmissionIssueDuplicate, TransmissionIssueDuplicateTransposition]",
+          "Case Type must be one of [Claim, ClaimTransposition, ClaimIssueDuplicate, Transmission, TransmissionIssueDuplicate, TransmissionIssueDuplicateTransposition, Deletion, DeletionIssueDuplicate, DeletionIssueDuplicateTransposition]",
       }),
     }
   ),
+  noOfShareHolder: z
+    .string({
+      errorMap: () => ({ message: "No. Of Share Holder must be a string" }),
+    })
+    .trim()
+    .optional(),
   noOfLegalHeir: z
     .string({
       errorMap: () => ({ message: "No. Of Legal Heir must be a string" }),

@@ -17,8 +17,6 @@ import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
 import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
-import { deleteImage, saveImage } from "../../utils/file";
-import { MultipartFile } from "../../@types/multipart_file.type";
 
 /**
  * Create a new shareHolderDetail with the provided shareHolderDetail information.
@@ -27,18 +25,11 @@ import { MultipartFile } from "../../@types/multipart_file.type";
  * @return {Promise<ShareHolderDetailType>} a promise that resolves with the created shareHolderDetail data
  */
 export async function create(
-  data: Omit<ShareHolderDetailRepoCreateType, "shareHolderMasterID"> & {
-    document?: MultipartFile | null | undefined;
-  },
+  data: Omit<ShareHolderDetailRepoCreateType, "shareHolderMasterID">,
   shareHolderMasterID: number
 ): Promise<ShareHolderDetailType | null> {
-  let saveDocumentFile: string | null = null;
-  if (data.document) {
-    saveDocumentFile = await saveImage(data.document);
-  }
   return await createShareHolderDetail({
     ...data,
-    document: saveDocumentFile,
     shareHolderMasterID,
   });
 }
@@ -51,21 +42,10 @@ export async function create(
  * @return {Promise<ShareHolderDetailType>} the updated ShareHolderDetailType information
  */
 export async function update(
-  data: ShareHolderDetailRepoUpdateType & {
-    document?: MultipartFile | null | undefined;
-  },
+  data: ShareHolderDetailRepoUpdateType,
   param: GetIdParam
 ): Promise<ShareHolderDetailType | null> {
-  const existingCriminal = await getById(param.id);
-  let saveDocumentFile: string | null | undefined = null;
-  if (data.document) {
-    saveDocumentFile = await saveImage(data.document);
-    existingCriminal?.document &&
-      deleteImage(existingCriminal.document);
-  } else {
-    saveDocumentFile = existingCriminal?.document;
-  }
-  return await updateShareHolderDetail({...data, document: saveDocumentFile}, param.id);
+  return await updateShareHolderDetail({...data}, param.id);
 }
 
 /**

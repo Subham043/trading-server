@@ -43,6 +43,7 @@ import { projectRoutes } from "../modules/project/project.routes";
 import { dividendMasterRoutes } from "../modules/dividend_master/dividend_master.routes";
 import { shareHolderMasterRoutes } from "../modules/share_holder_master/share_holder_master.routes";
 import { shareHolderDetailRoutes } from "../modules/share_holder_detail/share_holder_detail.routes";
+import { legalHeirDetailRoutes } from "../modules/legal_heir_detail/legal_heir_detail.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -141,6 +142,9 @@ export async function buildServer() {
   });
   await server.register(shareHolderDetailRoutes, {
     prefix: "/api/share-holder-details",
+  });
+  await server.register(legalHeirDetailRoutes, {
+    prefix: "/api/legal-heir-details",
   });
   await server.register(folioRoutes, {
     prefix: "/api/folios",

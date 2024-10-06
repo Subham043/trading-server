@@ -4,13 +4,16 @@ import { prisma } from "../db";
 export type ShareHolderMasterMainType = {
   id: number;
   caseType:
-    | "ClaimSuspense"
-    | "ClaimSuspenseTransmission"
-    | "ClaimSuspenseTransmissionIssueDuplicate"
-    | "ClaimSuspenseTransmissionIssueDuplicateTransposition"
+    | "Claim"
+    | "ClaimIssueDuplicate"
+    | "ClaimTransposition"
     | "Transmission"
     | "TransmissionIssueDuplicate"
-    | "TransmissionIssueDuplicateTransposition";
+    | "TransmissionIssueDuplicateTransposition"
+    | "Deletion"
+    | "DeletionIssueDuplicate"
+    | "DeletionIssueDuplicateTransposition";
+  noOfShareHolder: string;
   noOfLegalHeir: string;
   transpositionOrder?: string | null;
   projectID?: number | null;
@@ -21,13 +24,16 @@ export type ShareHolderMasterMainType = {
 export type ShareHolderMasterType = {
   id: number;
   caseType:
-    | "ClaimSuspense"
-    | "ClaimSuspenseTransmission"
-    | "ClaimSuspenseTransmissionIssueDuplicate"
-    | "ClaimSuspenseTransmissionIssueDuplicateTransposition"
+    | "Claim"
+    | "ClaimIssueDuplicate"
+    | "ClaimTransposition"
     | "Transmission"
     | "TransmissionIssueDuplicate"
-    | "TransmissionIssueDuplicateTransposition";
+    | "TransmissionIssueDuplicateTransposition"
+    | "Deletion"
+    | "DeletionIssueDuplicate"
+    | "DeletionIssueDuplicateTransposition";
+  noOfShareHolder: string;
   noOfLegalHeir: string;
   transpositionOrder?: string | null;
   projectID?: number | null;

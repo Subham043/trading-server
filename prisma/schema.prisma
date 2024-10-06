@@ -54,13 +54,15 @@ enum TruthType {
 }
 
 enum CaseType {
-  ClaimSuspense
-  ClaimSuspenseTransmission
-  ClaimSuspenseTransmissionIssueDuplicate
-  ClaimSuspenseTransmissionIssueDuplicateTransposition
+  Claim
+  ClaimTransposition
+  ClaimIssueDuplicate
   Transmission
   TransmissionIssueDuplicate
   TransmissionIssueDuplicateTransposition
+  Deletion
+  DeletionIssueDuplicate
+  DeletionIssueDuplicateTransposition
 }
 
 model User {
@@ -320,14 +322,16 @@ model DividendMaster {
 
 model ShareHolderMaster {
   id        Int      @id @default(autoincrement())
-  caseType      CaseType     @default(ClaimSuspense)
-  noOfLegalHeir  String @db.VarChar(256)
+  caseType      CaseType     @default(Claim)
+  noOfShareHolder  String @db.VarChar(256) @default("0")
+  noOfLegalHeir  String @db.VarChar(256) @default("0")
   transpositionOrder  String? @db.Text
   project   Project? @relation(fields: [projectID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   projectID Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   shareHolderDetails ShareHolderDetail[]
+  legalHeirDetails LegalHeirDetail[]
 
   @@index([projectID], map: "projectID_shareHolderMasterkey")
 }
@@ -335,10 +339,7 @@ model ShareHolderMaster {
 model ShareHolderDetail {
   id        Int      @id @default(autoincrement())
   shareholderName  String? @db.VarChar(256)
-  shareholderNamePan  String? @db.VarChar(256)
-  shareholderNameAadhar  String? @db.VarChar(256)
   shareholderNameCertificate  String? @db.VarChar(256)
-  shareholderNameCml  String? @db.VarChar(256)
   namePan  String? @db.VarChar(256)
   nameAadhar  String? @db.VarChar(256)
   nameCml  String? @db.VarChar(256)
@@ -368,6 +369,16 @@ model ShareHolderDetail {
   emailBank  String? @db.VarChar(256)
   phoneBank  String? @db.VarChar(256)
   pincodeBank  String? @db.VarChar(256)
+  shareHolderMaster   ShareHolderMaster? @relation(fields: [shareHolderMasterID], references: [id], onDelete: Cascade, onUpdate: SetNull)
+  shareHolderMasterID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([shareHolderMasterID], map: "shareHolderMasterID_shareHolderDetailkey")
+}
+
+model LegalHeirDetail {
+  id        Int      @id @default(autoincrement())
   isDeceased      TruthType     @default(No)
   shareholderNameDeath  String? @db.VarChar(256)
   dod  String? @db.VarChar(256)
@@ -393,5 +404,5 @@ model ShareHolderDetail {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
-  @@index([shareHolderMasterID], map: "shareHolderMasterID_shareHolderDetailkey")
+  @@index([shareHolderMasterID], map: "shareHolderMasterID_legalHeirDetailkey")
 }

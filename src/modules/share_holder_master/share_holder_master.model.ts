@@ -9,14 +9,17 @@ import {
 
 export type ShareHolderMasterExcelData = {
   caseType:
-    | "ClaimSuspense"
-    | "ClaimSuspenseTransmission"
-    | "ClaimSuspenseTransmissionIssueDuplicate"
-    | "ClaimSuspenseTransmissionIssueDuplicateTransposition"
+    | "Claim"
+    | "ClaimIssueDuplicate"
+    | "ClaimTransposition"
     | "Transmission"
     | "TransmissionIssueDuplicate"
-    | "TransmissionIssueDuplicateTransposition";
+    | "TransmissionIssueDuplicateTransposition"
+    | "Deletion"
+    | "DeletionIssueDuplicate"
+    | "DeletionIssueDuplicateTransposition";
   noOfLegalHeir?: string | null;
+  noOfShareHolder?: string | null;
   projectID: number;
 };
 
@@ -24,6 +27,7 @@ export const ShareHolderMasterColumn = {
   id: true,
   caseType: true,
   noOfLegalHeir: true,
+  noOfShareHolder: true,
   transpositionOrder: true,
   projectID: true,
   createdAt: true,
@@ -49,6 +53,10 @@ export class ShareHolderMasterModel {
           OR: [
             {
               noOfLegalHeir: {
+                contains: search,
+                mode: "insensitive",
+              },
+              noOfShareHolder: {
                 contains: search,
                 mode: "insensitive",
               },
