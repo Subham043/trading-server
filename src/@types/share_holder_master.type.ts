@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db";
+import { LegalHeirDetailType } from "./legal_heir_detail.type";
 
 export type ShareHolderMasterMainType = {
   id: number;
@@ -19,6 +20,7 @@ export type ShareHolderMasterMainType = {
   projectID?: number | null;
   createdAt?: Date | null;
   shareHolderDetails: ShareHolderDetailType[];
+  legalHeirDetails: LegalHeirDetailType[];
 };
 
 export type ShareHolderMasterType = {

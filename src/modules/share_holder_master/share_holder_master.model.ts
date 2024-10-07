@@ -113,6 +113,7 @@ export class ShareHolderMasterModel {
       select: {
         ...ShareHolderMasterColumn,
         shareHolderDetails: true,
+        legalHeirDetails: true
       },
     });
 
