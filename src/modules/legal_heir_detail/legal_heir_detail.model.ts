@@ -23,14 +23,56 @@ export class LegalHeirDetailModel {
     return search
       ? {
           ...whereProjectID,
-          // OR: [
-          //   {
-          //     noOfLegalHeir: {
-          //       contains: search,
-          //       mode: "insensitive",
-          //     },
-          //   },
-          // ],
+          OR: [
+            {
+              shareholderNameDeath: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              guardianName: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              guardianRelationship: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              guardianPan: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              taxStatus: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              selectClaimant: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              statusClaimant: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              occupationClaimant: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
         }
       : {
           ...whereProjectID,
