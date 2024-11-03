@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import {
   createShareHolderMaster,
+  generateShareHolderMasterDoc,
   getShareHolderMaster,
   getShareHolderMasterInfo,
   listShareHolderMaster,
@@ -40,6 +41,16 @@ export async function shareHolderMasterRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     getShareHolderMasterInfo
+  );
+  app.get(
+    "/generate-docs/:id",
+    {
+      schema: {
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    generateShareHolderMasterDoc
   );
   app.get(
     "/:id",

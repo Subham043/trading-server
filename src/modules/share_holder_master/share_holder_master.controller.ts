@@ -5,6 +5,7 @@ import {
   destroyMultiple,
   findById,
   findInfoById,
+  generateDoc,
   list,
   update,
   updateTransposition,
@@ -22,6 +23,8 @@ import {
 import {
   projectIdSchema,
 } from "./schemas/create.schema";
+import fs from "fs";
+import path from "path";
 
 export async function listShareHolderMaster(
   request: FastifyRequest<{
@@ -175,4 +178,18 @@ export async function removeMultipleShareHolderMaster(
     success: true,
     message: "Share Holder Masters Removed",
   });
+}
+
+export async function generateShareHolderMasterDoc(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await generateDoc(request.params);
+  const filePath = path.resolve(__dirname, result);
+  const fileStream = fs.createReadStream(filePath);
+  return reply
+    .header("Content-Disposition", 'attachment; filename="docs.zip"')
+    .send(fileStream)
 }
