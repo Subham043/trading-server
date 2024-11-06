@@ -4,40 +4,35 @@
 //   destroy,
 //   destroyMultiple,
 //   findById,
-//   findInfoById,
-//   generateDoc,
 //   list,
 //   update,
-//   updateTransposition,
-// } from "./share_holder_master.services";
+// } from "./legal_heir_detail.services";
 // import {
 //   GetIdParam,
 //   GetIdsBody,
-//   GetProjectIdParam,
+//   GetShareHolderMasterIdParam,
 // } from "../../common/schemas/id_param.schema";
 // import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 // import {
-//   ShareHolderMasterCreateType,
-//   ShareHolderMasterUpdateType,
-// } from "../../@types/share_holder_master.type";
+//   LegalHeirDetailRepoUpdateType,
+// } from "../../@types/legal_heir_detail.type";
 // import {
-//   projectIdSchema,
+//   shareHolderMasterIdSchema,
 // } from "./schemas/create.schema";
-// import fs from "fs";
-// import path from "path";
+// import { MultipartFile } from "../../@types/multipart_file.type";
 
-// export async function listShareHolderMaster(
+// export async function listLegalHeirDetail(
 //   request: FastifyRequest<{
-//     Params: GetProjectIdParam;
+//     Params: GetShareHolderMasterIdParam;
 //     Querystring: GetPaginationQuery;
 //   }>,
 //   reply: FastifyReply
 // ) {
-//   const result = await list(request.query, request.params.projectId);
+//   const result = await list(request.query, request.params.shareHolderMasterId);
 //   return reply.code(200).type("application/json").send({
 //     code: 200,
 //     success: true,
-//     message: "Share Holder Masters Fetched",
+//     message: "Legal Heir Details Fetched",
 //     data: result,
 //   });
 // }
@@ -49,7 +44,7 @@
 //  * @param {FastifyReply} reply - the reply object for sending the response
 //  * @return {Promise<void>} a promise resolving to the fetched shareHolderMaster data
 //  */
-// export async function getShareHolderMaster(
+// export async function getLegalHeirDetail(
 //   request: FastifyRequest<{
 //     Params: GetIdParam;
 //   }>,
@@ -59,22 +54,7 @@
 //   return reply.code(200).type("application/json").send({
 //     code: 200,
 //     success: true,
-//     message: "Share Holder Master Fetched",
-//     data: result,
-//   });
-// }
-
-// export async function getShareHolderMasterInfo(
-//   request: FastifyRequest<{
-//     Params: GetIdParam;
-//   }>,
-//   reply: FastifyReply
-// ): Promise<void> {
-//   const result = await findInfoById(request.params);
-//   return reply.code(200).type("application/json").send({
-//     code: 200,
-//     success: true,
-//     message: "Share Holder Master Fetched",
+//     message: "Legal Heir Detail Fetched",
 //     data: result,
 //   });
 // }
@@ -86,21 +66,26 @@
 //  * @param {FastifyReply} reply - the reply object for sending the response
 //  * @return {Promise<void>} A promise that resolves when the shareHolderMaster is successfully created
 //  */
-// export async function createShareHolderMaster(
+// export async function createLegalHeirDetail(
 //   request: FastifyRequest<{
-//     Params: GetProjectIdParam;
-//     Body: ShareHolderMasterCreateType;
+//     Params: GetShareHolderMasterIdParam;
+//     Body: Omit<
+//       LegalHeirDetailRepoUpdateType,
+//       "shareHolderMasterID" | "document" | "id" | "createdAt"
+//     > & {
+//       document?: MultipartFile | null | undefined;
+//     };
 //   }>,
 //   reply: FastifyReply
 // ): Promise<void> {
-//   await projectIdSchema.parseAsync({
-//     projectId: request.params.projectId,
+//   await shareHolderMasterIdSchema.parseAsync({
+//     shareHolderMasterId: request.params.shareHolderMasterId,
 //   });
-//   const result = await create(request.body, request.params.projectId);
+//   const result = await create(request.body, request.params.shareHolderMasterId);
 //   return reply.code(201).type("application/json").send({
 //     code: 201,
 //     success: true,
-//     message: "Share Holder Master Created",
+//     message: "Legal Heir Detail Created",
 //     data: result,
 //   });
 // }
@@ -112,9 +97,11 @@
 //  * @param {FastifyReply} reply - The reply object for sending the response
 //  * @return {Promise<void>} A promise that resolves when the shareHolderMaster is successfully updated
 //  */
-// export async function updateShareHolderMaster(
+// export async function updateLegalHeirDetail(
 //   request: FastifyRequest<{
-//     Body: ShareHolderMasterUpdateType;
+//     Body: LegalHeirDetailRepoUpdateType & {
+//       document?: MultipartFile | null | undefined;
+//     };
 //     Params: GetIdParam;
 //   }>,
 //   reply: FastifyReply
@@ -123,23 +110,7 @@
 //   return reply.code(200).type("application/json").send({
 //     code: 200,
 //     success: true,
-//     message: "Share Holder Master Updated",
-//     data: result,
-//   });
-// }
-
-// export async function updateShareHolderMasterTransposition(
-//   request: FastifyRequest<{
-//     Body: { transpositionOrder: string };
-//     Params: GetIdParam;
-//   }>,
-//   reply: FastifyReply
-// ): Promise<void> {
-//   const result = await updateTransposition(request.body, request.params);
-//   return reply.code(200).type("application/json").send({
-//     code: 200,
-//     success: true,
-//     message: "Share Holder Master Updated",
+//     message: "Legal Heir Detail Updated",
 //     data: result,
 //   });
 // }
@@ -151,7 +122,7 @@
 //  * @param {FastifyReply} reply - The reply object for sending the response
 //  * @return {Promise<void>} A promise that resolves after removing the shareHolderMaster
 //  */
-// export async function removeShareHolderMaster(
+// export async function removeLegalHeirDetail(
 //   request: FastifyRequest<{
 //     Params: GetIdParam;
 //   }>,
@@ -161,12 +132,12 @@
 //   return reply.code(200).type("application/json").send({
 //     code: 200,
 //     success: true,
-//     message: "Share Holder Master Removed",
+//     message: "Legal Heir Detail Removed",
 //     data: result,
 //   });
 // }
 
-// export async function removeMultipleShareHolderMaster(
+// export async function removeMultipleLegalHeirDetail(
 //   request: FastifyRequest<{
 //     Body: GetIdsBody;
 //   }>,
@@ -176,20 +147,6 @@
 //   return reply.code(200).type("application/json").send({
 //     code: 200,
 //     success: true,
-//     message: "Share Holder Masters Removed",
+//     message: "Legal Heir Details Removed",
 //   });
-// }
-
-// export async function generateShareHolderMasterDoc(
-//   request: FastifyRequest<{
-//     Params: GetIdParam;
-//   }>,
-//   reply: FastifyReply
-// ): Promise<void> {
-//   const result = await generateDoc(request.params);
-//   const filePath = path.resolve(__dirname, result);
-//   const fileStream = fs.createReadStream(filePath);
-//   return reply
-//     .header("Content-Disposition", 'attachment; filename="docs.zip"')
-//     .send(fileStream)
 // }

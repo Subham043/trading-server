@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db";
+import { ShareHolderDetailType } from "./share_holder_detail.type";
 
 type ShareCertificateMasterQueryType = {
   instrumentType:
@@ -18,15 +19,27 @@ export type FolioType = {
   Folio: string;
   certificateNumber?: string | null | undefined;
   certificateSerialNumber?: string | null | undefined;
-  shareholderName1?: string | null | undefined;
-  shareholderName2?: string | null | undefined;
-  shareholderName3?: string | null | undefined;
+  shareholderName1?: ShareHolderDetailType | null | undefined;
+  shareholderName1ID?: number | null | undefined;
+  shareholderName2?: ShareHolderDetailType | null | undefined;
+  shareholderName2ID?: number | null | undefined;
+  shareholderName3?: ShareHolderDetailType | null | undefined;
+  shareholderName3ID?: number | null | undefined;
   noOfShares?: string | null | undefined;
   noOfSharesWords?: string | null | undefined;
   dateOfAllotment?: Date | null | undefined;
   faceValue: number | null | undefined;
   distinctiveNosFrom?: string | null | undefined;
   distinctiveNosTo?: string | null | undefined;
+  endorsement: "Yes" | "No";
+  endorsementFolio?: string | null;
+  endorsementDate?: Date | null;
+  endorsementShareholderName1?: ShareHolderDetailType | null;
+  endorsementShareholderName1ID?: number | null;
+  endorsementShareholderName2?: ShareHolderDetailType | null;
+  endorsementShareholderName2ID?: number | null;
+  endorsementShareholderName3?: ShareHolderDetailType | null;
+  endorsementShareholderName3ID?: number | null;
   shareCertificateMaster?: ShareCertificateMasterQueryType | null;
   shareCertificateID?: number | null;
   createdAt?: Date | null | undefined;
@@ -34,9 +47,20 @@ export type FolioType = {
 
 export type FolioCreateType = Omit<
   FolioType,
-  "id" | "dateOfAllotment" | "createdAt" | "shareCertificateMaster"
+  | "id"
+  | "endorsementDate"
+  | "dateOfAllotment"
+  | "createdAt"
+  | "shareCertificateMaster"
+  | "shareholderName1"
+  | "shareholderName2"
+  | "shareholderName3"
+  | "endorsementShareholderName1"
+  | "endorsementShareholderName2"
+  | "endorsementShareholderName3"
 > & {
   dateOfAllotment: Date | string | undefined;
+  endorsementDate: Date | string | undefined;
 };
 
 export interface FolioUpdateType extends FolioCreateType {}

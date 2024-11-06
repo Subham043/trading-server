@@ -12,50 +12,6 @@ export const updateShareCertificateMasterBodySchema = z.object({
       }),
     }
   ),
-  endorsement: z.enum(["Yes", "No"], {
-    errorMap: () => ({
-      message: "Endorsement must be one of [Yes , No]",
-    }),
-  }),
-  endorsementFolio: z
-    .string({
-      errorMap: () => ({ message: "Endorsement Folio must be a string" }),
-    })
-    .trim()
-    .optional(),
-  endorsementDate: z
-    .string({
-      errorMap: () => ({ message: "Endorsement Date must be a string" }),
-    })
-    .datetime({
-      message: "Endorsement Date must be a valid date",
-    })
-    .trim()
-    .optional(),
-  endorsementShareholderName1: z
-    .string({
-      errorMap: () => ({
-        message: "Endorsement Shareholder Name 1 must be a string",
-      }),
-    })
-    .trim()
-    .optional(),
-  endorsementShareholderName2: z
-    .string({
-      errorMap: () => ({
-        message: "Endorsement Shareholder Name 2 must be a string",
-      }),
-    })
-    .trim()
-    .optional(),
-  endorsementShareholderName3: z
-    .string({
-      errorMap: () => ({
-        message: "Endorsement Shareholder Name 3 must be a string",
-      }),
-    })
-    .trim()
-    .optional(),
   companyID: z
     .number({
       errorMap: () => ({ message: "Company Id must be number" }),

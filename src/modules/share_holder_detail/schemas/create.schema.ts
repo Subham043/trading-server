@@ -1,21 +1,19 @@
 import { z } from "zod";
-import { getById } from "../../share_holder_master/share_holder_master.repository";
+import { getById } from "../../project/project.repository";
 
 export const createShareHolderDetailBodySchema = z.object({
   shareholderName: z
     .string({
       errorMap: () => ({ message: "shareholder name must be a string" }),
     })
-    .trim()
-    .optional(),
+    .trim(),
   shareholderNameCertificate: z
     .string({
       errorMap: () => ({
         message: "shareholder name as per certificate must be a string",
       }),
     })
-    .trim()
-    .optional(),
+    .trim(),
   namePan: z
     .string({
       errorMap: () => ({
@@ -250,19 +248,19 @@ export const createShareHolderDetailBodySchema = z.object({
     .optional(),
 });
 
-export const shareHolderMasterIdSchema = z
+export const projectIdSchema = z
   .object({
-    shareHolderMasterId: z
+    projectId: z
       .number({
         errorMap: () => ({ message: "project ID must be a number" }),
       })
-      .superRefine(async (shareHolderMasterId, ctx) => {
-        const project = await getById(shareHolderMasterId);
+      .superRefine(async (projectId, ctx) => {
+        const project = await getById(projectId);
         if (!project) {
           ctx.addIssue({
             code: "custom",
-            message: "Invalid share holder master Id",
-            path: ["shareHolderMasterId"],
+            message: "Invalid project Id",
+            path: ["projectId"],
           });
           return false;
         }

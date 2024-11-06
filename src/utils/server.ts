@@ -41,7 +41,6 @@ import { folioRoutes } from "../modules/folio/folio.routes";
 import { corporateMasterRoutes } from "../modules/corporate_master/corporate_master.routes";
 import { projectRoutes } from "../modules/project/project.routes";
 import { dividendMasterRoutes } from "../modules/dividend_master/dividend_master.routes";
-import { shareHolderMasterRoutes } from "../modules/share_holder_master/share_holder_master.routes";
 import { shareHolderDetailRoutes } from "../modules/share_holder_detail/share_holder_detail.routes";
 import { legalHeirDetailRoutes } from "../modules/legal_heir_detail/legal_heir_detail.routes";
 
@@ -136,9 +135,6 @@ export async function buildServer() {
   });
   await server.register(shareCertificateMasterRoutes, {
     prefix: "/api/share-certificate-masters",
-  });
-  await server.register(shareHolderMasterRoutes, {
-    prefix: "/api/share-holder-masters",
   });
   await server.register(shareHolderDetailRoutes, {
     prefix: "/api/share-holder-details",

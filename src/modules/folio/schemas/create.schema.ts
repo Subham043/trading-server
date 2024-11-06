@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { getById } from "../../share_certificate_master/share_certificate_master.repository";
+import { getById as getShareHolderDetailId } from "../../share_holder_detail/share_holder_detail.repository";
 
 export const createFolioBodySchema = z.object({
   equityType: z.enum(["Bonus", "Shares", "Splits", "Rights"], {
@@ -26,28 +27,25 @@ export const createFolioBodySchema = z.object({
     })
     .trim()
     .optional(),
-  shareholderName1: z
-    .string({
+  shareholderName1ID: z
+    .number({
       errorMap: () => ({
-        message: "Shareholder Name 1 must be a string",
+        message: "Shareholder Name 1 must be a number",
+      }),
+    }),
+  shareholderName2ID: z
+    .number({
+      errorMap: () => ({
+        message: "Shareholder Name 2 must be a number",
       }),
     })
-    .trim(),
-  shareholderName2: z
-    .string({
-      errorMap: () => ({
-        message: "Shareholder Name 2 must be a string",
-      }),
-    })
-    .trim()
     .optional(),
-  shareholderName3: z
-    .string({
+  shareholderName3ID: z
+    .number({
       errorMap: () => ({
-        message: "Shareholder Name 3 must be a string",
+        message: "Shareholder Name 3 must be a number",
       }),
     })
-    .trim()
     .optional(),
   noOfShares: z
     .string({
@@ -75,13 +73,13 @@ export const createFolioBodySchema = z.object({
     .trim()
     .optional(),
   faceValue: z
-    .number({
+    .string({
       errorMap: () => ({
         message: "Face Value must be a number",
       }),
     })
     .optional()
-    .catch(() => 0.0),
+    .transform((value) => (value ? parseFloat(value) : 0)),
   distinctiveNosFrom: z
     .string({
       errorMap: () => ({ message: "Distinctive Number From must be a string" }),
@@ -93,6 +91,47 @@ export const createFolioBodySchema = z.object({
       errorMap: () => ({ message: "Distinctive Number To must be a string" }),
     })
     .trim()
+    .optional(),
+  endorsement: z.enum(["Yes", "No"], {
+    errorMap: () => ({
+      message: "Endorsement must be one of [Yes , No]",
+    }),
+  }),
+  endorsementFolio: z
+    .string({
+      errorMap: () => ({ message: "Endorsement Folio must be a string" }),
+    })
+    .trim()
+    .optional(),
+  endorsementDate: z
+    .string({
+      errorMap: () => ({ message: "Endorsement Date must be a string" }),
+    })
+    .datetime({
+      message: "Endorsement Date must be a valid date",
+    })
+    .trim()
+    .optional(),
+  endorsementShareholderName1ID: z
+    .number({
+      errorMap: () => ({
+        message: "Endorsement Shareholder Name 1 must be a number",
+      }),
+    })
+    .optional(),
+  endorsementShareholderName2ID: z
+    .number({
+      errorMap: () => ({
+        message: "Endorsement Shareholder Name 2 must be a number",
+      }),
+    })
+    .optional(),
+  endorsementShareholderName3ID: z
+    .number({
+      errorMap: () => ({
+        message: "Endorsement Shareholder Name 3 must be a number",
+      }),
+    })
     .optional(),
 });
 
@@ -111,6 +150,123 @@ export const shareCertificateIdSchema = z
             path: ["shareCertificateId"],
           });
           return false;
+        }
+      }),
+    shareholderName1ID: z
+      .number({
+        errorMap: () => ({
+          message: "Shareholder Name 1 must be a number",
+        }),
+      })
+      .superRefine(async (shareholderName1ID, ctx) => {
+        const shareHolder = await getShareHolderDetailId(shareholderName1ID);
+        if (!shareHolder) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Invalid share holder detail Id",
+            path: ["shareholderName1ID"],
+          });
+          return false;
+        }
+      }),
+    shareholderName2ID: z
+      .number({
+        errorMap: () => ({
+          message: "Shareholder Name 2 must be a number",
+        }),
+      })
+      .optional()
+      .superRefine(async (shareholderName2ID, ctx) => {
+        if (shareholderName2ID) {
+          const shareHolder = await getShareHolderDetailId(shareholderName2ID);
+          if (!shareHolder) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Invalid share holder detail Id",
+              path: ["shareholderName2ID"],
+            });
+            return false;
+          }
+        }
+      }),
+    shareholderName3ID: z
+      .number({
+        errorMap: () => ({
+          message: "Shareholder Name 3 must be a number",
+        }),
+      })
+      .optional()
+      .superRefine(async (shareholderName3ID, ctx) => {
+        if (shareholderName3ID) {
+          const shareHolder = await getShareHolderDetailId(shareholderName3ID);
+          if (!shareHolder) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Invalid share holder detail Id",
+              path: ["shareholderName3ID"],
+            });
+            return false;
+          }
+        }
+      }),
+    endorsementShareholderName1ID: z
+      .number({
+        errorMap: () => ({
+          message: "Endorsement Shareholder Name 1 must be a number",
+        }),
+      })
+      .optional()
+      .superRefine(async (endorsementShareholderName1ID, ctx) => {
+        if (endorsementShareholderName1ID) {
+          const shareHolder = await getShareHolderDetailId(endorsementShareholderName1ID);
+          if (!shareHolder) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Invalid share holder detail Id",
+              path: ["endorsementShareholderName1ID"],
+            });
+            return false;
+          }
+        }
+      }),
+    endorsementShareholderName2ID: z
+      .number({
+        errorMap: () => ({
+          message: "Endorsement Shareholder Name 2 must be a number",
+        }),
+      })
+      .optional()
+      .superRefine(async (endorsementShareholderName2ID, ctx) => {
+        if (endorsementShareholderName2ID) {
+          const shareHolder = await getShareHolderDetailId(endorsementShareholderName2ID);
+          if (!shareHolder) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Invalid share holder detail Id",
+              path: ["endorsementShareholderName1ID"],
+            });
+            return false;
+          }
+        }
+      }),
+    endorsementShareholderName3ID: z
+      .number({
+        errorMap: () => ({
+          message: "Endorsement Shareholder Name 3 must be a number",
+        }),
+      })
+      .optional()
+      .superRefine(async (endorsementShareholderName3ID, ctx) => {
+        if (endorsementShareholderName3ID) {
+          const shareHolder = await getShareHolderDetailId(endorsementShareholderName3ID);
+          if (!shareHolder) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Invalid share holder detail Id",
+              path: ["endorsementShareholderName1ID"],
+            });
+            return false;
+          }
         }
       }),
   })

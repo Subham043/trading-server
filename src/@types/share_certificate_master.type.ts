@@ -39,12 +39,6 @@ export type ShareCertificateMasterType = {
     | "REiT"
     | "Equity"
     | "Warrant";
-  endorsement: "Yes" | "No";
-  endorsementFolio?: string | null;
-  endorsementDate?: Date | null;
-  endorsementShareholderName1?: string | null;
-  endorsementShareholderName2?: string | null;
-  endorsementShareholderName3?: string | null;
   companyMaster?: CompanyMasterQueryType | null;
   companyID?: number | null;
   projectID?: number | null;
@@ -53,10 +47,8 @@ export type ShareCertificateMasterType = {
 
 export type ShareCertificateMasterCreateType = Omit<
   ShareCertificateMasterType,
-  "id" | "endorsementDate" | "createdAt" | "projectID" | "companyMaster"
-> & {
-  endorsementDate: Date | string | undefined;
-};
+  "id" | "createdAt" | "projectID" | "companyMaster"
+>;
 
 export interface ShareCertificateMasterUpdateType
   extends ShareCertificateMasterCreateType {}

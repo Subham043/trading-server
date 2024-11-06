@@ -12,62 +12,80 @@ export class LegalHeirDetailModel {
   ) {}
 
   searchQuery({
-    shareHolderMasterID,
+    projectID,
     search,
   }: {
-    shareHolderMasterID?: number;
+    projectID?: number;
     search?: string;
   }): Prisma.LegalHeirDetailWhereInput {
-    const whereProjectID = shareHolderMasterID ? { shareHolderMasterID: shareHolderMasterID } : {};
+    const whereProjectID = projectID ? { projectID: projectID } : {};
 
     return search
       ? {
           ...whereProjectID,
           OR: [
             {
-              shareholderNameDeath: {
+              namePan: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              guardianName: {
+              nameAadhar: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              guardianRelationship: {
+              nameCml: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              guardianPan: {
+              phone: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              taxStatus: {
+              email: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              selectClaimant: {
+              aadhar: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              statusClaimant: {
+              dematAccountNo: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              occupationClaimant: {
+              bankName: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              bankAccountNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              DPID: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              bankIFS: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -129,7 +147,7 @@ export class LegalHeirDetailModel {
   }
 
   async totalCount(params: {
-    shareHolderMasterID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<number> {
     // do some custom validation...
@@ -139,7 +157,7 @@ export class LegalHeirDetailModel {
   }
 
   async all(params: {
-    shareHolderMasterID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<LegalHeirDetailType[]> {
     // do some custom validation...
@@ -155,7 +173,7 @@ export class LegalHeirDetailModel {
   async paginate(params: {
     limit: number;
     offset: number;
-    shareHolderMasterID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<LegalHeirDetailType[]> {
     // do some custom validation...
@@ -164,7 +182,7 @@ export class LegalHeirDetailModel {
       take: params.limit,
       where: this.searchQuery({
         search: params.search,
-        shareHolderMasterID: params.shareHolderMasterID,
+        projectID: params.projectID,
       }),
       orderBy: {
         id: "desc",

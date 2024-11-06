@@ -12,17 +12,17 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import {
   getIdParamSchema,
   getIdsBodySchema,
-  getShareHolderMasterIdParamSchema,
+  getProjectIdParamSchema,
 } from "../../common/schemas/id_param.schema";
 import { createLegalHeirDetailBodySchema } from "./schemas/create.schema";
 
 export async function legalHeirDetailRoutes(app: FastifyInstance) {
   app.get(
-    "/list/:shareHolderMasterId",
+    "/list/:projectId",
     {
       schema: {
         querystring: getPaginationQuerySchema,
-        params: getShareHolderMasterIdParamSchema,
+        params: getProjectIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
@@ -39,11 +39,11 @@ export async function legalHeirDetailRoutes(app: FastifyInstance) {
     getLegalHeirDetail
   );
   app.post(
-    "/create/:shareHolderMasterId",
+    "/create/:projectId",
     {
       schema: {
         body: createLegalHeirDetailBodySchema,
-        params: getShareHolderMasterIdParamSchema,
+        params: getProjectIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },

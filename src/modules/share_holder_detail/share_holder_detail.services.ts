@@ -25,12 +25,12 @@ import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema
  * @return {Promise<ShareHolderDetailType>} a promise that resolves with the created shareHolderDetail data
  */
 export async function create(
-  data: Omit<ShareHolderDetailRepoCreateType, "shareHolderMasterID">,
-  shareHolderMasterID: number
+  data: Omit<ShareHolderDetailRepoCreateType, "projectID">,
+  projectID: number
 ): Promise<ShareHolderDetailType | null> {
   return await createShareHolderDetail({
     ...data,
-    shareHolderMasterID,
+    projectID,
   });
 }
 
@@ -74,7 +74,7 @@ export async function findById(
  */
 export async function list(
   querystring: GetPaginationQuery,
-  shareHolderMasterID: number
+  projectID: number
 ): Promise<
   {
     shareHolderDetail: ShareHolderDetailType[];
@@ -87,11 +87,11 @@ export async function list(
   const shareHolderDetail = await paginate(
     limit,
     offset,
-    shareHolderMasterID,
+    projectID,
     querystring.search
   );
   const shareHolderDetailCount = await count(
-    shareHolderMasterID,
+    projectID,
     querystring.search
   );
   return {

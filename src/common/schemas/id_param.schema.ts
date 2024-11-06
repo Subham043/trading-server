@@ -91,11 +91,11 @@ export const getProjectIdParamSchema = z
     projectId: z
       .string({
         errorMap: () => ({
-          message: "Share Certificate Master ID must be a number",
+          message: "Project ID must be a number",
         }),
       })
       .regex(/^\d+$/, {
-        message: "Share Certificate Master ID must be a number",
+        message: "Project ID must be a number",
       })
       .transform((value) => parseInt(value)),
   })

@@ -12,13 +12,13 @@ export class ShareHolderDetailModel {
   ) {}
 
   searchQuery({
-    shareHolderMasterID,
+    projectID,
     search,
   }: {
-    shareHolderMasterID?: number;
+    projectID?: number;
     search?: string;
   }): Prisma.ShareHolderDetailWhereInput {
-    const whereProjectID = shareHolderMasterID ? { shareHolderMasterID: shareHolderMasterID } : {};
+    const whereProjectID = projectID ? { projectID: projectID } : {};
 
     return search
       ? {
@@ -159,7 +159,7 @@ export class ShareHolderDetailModel {
   }
 
   async totalCount(params: {
-    shareHolderMasterID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<number> {
     // do some custom validation...
@@ -169,7 +169,7 @@ export class ShareHolderDetailModel {
   }
 
   async all(params: {
-    shareHolderMasterID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<ShareHolderDetailType[]> {
     // do some custom validation...
@@ -185,7 +185,7 @@ export class ShareHolderDetailModel {
   async paginate(params: {
     limit: number;
     offset: number;
-    shareHolderMasterID?: number;
+    projectID?: number;
     search?: string;
   }): Promise<ShareHolderDetailType[]> {
     // do some custom validation...
@@ -194,7 +194,7 @@ export class ShareHolderDetailModel {
       take: params.limit,
       where: this.searchQuery({
         search: params.search,
-        shareHolderMasterID: params.shareHolderMasterID,
+        projectID: params.projectID,
       }),
       orderBy: {
         id: "desc",

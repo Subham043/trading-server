@@ -12,15 +12,21 @@ export type FolioExcelData = {
   Folio: string;
   certificateNumber: string | undefined;
   certificateSerialNumber: string | undefined;
-  shareholderName1: string | undefined;
-  shareholderName2: string | undefined;
-  shareholderName3: string | undefined;
+  shareholderName1: number | undefined;
+  shareholderName2: number | undefined;
+  shareholderName3: number | undefined;
   noOfShares: string | undefined;
   noOfSharesWords: string | undefined;
   dateOfAllotment: string | undefined;
   faceValue: number | undefined;
   distinctiveNosFrom: string | undefined;
   distinctiveNosTo: string | undefined;
+  endorsement: "Yes" | "No";
+  endorsementFolio?: string | undefined;
+  endorsementDate?: string | undefined;
+  endorsementShareholderName1?: number | undefined;
+  endorsementShareholderName2?: number | undefined;
+  endorsementShareholderName3?: number | undefined;
   shareCertificateID: number;
 };
 
@@ -40,8 +46,11 @@ export type FolioExportExcelData = {
   Folio: string;
   certificateNumber: string | null | undefined;
   certificateSerialNumber: string | null | undefined;
+  shareholderName1ID: number | null | undefined;
   shareholderName1: string | null | undefined;
+  shareholderName2ID: number | null | undefined;
   shareholderName2: string | null | undefined;
+  shareholderName3ID: number | null | undefined;
   shareholderName3: string | null | undefined;
   noOfShares: string | null | undefined;
   noOfSharesWords: string | null | undefined;
@@ -49,6 +58,15 @@ export type FolioExportExcelData = {
   faceValue: number | null | undefined;
   distinctiveNosFrom: string | null | undefined;
   distinctiveNosTo: string | null | undefined;
+  endorsement: "Yes" | "No";
+  endorsementFolio?: string | null | undefined;
+  endorsementDate?: Date | null | undefined;
+  endorsementShareholderName1ID?: number | null | undefined;
+  endorsementShareholderName1?: string | null | undefined;
+  endorsementShareholderName2ID?: number | null | undefined;
+  endorsementShareholderName2?: string | null | undefined;
+  endorsementShareholderName3ID?: number | null | undefined;
+  endorsementShareholderName3?: string | null | undefined;
   shareCertificateID: number | null | undefined;
   createdAt: Date | null | undefined;
 };
@@ -67,6 +85,21 @@ export const ExcelFailedFolioColumn: WorksheetColumnsType = [
   { key: "faceValue", header: "Face Value" },
   { key: "distinctiveNosFrom", header: "Distinctive Numbers From" },
   { key: "distinctiveNosTo", header: "Distinctive Numbers To" },
+  { key: "endorsement", header: "Endorsement" },
+  { key: "endorsementFolio", header: "Endorsement Folio" },
+  { key: "endorsementDate", header: "Endorsement Date" },
+  {
+    key: "endorsementShareholderName1",
+    header: "Endorsement Shareholder Name 1",
+  },
+  {
+    key: "endorsementShareholderName2",
+    header: "Endorsement Shareholder Name 2",
+  },
+  {
+    key: "endorsementShareholderName3",
+    header: "Endorsement Shareholder Name 3",
+  },
   { key: "shareCertificateID", header: "Share Certificate Master Id" },
   { key: "error", header: "Error" },
 ];
@@ -87,6 +120,21 @@ export const ExcelFolioesColumns: WorksheetColumnsType = [
   { key: "faceValue", header: "Face Value" },
   { key: "distinctiveNosFrom", header: "Distinctive Numbers From" },
   { key: "distinctiveNosTo", header: "Distinctive Numbers To" },
+  { key: "endorsement", header: "Endorsement" },
+  { key: "endorsementFolio", header: "Endorsement Folio" },
+  { key: "endorsementDate", header: "Endorsement Date" },
+  {
+    key: "endorsementShareholderName1",
+    header: "Endorsement Shareholder Name 1",
+  },
+  {
+    key: "endorsementShareholderName2",
+    header: "Endorsement Shareholder Name 2",
+  },
+  {
+    key: "endorsementShareholderName3",
+    header: "Endorsement Shareholder Name 3",
+  },
   { key: "shareCertificateID", header: "Share Certificate Master Id" },
   { key: "createdAt", header: "Created At" },
 ];
@@ -110,6 +158,12 @@ export const FolioColumn = {
   faceValue: true,
   distinctiveNosFrom: true,
   distinctiveNosTo: true,
+  endorsement: true,
+  endorsementFolio: true,
+  endorsementDate: true,
+  endorsementShareholderName1: true,
+  endorsementShareholderName2: true,
+  endorsementShareholderName3: true,
   shareCertificateID: true,
   createdAt: true,
 };
@@ -152,20 +206,26 @@ export class FolioModel {
             },
             {
               shareholderName1: {
-                contains: search,
-                mode: "insensitive",
+                shareholderName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
               },
             },
             {
               shareholderName2: {
-                contains: search,
-                mode: "insensitive",
+                shareholderName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
               },
             },
             {
               shareholderName3: {
-                contains: search,
-                mode: "insensitive",
+                shareholderName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
               },
             },
             {
@@ -178,6 +238,36 @@ export class FolioModel {
               noOfSharesWords: {
                 contains: search,
                 mode: "insensitive",
+              },
+            },
+            {
+              endorsementFolio: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              endorsementShareholderName1: {
+                shareholderName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              endorsementShareholderName2: {
+                shareholderName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              endorsementShareholderName3: {
+                shareholderName: {
+                  contains: search,
+                  mode: "insensitive",
+                },
               },
             },
           ],
@@ -206,6 +296,7 @@ export class FolioModel {
 
   async updateById(data: FolioUpdateType, id: number): Promise<FolioType> {
     // do some custom validation...
+    console.log(data);
     return await this.prismaFolio.update({
       where: { id },
       data,

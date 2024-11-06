@@ -227,14 +227,6 @@ export async function importExcel(
           | "REiT"
           | "Equity"
           | "Warrant",
-        endorsement: row.getCell(2).value?.toString() as "Yes" | "No",
-        endorsementFolio: row.getCell(3).value?.toString(),
-        endorsementDate: (
-          row.getCell(4).value as Date | undefined
-        )?.toISOString(),
-        endorsementShareholderName1: row.getCell(5).value?.toString(),
-        endorsementShareholderName2: row.getCell(6).value?.toString(),
-        endorsementShareholderName3: row.getCell(7).value?.toString(),
         companyID: Number(row.getCell(8).value?.toString()),
         projectID,
       };
@@ -251,20 +243,6 @@ export async function importExcel(
       });
       const validatedShareCertificateMasterData = {
         instrumentType: shareCertificateMasterInsertData[i].instrumentType,
-        endorsement: shareCertificateMasterInsertData[i].endorsement,
-        endorsementFolio: shareCertificateMasterInsertData[i].endorsementFolio,
-        endorsementDate:
-          shareCertificateMasterInsertData[i].endorsementDate !== undefined
-            ? new Date(
-                shareCertificateMasterInsertData[i].endorsementDate as string
-              )
-            : undefined,
-        endorsementShareholderName1:
-          shareCertificateMasterInsertData[i].endorsementShareholderName1,
-        endorsementShareholderName2:
-          shareCertificateMasterInsertData[i].endorsementShareholderName2,
-        endorsementShareholderName3:
-          shareCertificateMasterInsertData[i].endorsementShareholderName3,
         companyID: Number(shareCertificateMasterInsertData[i].companyID),
         projectID,
       };

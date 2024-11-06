@@ -179,15 +179,27 @@ export async function exportExcel(
       Folio: folio.Folio,
       certificateNumber: folio.certificateNumber,
       certificateSerialNumber: folio.certificateSerialNumber,
-      shareholderName1: folio.shareholderName1,
-      shareholderName2: folio.shareholderName2,
-      shareholderName3: folio.shareholderName3,
+      shareholderName1ID: folio.shareholderName1ID,
+      shareholderName1: folio.shareholderName1?.shareholderName,
+      shareholderName2ID: folio.shareholderName2ID,
+      shareholderName2: folio.shareholderName2?.shareholderName,
+      shareholderName3ID: folio.shareholderName3ID,
+      shareholderName3: folio.shareholderName3?.shareholderName,
       noOfShares: folio.noOfShares,
       noOfSharesWords: folio.noOfSharesWords,
       dateOfAllotment: folio.dateOfAllotment,
       faceValue: folio.faceValue,
       distinctiveNosFrom: folio.distinctiveNosFrom,
       distinctiveNosTo: folio.distinctiveNosTo,
+      endorsement: folio.endorsement,
+      endorsementFolio: folio.endorsementFolio,
+      endorsementDate: folio.endorsementDate,
+      endorsementShareholderName1ID: folio.endorsementShareholderName1ID,
+      endorsementShareholderName1: folio.endorsementShareholderName1?.shareholderName,
+      endorsementShareholderName2ID: folio.endorsementShareholderName2ID,
+      endorsementShareholderName2: folio.endorsementShareholderName2?.shareholderName,
+      endorsementShareholderName3ID: folio.endorsementShareholderName3ID,
+      endorsementShareholderName3: folio.endorsementShareholderName3?.shareholderName,
       createdAt: folio.createdAt,
       shareCertificateID: folio.shareCertificateID,
     };
@@ -252,9 +264,9 @@ export async function importExcel(
         Folio: row.getCell(2).value?.toString() as string,
         certificateNumber: row.getCell(3).value?.toString(),
         certificateSerialNumber: row.getCell(4).value?.toString(),
-        shareholderName1: row.getCell(5).value?.toString(),
-        shareholderName2: row.getCell(6).value?.toString(),
-        shareholderName3: row.getCell(7).value?.toString(),
+        shareholderName1: Number(row.getCell(5).value?.toString()),
+        shareholderName2: Number(row.getCell(6).value?.toString()),
+        shareholderName3: Number(row.getCell(7).value?.toString()),
         noOfShares: row.getCell(8).value?.toString(),
         noOfSharesWords: row.getCell(9).value?.toString(),
         dateOfAllotment: (
@@ -262,7 +274,15 @@ export async function importExcel(
         )?.toISOString(),
         distinctiveNosFrom: row.getCell(12).value?.toString(),
         distinctiveNosTo: row.getCell(13).value?.toString(),
-        shareCertificateID: Number(row.getCell(14).value?.toString()),
+        endorsement: row.getCell(14).value?.toString() as "Yes" | "No",
+        endorsementFolio: row.getCell(15).value?.toString(),
+        endorsementDate: (
+          row.getCell(16).value as Date | undefined
+        )?.toISOString(),
+        endorsementShareholderName1: Number(row.getCell(17).value?.toString()),
+        endorsementShareholderName2: Number(row.getCell(18).value?.toString()),
+        endorsementShareholderName3: Number(row.getCell(19).value?.toString()),
+        shareCertificateID: Number(row.getCell(20).value?.toString()),
       };
       folioInsertData.push(folioData);
     }
@@ -276,6 +296,20 @@ export async function importExcel(
       await createFolio({
         ...folioInsertData[i],
         shareCertificateId: folioInsertData[i].shareCertificateID,
+        endorsement: folioInsertData[i].endorsement,
+        endorsementFolio: folioInsertData[i].endorsementFolio,
+        endorsementDate:
+          folioInsertData[i].endorsementDate !== undefined
+            ? new Date(
+                folioInsertData[i].endorsementDate as string
+              )
+            : undefined,
+        endorsementShareholderName1ID:
+          folioInsertData[i].endorsementShareholderName1,
+        endorsementShareholderName2ID:
+          folioInsertData[i].endorsementShareholderName2,
+        endorsementShareholderName3ID:
+          folioInsertData[i].endorsementShareholderName3,
       });
       successCount = successCount + 1;
     } catch (error) {

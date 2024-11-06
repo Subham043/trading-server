@@ -17,12 +17,6 @@ export type ShareCertificateMasterExcelData = {
     | "REiT"
     | "Equity"
     | "Warrant";
-  endorsement: "Yes" | "No";
-  endorsementFolio?: string | undefined;
-  endorsementDate?: string | undefined;
-  endorsementShareholderName1?: string | undefined;
-  endorsementShareholderName2?: string | undefined;
-  endorsementShareholderName3?: string | undefined;
   companyID: number;
   projectID: number;
 };
@@ -39,31 +33,10 @@ export type ShareCertificateMasterExportExcelData = {
     | "REiT"
     | "Equity"
     | "Warrant";
-  endorsement: "Yes" | "No";
-  endorsementFolio?: string | null | undefined;
-  endorsementDate?: string | null | undefined;
-  endorsementShareholderName1?: string | null | undefined;
-  endorsementShareholderName2?: string | null | undefined;
-  endorsementShareholderName3?: string | null | undefined;
 };
 
 export const ExcelFailedShareCertificateMasterColumn: WorksheetColumnsType = [
   { key: "instrumentType", header: "Instrument Type" },
-  { key: "endorsement", header: "Endorsement" },
-  { key: "endorsementFolio", header: "Endorsement Folio" },
-  { key: "endorsementDate", header: "Endorsement Date" },
-  {
-    key: "endorsementShareholderName1",
-    header: "Endorsement Shareholder Name 1",
-  },
-  {
-    key: "endorsementShareholderName2",
-    header: "Endorsement Shareholder Name 2",
-  },
-  {
-    key: "endorsementShareholderName3",
-    header: "Endorsement Shareholder Name 3",
-  },
   { key: "companyID", header: "Company Master Id" },
   { key: "projectID", header: "Project Id" },
   { key: "error", header: "Error" },
@@ -72,21 +45,6 @@ export const ExcelFailedShareCertificateMasterColumn: WorksheetColumnsType = [
 export const ExcelShareCertificateMastersColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "instrumentType", header: "Instrument Type" },
-  { key: "endorsement", header: "Endorsement" },
-  { key: "endorsementFolio", header: "Endorsement Folio" },
-  { key: "endorsementDate", header: "Endorsement Date" },
-  {
-    key: "endorsementShareholderName1",
-    header: "Endorsement Shareholder Name 1",
-  },
-  {
-    key: "endorsementShareholderName2",
-    header: "Endorsement Shareholder Name 2",
-  },
-  {
-    key: "endorsementShareholderName3",
-    header: "Endorsement Shareholder Name 3",
-  },
   { key: "companyID", header: "Company Master Id" },
   { key: "projectID", header: "Project Id" },
 ];
@@ -94,12 +52,6 @@ export const ExcelShareCertificateMastersColumns: WorksheetColumnsType = [
 export const ShareCertificateMasterColumn = {
   id: true,
   instrumentType: true,
-  endorsement: true,
-  endorsementFolio: true,
-  endorsementDate: true,
-  endorsementShareholderName1: true,
-  endorsementShareholderName2: true,
-  endorsementShareholderName3: true,
   projectID: true,
   createdAt: true,
 };
@@ -125,32 +77,6 @@ export class ShareCertificateMasterModel {
       ? {
           ...wherecompanyID,
           ...whereProjectID,
-          OR: [
-            {
-              endorsementFolio: {
-                contains: search,
-                mode: "insensitive",
-              },
-            },
-            {
-              endorsementShareholderName1: {
-                contains: search,
-                mode: "insensitive",
-              },
-            },
-            {
-              endorsementShareholderName2: {
-                contains: search,
-                mode: "insensitive",
-              },
-            },
-            {
-              endorsementShareholderName3: {
-                contains: search,
-                mode: "insensitive",
-              },
-            },
-          ],
         }
       : {
           ...wherecompanyID,

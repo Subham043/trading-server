@@ -6,10 +6,10 @@ import {
 import { legalHeirDetailModel } from "./legal_heir_detail.model";
 
 /**
- * Create a new shareHolderMaster with the provided data.
+ * Create a new project with the provided data.
  *
- * @param {LegalHeirDetailRepoCreateType} data - the data for creating the shareHolderMaster
- * @return {Promise<LegalHeirDetailType>} a promise that resolves to the newly created shareHolderMaster
+ * @param {LegalHeirDetailRepoCreateType} data - the data for creating the project
+ * @return {Promise<LegalHeirDetailType>} a promise that resolves to the newly created project
  */
 export async function createLegalHeirDetail(
   data: LegalHeirDetailRepoCreateType
@@ -18,11 +18,11 @@ export async function createLegalHeirDetail(
 }
 
 /**
- * Update shareHolderMaster information in the database.
+ * Update project information in the database.
  *
- * @param {UpdateLegalHeirDetailBody} data - the data to update the shareHolderMaster with
- * @param {number} id - the id of the shareHolderMaster to update
- * @return {Promise<LegalHeirDetailType>} the updated shareHolderMaster information
+ * @param {UpdateLegalHeirDetailBody} data - the data to update the project with
+ * @param {number} id - the id of the project to update
+ * @return {Promise<LegalHeirDetailType>} the updated project information
  */
 export async function updateLegalHeirDetail(
   data: LegalHeirDetailRepoUpdateType,
@@ -36,18 +36,18 @@ export async function updateLegalHeirDetail(
  *
  * @param {number} limit - the maximum number of items to retrieve
  * @param {number} offset - the number of items to skip before starting to return data
- * @return {Promise<LegalHeirDetailType[]>} the paginated shareHolderMaster data as a promise
+ * @return {Promise<LegalHeirDetailType[]>} the paginated project data as a promise
  */
 export async function paginate(
   limit: number,
   offset: number,
-  shareHolderMasterID: number,
+  projectID: number,
   search?: string
 ): Promise<LegalHeirDetailType[]> {
   return await legalHeirDetailModel.paginate({
     limit,
     offset,
-    shareHolderMasterID,
+    projectID,
     search,
   });
 }
@@ -56,14 +56,14 @@ export async function paginate(
  * Asynchronously get all the data from the database.
  *
  * @param {string} search - the maximum number of items to retrieve
- * @return {Promise<LegalHeirDetailType[]>} the paginated shareHolderMaster data as a promise
+ * @return {Promise<LegalHeirDetailType[]>} the paginated project data as a promise
  */
 export async function getAll(
-  shareHolderMasterID: number,
+  projectID: number,
   search?: string
 ): Promise<LegalHeirDetailType[]> {
   return await legalHeirDetailModel.all({
-    shareHolderMasterID,
+    projectID,
     search,
   });
 }
@@ -74,20 +74,20 @@ export async function getAll(
  * @return {Promise<number>} The number of records.
  */
 export async function count(
-  shareHolderMasterID: number,
+  projectID: number,
   search?: string
 ): Promise<number> {
   return await legalHeirDetailModel.totalCount({
     search,
-    shareHolderMasterID,
+    projectID,
   });
 }
 
 /**
- * Retrieves shareHolderMaster data by the given ID.
+ * Retrieves project data by the given ID.
  *
- * @param {number} id - The ID of the shareHolderMaster to retrieve
- * @return {Promise<LegalHeirDetailType|null>} The shareHolderMaster data if found, otherwise null
+ * @param {number} id - The ID of the project to retrieve
+ * @return {Promise<LegalHeirDetailType|null>} The project data if found, otherwise null
  */
 export async function getById(
   id: number
@@ -96,10 +96,10 @@ export async function getById(
 }
 
 /**
- * Removes a shareHolderMaster from the database by their ID.
+ * Removes a project from the database by their ID.
  *
- * @param {number} id - the ID of the shareHolderMaster to be removed
- * @return {Promise<LegalHeirDetailType>} a promise that resolves once the shareHolderMaster is removed
+ * @param {number} id - the ID of the project to be removed
+ * @return {Promise<LegalHeirDetailType>} a promise that resolves once the project is removed
  */
 export async function remove(
   id: number
