@@ -32,7 +32,7 @@ export async function listLegalHeirDetail(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Legal Heirs Masters Fetched",
+    message: "Legal Heir Detail Fetched",
     data: result,
   });
 }
@@ -54,7 +54,7 @@ export async function getLegalHeirDetail(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Legal Heirs Master Fetched",
+    message: "Legal Heir Detail Fetched",
     data: result,
   });
 }
@@ -85,7 +85,7 @@ export async function createLegalHeirDetail(
   return reply.code(201).type("application/json").send({
     code: 201,
     success: true,
-    message: "Legal Heirs Master Created",
+    message: "Legal Heir Detail Created",
     data: result,
   });
 }
@@ -110,7 +110,7 @@ export async function updateLegalHeirDetail(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Legal Heirs Master Updated",
+    message: "Legal Heir Detail Updated",
     data: result,
   });
 }
@@ -132,7 +132,7 @@ export async function removeLegalHeirDetail(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Legal Heirs Master Removed",
+    message: "Legal Heir Detail Removed",
     data: result,
   });
 }
@@ -147,6 +147,6 @@ export async function removeMultipleLegalHeirDetail(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Legal Heirs Masters Removed",
+    message: "Legal Heir Detail Removed",
   });
 }

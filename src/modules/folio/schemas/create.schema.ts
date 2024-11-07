@@ -73,13 +73,13 @@ export const createFolioBodySchema = z.object({
     .trim()
     .optional(),
   faceValue: z
-    .string({
+    .number({
       errorMap: () => ({
         message: "Face Value must be a number",
       }),
     })
-    .optional()
-    .transform((value) => (value ? parseFloat(value) : 0)),
+    .default(0)
+    .optional(),
   distinctiveNosFrom: z
     .string({
       errorMap: () => ({ message: "Distinctive Number From must be a string" }),
@@ -243,7 +243,7 @@ export const shareCertificateIdSchema = z
             ctx.addIssue({
               code: "custom",
               message: "Invalid share holder detail Id",
-              path: ["endorsementShareholderName1ID"],
+              path: ["endorsementShareholderName2ID"],
             });
             return false;
           }
@@ -263,7 +263,7 @@ export const shareCertificateIdSchema = z
             ctx.addIssue({
               code: "custom",
               message: "Invalid share holder detail Id",
-              path: ["endorsementShareholderName1ID"],
+              path: ["endorsementShareholderName3ID"],
             });
             return false;
           }

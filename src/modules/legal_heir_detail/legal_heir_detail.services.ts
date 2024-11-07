@@ -19,10 +19,10 @@ import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 
 /**
- * Create a new shareHolderDetail with the provided shareHolderDetail information.
+ * Create a new legalHeirDetail with the provided legalHeirDetail information.
  *
- * @param {LegalHeirDetailRepoCreateType} shareHolderDetail - the shareHolderDetail information
- * @return {Promise<LegalHeirDetailType>} a promise that resolves with the created shareHolderDetail data
+ * @param {LegalHeirDetailRepoCreateType} legalHeirDetail - the legalHeirDetail information
+ * @return {Promise<LegalHeirDetailType>} a promise that resolves with the created legalHeirDetail data
  */
 export async function create(
   data: Omit<LegalHeirDetailRepoCreateType, "projectID">,
@@ -49,55 +49,55 @@ export async function update(
 }
 
 /**
- * Find a shareHolderDetail by ID.
+ * Find a legalHeirDetail by ID.
  *
- * @param {GetIdParam} params - the parameters for finding the shareHolderDetail
- * @return {Promise<LegalHeirDetailType>} the shareHolderDetail found by ID
+ * @param {GetIdParam} params - the parameters for finding the legalHeirDetail
+ * @return {Promise<LegalHeirDetailType>} the legalHeirDetail found by ID
  */
 export async function findById(
   params: GetIdParam
 ): Promise<LegalHeirDetailType> {
   const { id } = params;
 
-  const shareHolderDetail = await getById(id);
-  if (!shareHolderDetail) {
+  const legalHeirDetail = await getById(id);
+  if (!legalHeirDetail) {
     throw new NotFoundError();
   }
-  return shareHolderDetail;
+  return legalHeirDetail;
 }
 
 /**
- * Find shareHolderDetail by pagination.
+ * Find legalHeirDetail by pagination.
  *
- * @param {GetPaginationQuery} querystring - the parameters for finding the shareHolderDetail
- * @return {Promise<{shareHolderDetail:LegalHeirDetailType[]} & PaginationType>} the shareHolderDetail found by ID
+ * @param {GetPaginationQuery} querystring - the parameters for finding the legalHeirDetail
+ * @return {Promise<{legalHeirDetail:LegalHeirDetailType[]} & PaginationType>} the legalHeirDetail found by ID
  */
 export async function list(
   querystring: GetPaginationQuery,
   projectID: number
 ): Promise<
   {
-    shareHolderDetail: LegalHeirDetailType[];
+    legalHeirDetail: LegalHeirDetailType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const shareHolderDetail = await paginate(
+  const legalHeirDetail = await paginate(
     limit,
     offset,
     projectID,
     querystring.search
   );
-  const shareHolderDetailCount = await count(
+  const legalHeirDetailCount = await count(
     projectID,
     querystring.search
   );
   return {
-    shareHolderDetail,
+    legalHeirDetail,
     ...getPaginationKeys({
-      count: shareHolderDetailCount,
+      count: legalHeirDetailCount,
       page: querystring.page,
       size: querystring.limit,
     }),
@@ -105,10 +105,10 @@ export async function list(
 }
 
 /**
- * Destroys a shareHolderDetail based on the provided parameters.
+ * Destroys a legalHeirDetail based on the provided parameters.
  *
- * @param {GetIdParam} params - the parameters for destroying the shareHolderDetail
- * @return {Promise<LegalHeirDetailType>} the destroyed shareHolderDetail
+ * @param {GetIdParam} params - the parameters for destroying the legalHeirDetail
+ * @return {Promise<LegalHeirDetailType>} the destroyed legalHeirDetail
  */
 export async function destroy(
   params: GetIdParam

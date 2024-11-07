@@ -138,6 +138,12 @@ export async function createFolio(
 ): Promise<void> {
   await shareCertificateIdSchema.parseAsync({
     shareCertificateId: request.params.shareCertificateId,
+    shareholderName1ID: request.body.shareholderName1ID,
+    shareholderName2ID: request.body.shareholderName2ID,
+    shareholderName3ID: request.body.shareholderName3ID,
+    endorsementShareholderName1ID: request.body.endorsementShareholderName1ID,
+    endorsementShareholderName2ID: request.body.endorsementShareholderName2ID,
+    endorsementShareholderName3ID: request.body.endorsementShareholderName3ID,
   });
   const result = await create(request.body, request.params.shareCertificateId);
   return reply.code(201).type("application/json").send({
@@ -164,6 +170,12 @@ export async function updateFolio(
 ): Promise<void> {
   await updateFolioIdSchema.parseAsync({
     id: request.params.id,
+    shareholderName1ID: request.body.shareholderName1ID,
+    shareholderName2ID: request.body.shareholderName2ID,
+    shareholderName3ID: request.body.shareholderName3ID,
+    endorsementShareholderName1ID: request.body.endorsementShareholderName1ID,
+    endorsementShareholderName2ID: request.body.endorsementShareholderName2ID,
+    endorsementShareholderName3ID: request.body.endorsementShareholderName3ID,
   });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({

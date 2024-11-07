@@ -38,6 +38,14 @@ export const createShareHolderDetailBodySchema = z.object({
     })
     .trim()
     .optional(),
+  husbandName: z
+    .string({
+      errorMap: () => ({
+        message: "husband/father name must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
   phone: z
     .string({
       errorMap: () => ({
@@ -82,6 +90,14 @@ export const createShareHolderDetailBodySchema = z.object({
     .string({
       errorMap: () => ({
         message: "age must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  occupation: z
+    .string({
+      errorMap: () => ({
+        message: "occupation must be a string",
       }),
     })
     .trim()
@@ -158,6 +174,14 @@ export const createShareHolderDetailBodySchema = z.object({
     })
     .trim()
     .optional(),
+  branchName: z
+    .string({
+      errorMap: () => ({
+        message: "branch name must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
   bankAddress: z
     .string({
       errorMap: () => ({
@@ -210,6 +234,14 @@ export const createShareHolderDetailBodySchema = z.object({
     .string({
       errorMap: () => ({
         message: "bank account type must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  accountOpeningDate: z
+    .string({
+      errorMap: () => ({
+        message: "account opening date must be a string",
       }),
     })
     .trim()
