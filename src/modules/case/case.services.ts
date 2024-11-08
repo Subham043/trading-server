@@ -1,24 +1,25 @@
-// import {
-//   count,
-//   createShareHolderMaster,
-//   getById,
-//   getInfoById,
-//   paginate,
-//   remove,
-//   removeMultiple,
-//   updateShareHolderMaster,
-// } from "./share_holder_master.repository";
-// import { NotFoundError } from "../../utils/exceptions";
-// import {
-//   ShareHolderMasterCreateType,
-//   ShareHolderMasterMainType,
-//   ShareHolderMasterType,
-//   ShareHolderMasterUpdateType,
-// } from "../../@types/share_holder_master.type";
-// import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
-// import { PaginationType } from "../../@types/pagination.type";
-// import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
-// import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
+import {
+  count,
+  createCase,
+  getById,
+  getInfoById,
+  paginate,
+  remove,
+  removeMultiple,
+  updateCase,
+} from "./case.repository";
+import { NotFoundError } from "../../utils/exceptions";
+import {
+  CaseRepoCreateType,
+  CaseType,
+  CaseRepoUpdateType,
+} from "../../@types/case.type";
+import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
+import { PaginationType } from "../../@types/pagination.type";
+import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
+import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
+import { MultipartFile } from "../../@types/multipart_file.type";
+import { deleteImage, saveImage } from "../../utils/file";
 
 // import fs from "fs";
 // import path from "path";
@@ -27,129 +28,139 @@
 // import { prisma } from "../../db";
 // import AdmZip from "adm-zip";
 
-// /**
-//  * Create a new shareHolderMaster with the provided shareHolderMaster information.
-//  *
-//  * @param {ShareHolderMasterCreateType} shareHolderMaster - the shareHolderMaster information
-//  * @return {Promise<ShareHolderMasterType>} a promise that resolves with the created shareHolderMaster data
-//  */
-// export async function create(
-//   data: ShareHolderMasterCreateType,
-//   projectID: number
-// ): Promise<ShareHolderMasterType | null> {
-//   return await createShareHolderMaster({
-//     ...data,
-//     projectID,
-//   });
-// }
+/**
+ * Create a new shareHolderMaster with the provided shareHolderMaster information.
+ *
+ * @param {CaseRepoCreateType} shareHolderMaster - the shareHolderMaster information
+ * @return {Promise<CaseType>} a promise that resolves with the created shareHolderMaster data
+ */
+export async function create(
+  data: Omit<CaseRepoCreateType, "shareHolderMasterID"> & {
+    document?: MultipartFile | null | undefined;
+  },
+  shareCertificateID: number
+): Promise<CaseType | null> {
+ let saveDocumentFile: string | null = null;
+ if (data.document) {
+   saveDocumentFile = await saveImage(data.document);
+ }
+  return await createCase({
+    ...data,
+    document: saveDocumentFile,
+    shareCertificateID,
+  });
+}
 
-// /**
-//  * Update ShareHolderMasterType information.
-//  *
-//  * @param {CreateShareHolderMasterBody} ShareHolderMasterType - the ShareHolderMasterType information to be updated
-//  * @param {GetIdParam} param - the parameter used to identify the ShareHolderMasterType to be updated
-//  * @return {Promise<ShareHolderMasterType>} the updated ShareHolderMasterType information
-//  */
-// export async function update(
-//   data: ShareHolderMasterUpdateType,
-//   param: GetIdParam
-// ): Promise<ShareHolderMasterType | null> {
-//   return await updateShareHolderMaster(data, param.id);
-// }
+/**
+ * Update CaseType information.
+ *
+ * @param {CreateCaseBody} CaseType - the CaseType information to be updated
+ * @param {GetIdParam} param - the parameter used to identify the CaseType to be updated
+ * @return {Promise<CaseType>} the updated CaseType information
+ */
+export async function update(
+  data: CaseRepoUpdateType & {
+    document?: MultipartFile | null | undefined;
+  },
+  param: GetIdParam
+): Promise<CaseType | null> {
+ const existingCase = await getById(param.id);
+ let saveDocumentFile: string | null | undefined = null;
+ if (data.document) {
+   saveDocumentFile = await saveImage(data.document);
+   existingCase?.document && deleteImage(existingCase.document);
+ } else {
+   saveDocumentFile = existingCase?.document;
+ }
+  return await updateCase({ ...data, document: saveDocumentFile }, param.id);
+}
 
-// export async function updateTransposition(
-//   data: { transpositionOrder: string },
-//   param: GetIdParam
-// ): Promise<ShareHolderMasterType | null> {
-//   return await updateShareHolderMaster(data, param.id);
-// }
+/**
+ * Find a shareHolderMaster by ID.
+ *
+ * @param {GetIdParam} params - the parameters for finding the shareHolderMaster
+ * @return {Promise<CaseType>} the shareHolderMaster found by ID
+ */
+export async function findById(
+  params: GetIdParam
+): Promise<CaseType> {
+  const { id } = params;
 
-// /**
-//  * Find a shareHolderMaster by ID.
-//  *
-//  * @param {GetIdParam} params - the parameters for finding the shareHolderMaster
-//  * @return {Promise<ShareHolderMasterType>} the shareHolderMaster found by ID
-//  */
-// export async function findById(
-//   params: GetIdParam
-// ): Promise<ShareHolderMasterType> {
-//   const { id } = params;
+  const shareHolderMaster = await getById(id);
+  if (!shareHolderMaster) {
+    throw new NotFoundError();
+  }
+  return shareHolderMaster;
+}
 
-//   const shareHolderMaster = await getById(id);
-//   if (!shareHolderMaster) {
-//     throw new NotFoundError();
-//   }
-//   return shareHolderMaster;
-// }
+export async function findInfoById(
+  params: GetIdParam
+): Promise<CaseType> {
+  const { id } = params;
 
-// export async function findInfoById(
-//   params: GetIdParam
-// ): Promise<ShareHolderMasterMainType> {
-//   const { id } = params;
+  const shareHolderMaster = await getInfoById(id);
+  if (!shareHolderMaster) {
+    throw new NotFoundError();
+  }
+  return shareHolderMaster;
+}
 
-//   const shareHolderMaster = await getInfoById(id);
-//   if (!shareHolderMaster) {
-//     throw new NotFoundError();
-//   }
-//   return shareHolderMaster;
-// }
+/**
+ * Find shareHolderMaster by pagination.
+ *
+ * @param {GetPaginationQuery} querystring - the parameters for finding the shareHolderMaster
+ * @return {Promise<{shareHolderMaster:CaseType[]} & PaginationType>} the shareHolderMaster found by ID
+ */
+export async function list(
+  querystring: GetPaginationQuery,
+  shareCertificateID: number
+): Promise<
+  {
+    shareHolderMaster: CaseType[];
+  } & PaginationType
+> {
+  const { limit, offset } = getPaginationParams({
+    page: querystring.page,
+    size: querystring.limit,
+  });
+  const shareHolderMaster = await paginate(
+    limit,
+    offset,
+    shareCertificateID,
+    querystring.search
+  );
+  const shareHolderMasterCount = await count(
+    shareCertificateID,
+    querystring.search
+  );
+  return {
+    shareHolderMaster,
+    ...getPaginationKeys({
+      count: shareHolderMasterCount,
+      page: querystring.page,
+      size: querystring.limit,
+    }),
+  };
+}
 
-// /**
-//  * Find shareHolderMaster by pagination.
-//  *
-//  * @param {GetPaginationQuery} querystring - the parameters for finding the shareHolderMaster
-//  * @return {Promise<{shareHolderMaster:ShareHolderMasterType[]} & PaginationType>} the shareHolderMaster found by ID
-//  */
-// export async function list(
-//   querystring: GetPaginationQuery,
-//   projectID: number
-// ): Promise<
-//   {
-//     shareHolderMaster: ShareHolderMasterType[];
-//   } & PaginationType
-// > {
-//   const { limit, offset } = getPaginationParams({
-//     page: querystring.page,
-//     size: querystring.limit,
-//   });
-//   const shareHolderMaster = await paginate(
-//     limit,
-//     offset,
-//     projectID,
-//     querystring.search
-//   );
-//   const shareHolderMasterCount = await count(
-//     projectID,
-//     querystring.search
-//   );
-//   return {
-//     shareHolderMaster,
-//     ...getPaginationKeys({
-//       count: shareHolderMasterCount,
-//       page: querystring.page,
-//       size: querystring.limit,
-//     }),
-//   };
-// }
+/**
+ * Destroys a shareHolderMaster based on the provided parameters.
+ *
+ * @param {GetIdParam} params - the parameters for destroying the shareHolderMaster
+ * @return {Promise<CaseType>} the destroyed shareHolderMaster
+ */
+export async function destroy(
+  params: GetIdParam
+): Promise<CaseType | null> {
+  const { id } = params;
+  return await remove(id);
+}
 
-// /**
-//  * Destroys a shareHolderMaster based on the provided parameters.
-//  *
-//  * @param {GetIdParam} params - the parameters for destroying the shareHolderMaster
-//  * @return {Promise<ShareHolderMasterType>} the destroyed shareHolderMaster
-//  */
-// export async function destroy(
-//   params: GetIdParam
-// ): Promise<ShareHolderMasterType | null> {
-//   const { id } = params;
-//   return await remove(id);
-// }
+export async function destroyMultiple(body: GetIdsBody): Promise<void> {
+  const { id } = body;
 
-// export async function destroyMultiple(body: GetIdsBody): Promise<void> {
-//   const { id } = body;
-
-//   await removeMultiple(id);
-// }
+  await removeMultiple(id);
+}
 
 
 // export async function generateDoc(

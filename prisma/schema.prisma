@@ -246,6 +246,7 @@ model ShareCertificateMaster {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   folios Folio[]
+  cases Case[]
 
   @@index([companyID, projectID], map: "companyID_shareCertificateMasterkey")
 }
@@ -307,7 +308,6 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   shareCertificateMasters ShareCertificateMaster[]
-  // shareHolderMasters ShareHolderMaster[]
   shareHolderDetails ShareHolderDetail[]
   legalHeirDetails LegalHeirDetail[]
 
@@ -327,22 +327,6 @@ model DividendMaster {
 
   @@index([companyID], map: "companyID_dividend_master")
 }
-
-// model ShareHolderMaster {
-//   id        Int      @id @default(autoincrement())
-//   caseType      CaseType     @default(Claim)
-//   noOfShareHolder  String @db.VarChar(256) @default("0")
-//   noOfLegalHeir  String @db.VarChar(256) @default("0")
-//   transpositionOrder  String? @db.Text
-//   project   Project? @relation(fields: [projectID], references: [id], onDelete: Cascade, onUpdate: SetNull)
-//   projectID Int?
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt @default(now())
-//   shareHolderDetails ShareHolderDetail[]
-//   legalHeirDetails LegalHeirDetail[]
-
-//   @@index([projectID], map: "projectID_shareHolderMasterkey")
-// }
 
 model ShareHolderDetail {
   id        Int      @id @default(autoincrement())
@@ -397,26 +381,6 @@ model ShareHolderDetail {
 
 model LegalHeirDetail {
   id        Int      @id @default(autoincrement())
-  // isDeceased      TruthType     @default(No)
-  // shareholderNameDeath  String? @db.VarChar(256)
-  // dod  String? @db.VarChar(256)
-  // isTestate      TruthType     @default(No)
-  // proofOfSucession      TruthType     @default(No)
-  // document  String? @db.Text
-  // dateOfDocument  String? @db.VarChar(256)
-  // isMinor      TruthType     @default(No)
-  // dobMinor  String? @db.VarChar(256)
-  // guardianName  String? @db.VarChar(256)
-  // guardianRelationship  String? @db.VarChar(256)
-  // guardianPan  String? @db.VarChar(256)
-  // deceasedRelationship  String? @db.VarChar(256)
-  // taxStatus  String? @db.VarChar(256)
-  // selectClaimant  String? @db.VarChar(256)
-  // statusClaimant  String? @db.VarChar(256)
-  // percentageClaimant  String? @db.VarChar(256)
-  // occupationClaimant  String? @db.VarChar(256)
-  // politicalExposureClaimant  String? @db.VarChar(256)
-  // annualIncomeClaimant  String? @db.VarChar(256)
   namePan  String? @db.VarChar(256)
   nameAadhar  String? @db.VarChar(256)
   nameCml  String? @db.VarChar(256)
@@ -456,4 +420,37 @@ model LegalHeirDetail {
   updatedAt DateTime @updatedAt @default(now())
 
   @@index([projectID], map: "projectID_legalHeirDetailkey")
+}
+
+model Case {
+  id        Int      @id @default(autoincrement())
+  caseType      CaseType     @default(Claim)
+  folios  String? @db.Text
+  transpositionOrder  String? @db.Text
+  isDeceased      TruthType     @default(No)
+  shareholderNameDeath  String? @db.VarChar(256)
+  dod  String? @db.VarChar(256)
+  isTestate      TruthType     @default(No)
+  proofOfSucession      TruthType     @default(No)
+  document  String? @db.Text
+  dateOfDocument  String? @db.VarChar(256)
+  isMinor      TruthType     @default(No)
+  dobMinor  String? @db.VarChar(256)
+  guardianName  String? @db.VarChar(256)
+  guardianRelationship  String? @db.VarChar(256)
+  guardianPan  String? @db.VarChar(256)
+  deceasedRelationship  String? @db.VarChar(256)
+  taxStatus  String? @db.VarChar(256)
+  selectClaimant  String? @db.VarChar(256)
+  statusClaimant  String? @db.VarChar(256)
+  percentageClaimant  String? @db.VarChar(256)
+  occupationClaimant  String? @db.VarChar(256)
+  politicalExposureClaimant  String? @db.VarChar(256)
+  annualIncomeClaimant  String? @db.VarChar(256)
+  shareCertificateMaster   ShareCertificateMaster? @relation(fields: [shareCertificateID], references: [id], onDelete: Cascade, onUpdate: SetNull)
+  shareCertificateID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@index([shareCertificateID], map: "shareCertificateID_casekey")
 }

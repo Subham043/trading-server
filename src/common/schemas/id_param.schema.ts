@@ -86,6 +86,10 @@ export const getShareCertificateMasterIdParamSchema = z
   })
   .required();
 
+export type GetShareCertificateMasterIdParam = z.infer<
+  typeof getShareCertificateMasterIdParamSchema
+>;
+
 export const getProjectIdParamSchema = z
   .object({
     projectId: z

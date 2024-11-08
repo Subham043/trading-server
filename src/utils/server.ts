@@ -43,6 +43,7 @@ import { projectRoutes } from "../modules/project/project.routes";
 import { dividendMasterRoutes } from "../modules/dividend_master/dividend_master.routes";
 import { shareHolderDetailRoutes } from "../modules/share_holder_detail/share_holder_detail.routes";
 import { legalHeirDetailRoutes } from "../modules/legal_heir_detail/legal_heir_detail.routes";
+import { caseRoutes } from "../modules/case/case.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -153,6 +154,9 @@ export async function buildServer() {
   });
   await server.register(projectRoutes, {
     prefix: "/api/projects",
+  });
+  await server.register(caseRoutes, {
+    prefix: "/api/cases",
   });
 
   // delay is the number of milliseconds for the graceful close to finish
