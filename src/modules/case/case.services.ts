@@ -20,6 +20,9 @@ import { GetIdParam, GetIdsBody } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { MultipartFile } from "../../@types/multipart_file.type";
 import { deleteImage, saveImage } from "../../utils/file";
+import { prisma } from "../../db";
+import { FolioType } from "../../@types/folio.type";
+import { ShareHolderDetailType } from "../../@types/share_holder_detail.type";
 
 // import fs from "fs";
 // import path from "path";
@@ -44,11 +47,13 @@ export async function create(
  if (data.document) {
    saveDocumentFile = await saveImage(data.document);
  }
-  return await createCase({
+  const caseData = await createCase({
     ...data,
     document: saveDocumentFile,
     shareCertificateID,
   });
+
+  return await findInfoById({ id: caseData!.id });
 }
 
 /**
@@ -72,7 +77,8 @@ export async function update(
  } else {
    saveDocumentFile = existingCase?.document;
  }
-  return await updateCase({ ...data, document: saveDocumentFile }, param.id);
+  const caseData = await updateCase({ ...data, document: saveDocumentFile }, param.id);
+  return await findInfoById({ id: caseData!.id });
 }
 
 /**
@@ -95,14 +101,75 @@ export async function findById(
 
 export async function findInfoById(
   params: GetIdParam
-): Promise<CaseType> {
+): Promise<
+  CaseType & {
+    foliosSet: FolioType[];
+    clamaints: ShareHolderDetailType[];
+    order: ShareHolderDetailType[];
+  }
+> {
   const { id } = params;
+  let foliosSet: FolioType[] = [];
+  let clamaints: ShareHolderDetailType[] = [];
+  let order: ShareHolderDetailType[] = [];
 
   const shareHolderMaster = await getInfoById(id);
   if (!shareHolderMaster) {
     throw new NotFoundError();
   }
-  return shareHolderMaster;
+  if (shareHolderMaster.folios && shareHolderMaster.folios.split("_").length > 0) {
+    const inFolios = shareHolderMaster.folios
+      .split("_")
+      .map((folio) => (isNaN(Number(folio)) ? undefined : Number(folio)))
+      .filter((folio) => folio !== undefined) as number[];
+      if(inFolios.length>0){
+        foliosSet = await prisma.folio.findMany({
+          where: {
+            id: {
+              in: inFolios,
+            },
+          },
+        });
+      }
+  }
+  if (shareHolderMaster.selectClaimant && shareHolderMaster.selectClaimant.split("_").length > 0) {
+    const inClaimants = shareHolderMaster.selectClaimant
+      ?.split("_")
+      .map((claimant) =>
+        isNaN(Number(claimant)) ? undefined : Number(claimant)
+      )
+      .filter((claimant) => claimant !== undefined) as number[];
+    if(inClaimants.length>0){
+      clamaints = await prisma.shareHolderDetail.findMany({
+        where: {
+          id: {
+            in: inClaimants,
+          },
+        },
+      });
+    }
+  }
+  if (shareHolderMaster.transpositionOrder && shareHolderMaster.transpositionOrder.split("_").length > 0) {
+    const inOrder = shareHolderMaster.transpositionOrder
+      ?.split("_")
+      .map((order) => (isNaN(Number(order)) ? undefined : Number(order)))
+      .filter((order) => order !== undefined) as number[];
+    if(inOrder.length>0){
+      order = await prisma.shareHolderDetail.findMany({
+        where: {
+          id: {
+            in: inOrder,
+          },
+        },
+      });
+    }
+  }
+  return {
+    ...shareHolderMaster,
+    foliosSet: foliosSet,
+    clamaints,
+    order,
+  };
 }
 
 /**
@@ -116,14 +183,19 @@ export async function list(
   shareCertificateID: number
 ): Promise<
   {
-    shareHolderMaster: CaseType[];
+    shareHolderMaster: (CaseType &
+      {
+        foliosSet: FolioType[];
+        clamaints: ShareHolderDetailType[];
+        order: ShareHolderDetailType[];
+      })[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const shareHolderMaster = await paginate(
+  const shareHolderMasterData = await paginate(
     limit,
     offset,
     shareCertificateID,
@@ -133,8 +205,79 @@ export async function list(
     shareCertificateID,
     querystring.search
   );
+
+  const shareHolderMasters = await Promise.all(
+    shareHolderMasterData.map(async (shareHolderMaster) => {
+      let foliosSet: FolioType[] = [];
+      let clamaints: ShareHolderDetailType[] = [];
+      let order: ShareHolderDetailType[] = [];
+      if (
+        shareHolderMaster.folios &&
+        shareHolderMaster.folios.split("_").length > 0
+      ) {
+        const inFolios = shareHolderMaster.folios
+          .split("_")
+          .map((folio) => (isNaN(Number(folio)) ? undefined : Number(folio)))
+          .filter((folio) => folio !== undefined) as number[];
+        if (inFolios.length > 0) {
+          foliosSet = await prisma.folio.findMany({
+            where: {
+              id: {
+                in: inFolios,
+              },
+            },
+          });
+        }
+      }
+      if (
+        shareHolderMaster.selectClaimant &&
+        shareHolderMaster.selectClaimant.split("_").length > 0
+      ) {
+        const inClaimants = shareHolderMaster.selectClaimant
+          ?.split("_")
+          .map((claimant) =>
+            isNaN(Number(claimant)) ? undefined : Number(claimant)
+          )
+          .filter((claimant) => claimant !== undefined) as number[];
+        if (inClaimants.length > 0) {
+          clamaints = await prisma.shareHolderDetail.findMany({
+            where: {
+              id: {
+                in: inClaimants,
+              },
+            },
+          });
+        }
+      }
+      if (
+        shareHolderMaster.transpositionOrder &&
+        shareHolderMaster.transpositionOrder.split("_").length > 0
+      ) {
+        const inOrder = shareHolderMaster.transpositionOrder
+          ?.split("_")
+          .map((order) => (isNaN(Number(order)) ? undefined : Number(order)))
+          .filter((order) => order !== undefined) as number[];
+        if (inOrder.length > 0) {
+          order = await prisma.shareHolderDetail.findMany({
+            where: {
+              id: {
+                in: inOrder,
+              },
+            },
+          });
+        }
+      }
+      return {
+        ...shareHolderMaster,
+        foliosSet: foliosSet,
+        clamaints,
+        order,
+      };
+    })
+  );
+
   return {
-    shareHolderMaster,
+    shareHolderMaster: shareHolderMasters,
     ...getPaginationKeys({
       count: shareHolderMasterCount,
       page: querystring.page,

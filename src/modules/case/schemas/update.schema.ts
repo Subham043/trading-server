@@ -30,6 +30,12 @@ export const updateCaseBodySchema = z.object({
       }),
     }
   ),
+  folios: z
+    .string({
+      errorMap: () => ({ message: "Folios must be a string" }),
+    })
+    .trim()
+    .optional(),
   transpositionOrder: z
     .string({
       errorMap: () => ({ message: "Transposition Order must be a string" }),
