@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import {
   createCase,
-  // generateCaseDoc,
+  generateCaseDoc,
   getCase,
   getCaseInfo,
   listCase,
@@ -40,16 +40,16 @@ export async function caseRoutes(app: FastifyInstance) {
     },
     getCaseInfo
   );
-  // app.get(
-  //   "/generate-docs/:id",
-  //   {
-  //     schema: {
-  //       params: getIdParamSchema,
-  //     },
-  //     preHandler: app.verifyJwt,
-  //   },
-  //   generateCaseDoc
-  // );
+  app.get(
+    "/generate-docs/:id",
+    {
+      schema: {
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    generateCaseDoc
+  );
   app.get(
     "/:id",
     {

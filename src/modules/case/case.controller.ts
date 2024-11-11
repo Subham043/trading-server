@@ -5,7 +5,7 @@ import {
   destroyMultiple,
   findById,
   findInfoById,
-  // generateDoc,
+  generateDoc,
   list,
   update,
 } from "./case.services";
@@ -23,8 +23,8 @@ import {
   shareCertificateIdSchema,
 } from "./schemas/create.schema";
 import { MultipartFile } from "../../@types/multipart_file.type";
-// import fs from "fs";
-// import path from "path";
+import fs from "fs";
+import path from "path";
 
 export async function listCase(
   request: FastifyRequest<{
@@ -171,16 +171,16 @@ export async function removeMultipleCase(
   });
 }
 
-// export async function generateCaseDoc(
-//   request: FastifyRequest<{
-//     Params: GetIdParam;
-//   }>,
-//   reply: FastifyReply
-// ): Promise<void> {
-//   const result = await generateDoc(request.params);
-//   const filePath = path.resolve(__dirname, result);
-//   const fileStream = fs.createReadStream(filePath);
-//   return reply
-//     .header("Content-Disposition", 'attachment; filename="docs.zip"')
-//     .send(fileStream)
-// }
+export async function generateCaseDoc(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await generateDoc(request.params);
+  const filePath = path.resolve(__dirname, result);
+  const fileStream = fs.createReadStream(filePath);
+  return reply
+    .header("Content-Disposition", 'attachment; filename="docs.zip"')
+    .send(fileStream)
+}
