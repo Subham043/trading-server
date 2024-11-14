@@ -17,7 +17,6 @@ import {
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import {
   CaseRepoCreateType,
-  CaseRepoUpdateType,
 } from "../../@types/case.type";
 import {
   shareCertificateIdSchema,
@@ -25,6 +24,7 @@ import {
 import { MultipartFile } from "../../@types/multipart_file.type";
 import fs from "fs";
 import path from "path";
+import { updateCaseUniqueSchema } from "./schemas/update.schema";
 
 export async function listCase(
   request: FastifyRequest<{
@@ -94,12 +94,14 @@ export async function createCase(
       "shareCertificateID" | "document" | "id" | "createdAt"
     > & {
       document?: MultipartFile | null | undefined;
+      deadShareholderID?: number | null | undefined;
     };
   }>,
   reply: FastifyReply
 ): Promise<void> {
   await shareCertificateIdSchema.parseAsync({
     shareCertificateId: request.params.shareCertificateId,
+    deadShareholderID: (request.body.deadShareholderID && +request.body.deadShareholderID) || null,
   });
   const result = await create(request.body, request.params.shareCertificateId);
   return reply.code(201).type("application/json").send({
@@ -119,13 +121,20 @@ export async function createCase(
  */
 export async function updateCase(
   request: FastifyRequest<{
-    Body: CaseRepoUpdateType & {
+    Body: CaseRepoCreateType & {
       document?: MultipartFile | null | undefined;
+      deadShareholderID?: number | null | undefined;
     };
     Params: GetIdParam;
   }>,
   reply: FastifyReply
 ): Promise<void> {
+  await updateCaseUniqueSchema.parseAsync({
+    id: request.params.id,
+    deadShareholderID:
+      (request.body.deadShareholderID && +request.body.deadShareholderID) ||
+      null,
+  });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({
     code: 200,

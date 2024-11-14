@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getById } from "../case.repository";
 import { MultipartFile } from "../../../@types/multipart_file.type";
+import { getById as getShareHolderDetailId } from "../../share_holder_detail/share_holder_detail.repository";
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 5; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -61,6 +62,14 @@ export const updateCaseBodySchema = z.object({
     .string({
       errorMap: () => ({
         message: "date of death must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  placeOfDeath: z
+    .string({
+      errorMap: () => ({
+        message: "place of death must be a string",
       }),
     })
     .trim()
@@ -142,6 +151,21 @@ export const updateCaseBodySchema = z.object({
     })
     .trim()
     .optional(),
+  allowAffidavit: z
+    .enum(["Yes", "No"], {
+      errorMap: () => ({
+        message: "allow affidavit must be one of [Yes, No]",
+      }),
+    })
+    .optional(),
+  selectAffidavit: z
+    .string({
+      errorMap: () => ({
+        message: "select affidavit must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
   selectClaimant: z
     .string({
       errorMap: () => ({
@@ -190,6 +214,13 @@ export const updateCaseBodySchema = z.object({
     })
     .trim()
     .optional(),
+  deadShareholderID: z
+    .string({
+      errorMap: () => ({
+        message: "Dead Shareholder must be a number",
+      }),
+    })
+    .optional(),
   document: z
     .any()
     .refine((document) => {
@@ -222,6 +253,26 @@ export const updateCaseUniqueSchema = z.object({
           path: ["id"],
         });
         return false;
+      }
+    }),
+  deadShareholderID: z
+    .number({
+      errorMap: () => ({
+        message: "Dead Shareholder must be a number",
+      }),
+    })
+    .optional()
+    .superRefine(async (deadShareholderID, ctx) => {
+      if (deadShareholderID) {
+        const shareHolder = await getShareHolderDetailId(deadShareholderID);
+        if (!shareHolder) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Invalid share holder detail Id",
+            path: ["deadShareholderID"],
+          });
+          return false;
+        }
       }
     }),
 });

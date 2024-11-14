@@ -375,6 +375,7 @@ model ShareHolderDetail {
   endorsementFolio1 Folio[] @relation(name: "endorsementShareholderName1")
   endorsementFolio2 Folio[] @relation(name: "endorsementShareholderName2")
   endorsementFolio3 Folio[] @relation(name: "endorsementShareholderName3")
+  deadShareholder Case[] @relation(name: "deadShareholder")
 
   @@index([projectID], map: "projectID_shareHolderDetailkey")
 }
@@ -430,6 +431,7 @@ model Case {
   isDeceased      TruthType     @default(No)
   shareholderNameDeath  String? @db.VarChar(256)
   dod  String? @db.VarChar(256)
+  placeOfDeath  String? @db.VarChar(256)
   isTestate      TruthType     @default(No)
   proofOfSucession      TruthType     @default(No)
   document  String? @db.Text
@@ -441,12 +443,16 @@ model Case {
   guardianPan  String? @db.VarChar(256)
   deceasedRelationship  String? @db.VarChar(256)
   taxStatus  String? @db.VarChar(256)
+  allowAffidavit      TruthType     @default(No)
+  selectAffidavit  String? @db.VarChar(256)
   selectClaimant  String? @db.VarChar(256)
   statusClaimant  String? @db.VarChar(256)
   percentageClaimant  String? @db.VarChar(256)
   occupationClaimant  String? @db.VarChar(256)
   politicalExposureClaimant  String? @db.VarChar(256)
   annualIncomeClaimant  String? @db.VarChar(256)
+  deadShareholder   ShareHolderDetail? @relation(fields: [deadShareholderID], references: [id], onDelete: Cascade, onUpdate: SetNull, name: "deadShareholder")
+  deadShareholderID Int?
   shareCertificateMaster   ShareCertificateMaster? @relation(fields: [shareCertificateID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   shareCertificateID Int?
   createdAt DateTime @default(now())

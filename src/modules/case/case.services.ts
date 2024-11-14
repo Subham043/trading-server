@@ -12,7 +12,6 @@ import { NotFoundError } from "../../utils/exceptions";
 import {
   CaseRepoCreateType,
   CaseType,
-  CaseRepoUpdateType,
 } from "../../@types/case.type";
 import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
 import { PaginationType } from "../../@types/pagination.type";
@@ -31,6 +30,7 @@ import Docxtemplater from "docxtemplater";
 import AdmZip from "adm-zip";
 import { NameChangeMasterColumn } from "../company_master/company_master.model";
 import dayjs from "dayjs";
+import { LegalHeirDetailType } from "../../@types/legal_heir_detail.type";
 
 /**
  * Create a new shareHolderMaster with the provided shareHolderMaster information.
@@ -41,17 +41,20 @@ import dayjs from "dayjs";
 export async function create(
   data: Omit<CaseRepoCreateType, "shareHolderMasterID"> & {
     document?: MultipartFile | null | undefined;
+    deadShareholderID?: number | null | undefined;
   },
   shareCertificateID: number
 ): Promise<CaseType | null> {
- let saveDocumentFile: string | null = null;
- if (data.document) {
-   saveDocumentFile = await saveImage(data.document);
- }
+  let saveDocumentFile: string | null = null;
+  if (data.document) {
+    saveDocumentFile = await saveImage(data.document);
+  }
+  const { deadShareholderID, ...rest } = data;
   const caseData = await createCase({
-    ...data,
+    ...rest,
     document: saveDocumentFile,
     shareCertificateID,
+    deadShareholderID: deadShareholderID  && +deadShareholderID || null,
   });
 
   return await findInfoById({ id: caseData!.id });
@@ -65,20 +68,27 @@ export async function create(
  * @return {Promise<CaseType>} the updated CaseType information
  */
 export async function update(
-  data: CaseRepoUpdateType & {
-    document?: MultipartFile | null | undefined;
+  data: CaseRepoCreateType & {
+    document?: MultipartFile | null;
+    deadShareholderID?: number | null | undefined;
   },
   param: GetIdParam
 ): Promise<CaseType | null> {
- const existingCase = await getById(param.id);
- let saveDocumentFile: string | null | undefined = null;
- if (data.document) {
-   saveDocumentFile = await saveImage(data.document);
-   existingCase?.document && deleteImage(existingCase.document);
- } else {
-   saveDocumentFile = existingCase?.document;
- }
-  const caseData = await updateCase({ ...data, document: saveDocumentFile }, param.id);
+  const existingCase = await getById(param.id);
+  let saveDocumentFile: string | null | undefined = null;
+  if (data.document) {
+    saveDocumentFile = await saveImage(data.document);
+    existingCase?.document && deleteImage(existingCase.document);
+  } else {
+    saveDocumentFile = existingCase?.document;
+  }
+  const updateData = {
+    ...data,
+    document: saveDocumentFile,
+    deadShareholderID:
+      (data.deadShareholderID && +data.deadShareholderID) || null,
+  };
+  const caseData = await updateCase(updateData, param.id);
   return await findInfoById({ id: caseData!.id });
 }
 
@@ -100,48 +110,54 @@ export async function findById(
   return shareHolderMaster;
 }
 
-export async function findInfoById(
-  params: GetIdParam
-): Promise<
+export async function findInfoById(params: GetIdParam): Promise<
   CaseType & {
     foliosSet: FolioType[];
-    clamaints: ShareHolderDetailType[];
+    clamaints: LegalHeirDetailType[];
     order: ShareHolderDetailType[];
+    affidavits: (LegalHeirDetailType | ShareHolderDetailType)[];
   }
 > {
   const { id } = params;
   let foliosSet: FolioType[] = [];
-  let clamaints: ShareHolderDetailType[] = [];
+  let clamaints: LegalHeirDetailType[] = [];
+  let affidavits: (LegalHeirDetailType | ShareHolderDetailType)[] = [];
   let order: ShareHolderDetailType[] = [];
 
   const shareHolderMaster = await getInfoById(id);
   if (!shareHolderMaster) {
     throw new NotFoundError();
   }
-  if (shareHolderMaster.folios && shareHolderMaster.folios.split("_").length > 0) {
+  if (
+    shareHolderMaster.folios &&
+    shareHolderMaster.folios.split("_").length > 0
+  ) {
     const inFolios = shareHolderMaster.folios
       .split("_")
       .map((folio) => (isNaN(Number(folio)) ? undefined : Number(folio)))
       .filter((folio) => folio !== undefined) as number[];
-      if(inFolios.length>0){
-        foliosSet = await prisma.folio.findMany({
-          where: {
-            id: {
-              in: inFolios,
-            },
+    if (inFolios.length > 0) {
+      foliosSet = await prisma.folio.findMany({
+        where: {
+          id: {
+            in: inFolios,
           },
-        });
-      }
+        },
+      });
+    }
   }
-  if (shareHolderMaster.selectClaimant && shareHolderMaster.selectClaimant.split("_").length > 0) {
+  if (
+    shareHolderMaster.selectClaimant &&
+    shareHolderMaster.selectClaimant.split("_").length > 0
+  ) {
     const inClaimants = shareHolderMaster.selectClaimant
       ?.split("_")
       .map((claimant) =>
         isNaN(Number(claimant)) ? undefined : Number(claimant)
       )
       .filter((claimant) => claimant !== undefined) as number[];
-    if(inClaimants.length>0){
-      clamaints = await prisma.shareHolderDetail.findMany({
+    if (inClaimants.length > 0) {
+      clamaints = await prisma.legalHeirDetail.findMany({
         where: {
           id: {
             in: inClaimants,
@@ -150,12 +166,47 @@ export async function findInfoById(
       });
     }
   }
-  if (shareHolderMaster.transpositionOrder && shareHolderMaster.transpositionOrder.split("_").length > 0) {
+  if (shareHolderMaster.allowAffidavit === "Yes") {
+    if (
+      shareHolderMaster.selectAffidavit &&
+      shareHolderMaster.selectAffidavit.split("_").length > 0
+    ) {
+      const inAffidavits = shareHolderMaster.selectAffidavit
+        ?.split("_")
+        .map((claimant) =>
+          isNaN(Number(claimant)) ? undefined : Number(claimant)
+        )
+        .filter((claimant) => claimant !== undefined) as number[];
+      if (inAffidavits.length > 0) {
+        if (shareHolderMaster.caseType.includes("Transmission")) {
+          affidavits = await prisma.legalHeirDetail.findMany({
+            where: {
+              id: {
+                in: inAffidavits,
+              },
+            },
+          });
+        } else {
+          affidavits = await prisma.shareHolderDetail.findMany({
+            where: {
+              id: {
+                in: inAffidavits,
+              },
+            },
+          });
+        }
+      }
+    }
+  }
+  if (
+    shareHolderMaster.transpositionOrder &&
+    shareHolderMaster.transpositionOrder.split("_").length > 0
+  ) {
     const inOrder = shareHolderMaster.transpositionOrder
       ?.split("_")
       .map((order) => (isNaN(Number(order)) ? undefined : Number(order)))
       .filter((order) => order !== undefined) as number[];
-    if(inOrder.length>0){
+    if (inOrder.length > 0) {
       order = await prisma.shareHolderDetail.findMany({
         where: {
           id: {
@@ -170,6 +221,7 @@ export async function findInfoById(
     foliosSet: foliosSet,
     clamaints,
     order,
+    affidavits,
   };
 }
 
@@ -184,12 +236,12 @@ export async function list(
   shareCertificateID: number
 ): Promise<
   {
-    shareHolderMaster: (CaseType &
-      {
-        foliosSet: FolioType[];
-        clamaints: ShareHolderDetailType[];
-        order: ShareHolderDetailType[];
-      })[];
+    shareHolderMaster: (CaseType & {
+      foliosSet: FolioType[];
+      clamaints: LegalHeirDetailType[];
+      order: ShareHolderDetailType[];
+      affidavits: (LegalHeirDetailType | ShareHolderDetailType)[];
+    })[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
@@ -210,8 +262,9 @@ export async function list(
   const shareHolderMasters = await Promise.all(
     shareHolderMasterData.map(async (shareHolderMaster) => {
       let foliosSet: FolioType[] = [];
-      let clamaints: ShareHolderDetailType[] = [];
+      let clamaints: LegalHeirDetailType[] = [];
       let order: ShareHolderDetailType[] = [];
+      let affidavits: (LegalHeirDetailType | ShareHolderDetailType)[] = [];
       if (
         shareHolderMaster.folios &&
         shareHolderMaster.folios.split("_").length > 0
@@ -241,13 +294,45 @@ export async function list(
           )
           .filter((claimant) => claimant !== undefined) as number[];
         if (inClaimants.length > 0) {
-          clamaints = await prisma.shareHolderDetail.findMany({
+          clamaints = await prisma.legalHeirDetail.findMany({
             where: {
               id: {
                 in: inClaimants,
               },
             },
           });
+        }
+      }
+      if (shareHolderMaster.allowAffidavit === "Yes") {
+        if (
+          shareHolderMaster.selectAffidavit &&
+          shareHolderMaster.selectAffidavit.split("_").length > 0
+        ) {
+          const inAffidavits = shareHolderMaster.selectAffidavit
+            ?.split("_")
+            .map((claimant) =>
+              isNaN(Number(claimant)) ? undefined : Number(claimant)
+            )
+            .filter((claimant) => claimant !== undefined) as number[];
+            if (inAffidavits.length > 0) {
+              if (shareHolderMaster.caseType.includes("Transmission")) {
+                affidavits = await prisma.legalHeirDetail.findMany({
+                  where: {
+                    id: {
+                      in: inAffidavits,
+                    },
+                  },
+                });
+              }else{
+                affidavits = await prisma.shareHolderDetail.findMany({
+                  where: {
+                    id: {
+                      in: inAffidavits,
+                    },
+                  },
+                });
+              }
+          }
         }
       }
       if (
@@ -273,6 +358,7 @@ export async function list(
         foliosSet: foliosSet,
         clamaints,
         order,
+        affidavits,
       };
     })
   );
@@ -356,7 +442,7 @@ export async function generateDoc(
   }
 
   let foliosSet: FolioType[] = [];
-  let clamaints: ShareHolderDetailType[] = [];
+  let clamaints: LegalHeirDetailType[] = [];
   // let order: ShareHolderDetailType[] = [];
 
   if (
@@ -414,7 +500,7 @@ export async function generateDoc(
       )
       .filter((claimant) => claimant !== undefined) as number[];
     if (inClaimants.length > 0) {
-      clamaints = await prisma.shareHolderDetail.findMany({
+      clamaints = await prisma.legalHeirDetail.findMany({
         where: {
           id: {
             in: inClaimants,
@@ -698,9 +784,6 @@ export async function generateDoc(
         .accountOpeningDate
         ? dayjs(clamaints[0].accountOpeningDate).format("DD-MM-YYYY")
         : null;
-      payload["clamaint_shareholderName_" + 1] = clamaints[0].shareholderName;
-      payload["clamaint_shareholderNameCertificate_" + 1] =
-        clamaints[0].shareholderNameCertificate;
       payload["clamaint_state_" + 1] = clamaints[0].state;
     } else {
       payload["clamaint_hasShareholder_" + 1] = false;
@@ -745,9 +828,6 @@ export async function generateDoc(
         .accountOpeningDate
         ? dayjs(clamaints[1].accountOpeningDate).format("DD-MM-YYYY")
         : null;
-      payload["clamaint_shareholderName_" + 2] = clamaints[1].shareholderName;
-      payload["clamaint_shareholderNameCertificate_" + 2] =
-        clamaints[1].shareholderNameCertificate;
       payload["clamaint_state_" + 2] = clamaints[1].state;
     } else {
       payload["clamaint_hasShareholder_" + 2] = false;
@@ -792,9 +872,6 @@ export async function generateDoc(
         .accountOpeningDate
         ? dayjs(clamaints[2].accountOpeningDate).format("DD-MM-YYYY")
         : null;
-      payload["clamaint_shareholderName_" + 3] = clamaints[2].shareholderName;
-      payload["clamaint_shareholderNameCertificate_" + 3] =
-        clamaints[2].shareholderNameCertificate;
       payload["clamaint_state_" + 3] = clamaints[2].state;
     } else {
       payload["clamaint_hasShareholder_" + 3] = false;

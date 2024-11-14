@@ -1,6 +1,5 @@
 import {
   CaseRepoCreateType,
-  CaseRepoUpdateType,
   CaseType,
 } from "../../@types/case.type";
 import { caseModel } from "./case.model";
@@ -25,7 +24,7 @@ export async function createCase(
  * @return {Promise<CaseType>} the updated case information
  */
 export async function updateCase(
-  data: CaseRepoUpdateType,
+  data: any,
   id: number
 ): Promise<CaseType | null> {
   return await caseModel.updateById(data, id);

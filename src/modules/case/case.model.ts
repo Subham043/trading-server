@@ -2,7 +2,6 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { prisma } from "../../db";
 import {
  CaseRepoCreateType,
- CaseRepoUpdateType,
  CaseType,
 } from "../../@types/case.type";
 
@@ -92,7 +91,7 @@ export class CaseModel {
  }
 
  async updateById(
-  data: CaseRepoUpdateType,
+  data: any,
   id: number
  ): Promise<CaseType | null> {
   // do some custom validation...
@@ -107,7 +106,10 @@ export class CaseModel {
  async findById(id: number): Promise<CaseType | null> {
   // do some custom validation...
   const data = await this.prismaCase.findFirst({
-   where: { id },
+    where: { id },
+    include: {
+      deadShareholder: true,
+    },
   });
 
   return data;
@@ -117,6 +119,9 @@ export class CaseModel {
   // do some custom validation...
   const data = await this.prismaCase.findFirst({
    where: { id },
+   include: {
+    deadShareholder: true
+   }
   });
 
   return data;
