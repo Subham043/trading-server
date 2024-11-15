@@ -443,6 +443,7 @@ export async function generateDoc(
 
   let foliosSet: FolioType[] = [];
   let clamaints: LegalHeirDetailType[] = [];
+  let affidavits: (LegalHeirDetailType | ShareHolderDetailType)[] = [];
   // let order: ShareHolderDetailType[] = [];
 
   if (
@@ -527,6 +528,38 @@ export async function generateDoc(
   //     });
   //   }
   // }
+  if (shareHolderMaster.allowAffidavit === "Yes") {
+    if (
+      shareHolderMaster.selectAffidavit &&
+      shareHolderMaster.selectAffidavit.split("_").length > 0
+    ) {
+      const inAffidavits = shareHolderMaster.selectAffidavit
+        ?.split("_")
+        .map((claimant) =>
+          isNaN(Number(claimant)) ? undefined : Number(claimant)
+        )
+        .filter((claimant) => claimant !== undefined) as number[];
+      if (inAffidavits.length > 0) {
+        if (shareHolderMaster.caseType.includes("Transmission")) {
+          affidavits = await prisma.legalHeirDetail.findMany({
+            where: {
+              id: {
+                in: inAffidavits,
+              },
+            },
+          });
+        } else {
+          affidavits = await prisma.shareHolderDetail.findMany({
+            where: {
+              id: {
+                in: inAffidavits,
+              },
+            },
+          });
+        }
+      }
+    }
+  }
 
   const legalHeirDetails = await prisma.legalHeirDetail.findMany({
     where: {
@@ -538,13 +571,24 @@ export async function generateDoc(
   foliosSet.forEach((folio) => {
     const payload: any = {};
     payload["Case"] = shareHolderMaster.caseType;
+    payload["allowAffidavit"] =
+      shareHolderMaster.allowAffidavit === "Yes" ? true : false;
+    payload["affidavits"] = affidavits.map((item) => ({
+      ...item,
+      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
+      accountOpeningDate: item.accountOpeningDate
+        ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
+        : null,
+    }));
     payload["isDeceased"] = shareHolderMaster.isDeceased==="Yes" ? true : false;
     payload["shareholderNameDeath"] = shareHolderMaster.shareholderNameDeath;
     payload["deceasedRelationship"] = shareHolderMaster.deceasedRelationship;
+    payload["placeOfDeath"] = shareHolderMaster.placeOfDeath;
     payload["dod"] = shareHolderMaster.dod
       ? dayjs(shareHolderMaster.dod).format("DD-MM-YYYY")
       : null;
     payload["isTestate"] = shareHolderMaster.isTestate==="Yes" ? true : false;
+    payload["isInTestate"] = shareHolderMaster.isTestate==="No" ? true : false;
     payload["isMinor"] = shareHolderMaster.isMinor==="Yes" ? true : false;
     payload["dobMinor"] = shareHolderMaster.dobMinor
       ? dayjs(shareHolderMaster.dobMinor).format("DD-MM-YYYY")
@@ -587,7 +631,9 @@ export async function generateDoc(
     payload["companyName"] =
       shareHolderMaster.shareCertificateMaster?.companyMaster?.nameChangeMasters[0].currentName ||
       null;
+    payload["shareHolderDetails"] = [];
     if(folio.shareholderName1){
+      payload["shareHolderDetails"] = [folio.shareholderName1, ...payload["shareHolderDetails"]];
       payload["hasShareholder_" + (1)] = true;
       payload["namePan_" + (1)] = folio.shareholderName1.namePan;
       payload["DPID_" + (1)] = folio.shareholderName1.DPID;
@@ -638,6 +684,10 @@ export async function generateDoc(
       payload["hasShareholder_" + (1)] = false;
     }
     if(folio.shareholderName2){
+      payload["shareHolderDetails"] = [
+        folio.shareholderName2,
+        ...payload["shareHolderDetails"],
+      ];
       payload["hasShareholder_" + (2)] = true;
       payload["namePan_" + (2)] = folio.shareholderName2.namePan;
       payload["DPID_" + (2)] = folio.shareholderName2.DPID;
@@ -689,6 +739,10 @@ export async function generateDoc(
       payload["hasShareholder_" + (2)] = false;
     }
     if(folio.shareholderName3){
+      payload["shareHolderDetails"] = [
+        folio.shareholderName3,
+        ...payload["shareHolderDetails"],
+      ];
       payload["hasShareholder_" + (3)] = true;
       payload["namePan_" + (3)] = folio.shareholderName3.namePan;
       payload["DPID_" + (3)] = folio.shareholderName3.DPID;
@@ -744,138 +798,23 @@ export async function generateDoc(
       dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
       accountOpeningDate: item.accountOpeningDate ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY") : null,
     }));
-    if (clamaints.length >= 1) {
-      payload["clamaint_hasShareholder_" + 1] = true;
-      payload["clamaint_namePan_" + 1] = clamaints[0].namePan;
-      payload["clamaint_DPID_" + 1] = clamaints[0].DPID;
-      payload["clamaint_aadhar_" + 1] = clamaints[0].aadhar;
-      payload["clamaint_addressBank_" + 1] = clamaints[0].addressBank;
-      payload["clamaint_age_" + 1] = clamaints[0].age;
-      payload["clamaint_bankAccountNo_" + 1] = clamaints[0].bankAccountNo;
-      payload["clamaint_bankAccountType_" + 1] = clamaints[0].bankAccountType;
-      payload["clamaint_bankAddress_" + 1] = clamaints[0].bankAddress;
-      payload["clamaint_bankEmail_" + 1] = clamaints[0].bankEmail;
-      payload["clamaint_bankIFS_" + 1] = clamaints[0].bankIFS;
-      payload["clamaint_bankMICR_" + 1] = clamaints[0].bankMICR;
-      payload["clamaint_bankName_" + 1] = clamaints[0].bankName;
-      payload["clamaint_bankPhone_" + 1] = clamaints[0].bankPhone;
-      payload["clamaint_city_" + 1] = clamaints[0].city;
-      payload["clamaint_countryOfBirth_" + 1] = clamaints[0].countryOfBirth;
-      payload["clamaint_dematAccountNo_" + 1] = clamaints[0].dematAccountNo;
-      payload["clamaint_dob_" + 1] = clamaints[0].dob
-        ? dayjs(clamaints[0].dob).format("DD-MM-YYYY")
-        : null;
-      payload["clamaint_email_" + 1] = clamaints[0].email;
-      payload["clamaint_emailBank_" + 1] = clamaints[0].emailBank;
-      payload["clamaint_nameAadhar_" + 1] = clamaints[0].nameAadhar;
-      payload["clamaint_nameBank_" + 1] = clamaints[0].nameBank;
-      payload["clamaint_nameCml_" + 1] = clamaints[0].nameCml;
-      payload["clamaint_namePan_" + 1] = clamaints[0].namePan;
-      payload["clamaint_nationality_" + 1] = clamaints[0].nationality;
-      payload["clamaint_pan_" + 1] = clamaints[0].pan;
-      payload["clamaint_phone_" + 1] = clamaints[0].phone;
-      payload["clamaint_phoneBank_" + 1] = clamaints[0].phoneBank;
-      payload["clamaint_pincodeBank_" + 1] = clamaints[0].pincodeBank;
-      payload["clamaint_placeOfBirth_" + 1] = clamaints[0].placeOfBirth;
-      payload["clamaint_husbandName_" + 1] = clamaints[0].husbandName;
-      payload["clamaint_occupation_" + 1] = clamaints[0].occupation;
-      payload["clamaint_branchName_" + 1] = clamaints[0].branchName;
-      payload["clamaint_accountOpeningDate_" + 1] = clamaints[0]
-        .accountOpeningDate
-        ? dayjs(clamaints[0].accountOpeningDate).format("DD-MM-YYYY")
-        : null;
-      payload["clamaint_state_" + 1] = clamaints[0].state;
-    } else {
-      payload["clamaint_hasShareholder_" + 1] = false;
-    }
-    if (clamaints.length >= 2) {
-      payload["clamaint_hasShareholder_" + 2] = true;
-      payload["clamaint_namePan_" + 2] = clamaints[1].namePan;
-      payload["clamaint_DPID_" + 2] = clamaints[1].DPID;
-      payload["clamaint_aadhar_" + 2] = clamaints[1].aadhar;
-      payload["clamaint_addressBank_" + 2] = clamaints[1].addressBank;
-      payload["clamaint_age_" + 2] = clamaints[1].age;
-      payload["clamaint_bankAccountNo_" + 2] = clamaints[1].bankAccountNo;
-      payload["clamaint_bankAccountType_" + 2] = clamaints[1].bankAccountType;
-      payload["clamaint_bankAddress_" + 2] = clamaints[1].bankAddress;
-      payload["clamaint_bankEmail_" + 2] = clamaints[1].bankEmail;
-      payload["clamaint_bankIFS_" + 2] = clamaints[1].bankIFS;
-      payload["clamaint_bankMICR_" + 2] = clamaints[1].bankMICR;
-      payload["clamaint_bankName_" + 2] = clamaints[1].bankName;
-      payload["clamaint_bankPhone_" + 2] = clamaints[1].bankPhone;
-      payload["clamaint_city_" + 2] = clamaints[1].city;
-      payload["clamaint_countryOfBirth_" + 2] = clamaints[1].countryOfBirth;
-      payload["clamaint_dematAccountNo_" + 2] = clamaints[1].dematAccountNo;
-      payload["clamaint_dob_" + 2] = clamaints[1].dob
-        ? dayjs(clamaints[1].dob).format("DD-MM-YYYY")
-        : null;
-      payload["clamaint_email_" + 2] = clamaints[1].email;
-      payload["clamaint_emailBank_" + 2] = clamaints[1].emailBank;
-      payload["clamaint_nameAadhar_" + 2] = clamaints[1].nameAadhar;
-      payload["clamaint_nameBank_" + 2] = clamaints[1].nameBank;
-      payload["clamaint_nameCml_" + 2] = clamaints[1].nameCml;
-      payload["clamaint_namePan_" + 2] = clamaints[1].namePan;
-      payload["clamaint_nationality_" + 2] = clamaints[1].nationality;
-      payload["clamaint_pan_" + 2] = clamaints[1].pan;
-      payload["clamaint_phone_" + 2] = clamaints[1].phone;
-      payload["clamaint_phoneBank_" + 2] = clamaints[1].phoneBank;
-      payload["clamaint_pincodeBank_" + 2] = clamaints[1].pincodeBank;
-      payload["clamaint_placeOfBirth_" + 2] = clamaints[1].placeOfBirth;
-      payload["clamaint_husbandName_" + 2] = clamaints[1].husbandName;
-      payload["clamaint_occupation_" + 2] = clamaints[1].occupation;
-      payload["clamaint_branchName_" + 2] = clamaints[1].branchName;
-      payload["clamaint_accountOpeningDate_" + 2] = clamaints[1]
-        .accountOpeningDate
-        ? dayjs(clamaints[1].accountOpeningDate).format("DD-MM-YYYY")
-        : null;
-      payload["clamaint_state_" + 2] = clamaints[1].state;
-    } else {
-      payload["clamaint_hasShareholder_" + 2] = false;
-    }
-    if (clamaints.length >= 3) {
-      payload["clamaint_hasShareholder_" + 3] = true;
-      payload["clamaint_namePan_" + 3] = clamaints[2].namePan;
-      payload["clamaint_DPID_" + 3] = clamaints[2].DPID;
-      payload["clamaint_aadhar_" + 3] = clamaints[2].aadhar;
-      payload["clamaint_addressBank_" + 3] = clamaints[2].addressBank;
-      payload["clamaint_age_" + 3] = clamaints[2].age;
-      payload["clamaint_bankAccountNo_" + 3] = clamaints[2].bankAccountNo;
-      payload["clamaint_bankAccountType_" + 3] = clamaints[2].bankAccountType;
-      payload["clamaint_bankAddress_" + 3] = clamaints[2].bankAddress;
-      payload["clamaint_bankEmail_" + 3] = clamaints[2].bankEmail;
-      payload["clamaint_bankIFS_" + 3] = clamaints[2].bankIFS;
-      payload["clamaint_bankMICR_" + 3] = clamaints[2].bankMICR;
-      payload["clamaint_bankName_" + 3] = clamaints[2].bankName;
-      payload["clamaint_bankPhone_" + 3] = clamaints[2].bankPhone;
-      payload["clamaint_city_" + 3] = clamaints[2].city;
-      payload["clamaint_countryOfBirth_" + 3] = clamaints[2].countryOfBirth;
-      payload["clamaint_dematAccountNo_" + 3] = clamaints[2].dematAccountNo;
-      payload["clamaint_dob_" + 3] = clamaints[2].dob
-        ? dayjs(clamaints[2].dob).format("DD-MM-YYYY")
-        : null;
-      payload["clamaint_email_" + 3] = clamaints[2].email;
-      payload["clamaint_emailBank_" + 3] = clamaints[2].emailBank;
-      payload["clamaint_nameAadhar_" + 3] = clamaints[2].nameAadhar;
-      payload["clamaint_nameBank_" + 3] = clamaints[2].nameBank;
-      payload["clamaint_nameCml_" + 3] = clamaints[2].nameCml;
-      payload["clamaint_namePan_" + 3] = clamaints[2].namePan;
-      payload["clamaint_nationality_" + 3] = clamaints[2].nationality;
-      payload["clamaint_pan_" + 3] = clamaints[2].pan;
-      payload["clamaint_phone_" + 3] = clamaints[2].phone;
-      payload["clamaint_phoneBank_" + 3] = clamaints[2].phoneBank;
-      payload["clamaint_pincodeBank_" + 3] = clamaints[2].pincodeBank;
-      payload["clamaint_placeOfBirth_" + 3] = clamaints[2].placeOfBirth;
-      payload["clamaint_husbandName_" + 3] = clamaints[2].husbandName;
-      payload["clamaint_occupation_" + 3] = clamaints[2].occupation;
-      payload["clamaint_branchName_" + 3] = clamaints[2].branchName;
-      payload["clamaint_accountOpeningDate_" + 3] = clamaints[2]
-        .accountOpeningDate
-        ? dayjs(clamaints[2].accountOpeningDate).format("DD-MM-YYYY")
-        : null;
-      payload["clamaint_state_" + 3] = clamaints[2].state;
-    } else {
-      payload["clamaint_hasShareholder_" + 3] = false;
-    }
+    payload["clamaints"] = clamaints.map((item) => ({
+      ...item,
+      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
+      accountOpeningDate: item.accountOpeningDate
+        ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
+        : null,
+    }));
+    payload["non_clamaints"] = legalHeirDetails
+      .filter((itmm) => clamaints.map(i => i.id).includes(itmm.id) === false)
+      .map((itmm) => ({
+        ...itmm,
+        dob: itmm.dob ? dayjs(itmm.dob).format("DD-MM-YYYY") : null,
+        accountOpeningDate: itmm.accountOpeningDate
+          ? dayjs(itmm.accountOpeningDate).format("DD-MM-YYYY")
+          : null,
+      }));
+    console.log(payload["non_clamaints"]);
     mainData.push(payload);
   })
 
@@ -919,13 +858,13 @@ export async function generateDoc(
     )
   }
 
-  // const Affidavit = {
-  //   name: "Affidavit",
-  //   path: path.resolve(
-  //     __dirname,
-  //     "../../../static/word_template/Affidavit.docx"
-  //   )
-  // }
+  const Affidavit = {
+    name: "Affidavit",
+    path: path.resolve(
+      __dirname,
+      "../../../static/word_template/Affidavit.docx"
+    )
+  }
 
   const Annexure_D = {
     name: "Annexure_D",
@@ -992,8 +931,8 @@ export async function generateDoc(
   }
 
   const caseType = {
-    Claim: [ISR1, ISR2, ISR3, ISR4, form_no_sh_13],
-    ClaimTransposition: [ISR1, ISR2, ISR3, ISR4, form_no_sh_13],
+    Claim: [ISR1, ISR2, ISR3, ISR4, form_no_sh_13, Affidavit],
+    ClaimTransposition: [ISR1, ISR2, ISR3, ISR4, form_no_sh_13, Affidavit],
     ClaimIssueDuplicate: [
       ISR1,
       ISR2,
@@ -1001,6 +940,7 @@ export async function generateDoc(
       ISR4,
       Form_A_Duplicate,
       Form_B_Duplicate,
+      Affidavit,
     ],
     Transmission: [
       ISR1,
@@ -1013,6 +953,7 @@ export async function generateDoc(
       Annexure_D,
       Annexure_E,
       Annexure_F,
+      Affidavit,
     ],
     TransmissionIssueDuplicate: [
       ISR1,
@@ -1026,6 +967,7 @@ export async function generateDoc(
       Annexure_D,
       Annexure_E,
       Annexure_F,
+      Affidavit,
     ],
     TransmissionIssueDuplicateTransposition: [
       ISR1,
@@ -1040,6 +982,7 @@ export async function generateDoc(
       Annexure_D,
       Annexure_E,
       Annexure_F,
+      Affidavit,
     ],
     Deletion: [ISR1, ISR2, ISR3, ISR4, form_no_sh_13, Form_SH_14, Deletion],
     DeletionIssueDuplicate: [
@@ -1052,6 +995,7 @@ export async function generateDoc(
       Deletion,
       Form_A_Duplicate,
       Form_B_Duplicate,
+      Affidavit,
     ],
     DeletionIssueDuplicateTransposition: [
       ISR1,
@@ -1066,6 +1010,7 @@ export async function generateDoc(
       Annexure_D,
       Annexure_E,
       Annexure_F,
+      Affidavit,
     ],
   };
 
@@ -1084,36 +1029,383 @@ export async function generateDoc(
     };
 
     caseType[item.Case].forEach((casee) => {
-      // Load the docx file as a binary
-      const wordTemplate = path.resolve(
-        __dirname,
-        "../../../static/word_template/" + casee.name + ".docx"
-      );
-      const content = fs.readFileSync(wordTemplate, "binary");
 
-      // Create a zip instance of the file
-      const zip = new PizZip(content);
+      if (casee.name === "Annexure_D") {
+        const folioFolderAnxDPath = path.resolve(
+          __dirname,
+          `../../../static/word_output/${folderName}/${folioFolderName}/Annexure_D`
+        );
+        if (!fs.existsSync(folioFolderAnxDPath)) {
+          fs.mkdirSync(folioFolderAnxDPath);
+        }
+        data.legalHeirDetails.forEach((i, idx) => {
+          const annxDWordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/" + casee.name + ".docx"
+          );
+          const annxDContent = fs.readFileSync(annxDWordTemplate, "binary");
 
-      // Create a Docxtemplater instance
-      const doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-      });
+          // Create a zip instance of the file
+          const annxDZip = new PizZip(annxDContent);
+
+          // Create a Docxtemplater instance
+          const annxDDoc = new Docxtemplater(annxDZip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          const dataRender:any = {...i};
+          dataRender["companyName"] = data["companyName"];
+          dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
+          dataRender["deceasedRelationship"] = data["deceasedRelationship"];
+          dataRender["Folio"] = data["Folio"];
+          dataRender["totalNoOfShares"] = data["totalNoOfShares"];
+          dataRender["legalHeirDetails"] = data.legalHeirDetails.filter(
+            (_it, itx) => itx !== idx
+          );
+          annxDDoc.render(dataRender);
+  
+          // Get the generated document as a buffer
+          const buf = annxDDoc.getZip().generate({ type: "nodebuffer" });
+  
+          // Write the buffer to a file (output.docx)
+          const annxDWordOutput = path.resolve(
+            __dirname,
+            folioFolderAnxDPath + "/" + casee.name + "_" + (idx + 1) + ".docx"
+          );
+          fs.writeFileSync(annxDWordOutput, buf);
+  
+          console.log("Annexure D Document created successfully!");
+        })
+      } 
+      else if (casee.name === "ISR5") {
+        const folioFolderISR5DPath = path.resolve(
+          __dirname,
+          `../../../static/word_output/${folderName}/${folioFolderName}/ISR5`
+        );
+        if (!fs.existsSync(folioFolderISR5DPath)) {
+          fs.mkdirSync(folioFolderISR5DPath);
+        }
+        data.clamaints.forEach((i, idx) => {
+          const ISR5WordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/" + casee.name + ".docx"
+          );
+          const ISR5Content = fs.readFileSync(ISR5WordTemplate, "binary");
+
+          // Create a zip instance of the file
+          const ISR5Zip = new PizZip(ISR5Content);
+
+          // Create a Docxtemplater instance
+          const ISR5Doc = new Docxtemplater(ISR5Zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+          const dataRender: any = { ...i };
+          dataRender["companyName"] = data["companyName"];
+          dataRender["isDeceased"] = data["isDeceased"];
+          dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
+          dataRender["deceasedRelationship"] = data["deceasedRelationship"];
+          dataRender["dod"] = data["dod"];
+          dataRender["placeOfDeath"] = data["placeOfDeath"];
+          dataRender["isTestate"] = data["isTestate"];
+          dataRender["isMinor"] = data["isMinor"];
+          dataRender["dobMinor"] = data["dobMinor"];
+          dataRender["guardianName"] = data["guardianName"];
+          dataRender["guardianRelationship"] = data["guardianRelationship"];
+          dataRender["guardianPan"] = data["guardianPan"];
+          dataRender["taxStatus"] = data["taxStatus"];
+          dataRender["statusClaimant"] = data["statusClaimant"];
+          dataRender["percentageClaimant"] = data["percentageClaimant"];
+          dataRender["occupationClaimant"] = data["occupationClaimant"];
+          dataRender["politicalExposureClaimant"] = data["politicalExposureClaimant"];
+          dataRender["annualIncomeClaimant"] = data["annualIncomeClaimant"];
+          dataRender["Folio"] = data["Folio"];
+          dataRender["totalNoOfShares"] = data["totalNoOfShares"];
+          ISR5Doc.render(dataRender);
+
+          // Get the generated document as a buffer
+          const buf = ISR5Doc.getZip().generate({ type: "nodebuffer" });
+
+          // Write the buffer to a file (output.docx)
+          const ISR5WordOutput = path.resolve(
+            __dirname,
+            folioFolderISR5DPath + "/" + casee.name + "_" + (idx + 1) + ".docx"
+          );
+          fs.writeFileSync(ISR5WordOutput, buf);
+
+          console.log("ISR5 Document created successfully!");
+        });
+      } 
+      else if (casee.name === "Form_A_Duplicate") {
+        if (item.Case === "TransmissionIssueDuplicate") {
+          // Load the docx file as a binary
+          const wordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/Form_A_Duplicate_2.docx"
+          );
+          const content = fs.readFileSync(wordTemplate, "binary");
+
+          // Create a zip instance of the file
+          const zip = new PizZip(content);
+
+          // Create a Docxtemplater instance
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+
+          doc.render(data);
+
+          // Get the generated document as a buffer
+          const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+          // Write the buffer to a file (output.docx)
+          const wordOutput = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee.name + "_" + (index + 1) + ".docx"
+          );
+          fs.writeFileSync(wordOutput, buf);
+
+          console.log("Document created successfully!");
+        } else {
+          // Load the docx file as a binary
+          const wordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/Form_A_Duplicate_1.docx"
+          );
+          const content = fs.readFileSync(wordTemplate, "binary");
+
+          // Create a zip instance of the file
+          const zip = new PizZip(content);
+
+          // Create a Docxtemplater instance
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+
+          doc.render(data);
+
+          // Get the generated document as a buffer
+          const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+          // Write the buffer to a file (output.docx)
+          const wordOutput = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee.name + "_" + (index + 1) + ".docx"
+          );
+          fs.writeFileSync(wordOutput, buf);
+
+          console.log("Document created successfully!");
+        }
+      } 
+      else if (casee.name === "Form_B_Duplicate") {
+        if (item.Case === "TransmissionIssueDuplicate") {
+          // Load the docx file as a binary
+          const wordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/Form_B_Duplicate_2.docx"
+          );
+          const content = fs.readFileSync(wordTemplate, "binary");
+
+          // Create a zip instance of the file
+          const zip = new PizZip(content);
+
+          // Create a Docxtemplater instance
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+
+          doc.render(data);
+
+          // Get the generated document as a buffer
+          const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+          // Write the buffer to a file (output.docx)
+          const wordOutput = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee.name + "_" + (index + 1) + ".docx"
+          );
+          fs.writeFileSync(wordOutput, buf);
+
+          console.log("Document created successfully!");
+        } else {
+          // Load the docx file as a binary
+          const wordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/Form_B_Duplicate_1.docx"
+          );
+          const content = fs.readFileSync(wordTemplate, "binary");
+
+          // Create a zip instance of the file
+          const zip = new PizZip(content);
+
+          // Create a Docxtemplater instance
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+
+          doc.render(data);
+
+          // Get the generated document as a buffer
+          const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+          // Write the buffer to a file (output.docx)
+          const wordOutput = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee.name + "_" + (index + 1) + ".docx"
+          );
+          fs.writeFileSync(wordOutput, buf);
+
+          console.log("Document created successfully!");
+        }
+      } 
+      else if (casee.name === "Affidavit") {
+        if (data.allowAffidavit) {
+          if (item.Case.includes("Transmission")) {
+            // Load the docx file as a binary
+            const folioFolderAffidavitDPath = path.resolve(
+              __dirname,
+              `../../../static/word_output/${folderName}/${folioFolderName}/Affidavit`
+            );
+            if (!fs.existsSync(folioFolderAffidavitDPath)) {
+              fs.mkdirSync(folioFolderAffidavitDPath);
+            }
+            data.affidavits.forEach((i, idx) => {
+              const affidavitWordTemplate = path.resolve(
+                __dirname,
+                "../../../static/word_template/Affidavit.docx"
+              );
+              const affidavitContent = fs.readFileSync(
+                affidavitWordTemplate,
+                "binary"
+              );
+
+              // Create a zip instance of the file
+              const affidavitZip = new PizZip(affidavitContent);
+
+              // Create a Docxtemplater instance
+              const affidavitDoc = new Docxtemplater(affidavitZip, {
+                paragraphLoop: true,
+                linebreaks: true,
+              });
+
+              const dataRender: any = { ...i };
+              dataRender["companyName"] = data["companyName"];
+              dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
+              dataRender["deceasedRelationship"] = data["deceasedRelationship"];
+              dataRender["placeOfDeath"] = data["placeOfDeath"];
+
+              affidavitDoc.render(dataRender);
+
+              // Get the generated document as a buffer
+              const buf = affidavitDoc
+                .getZip()
+                .generate({ type: "nodebuffer" });
+
+              // Write the buffer to a file (output.docx)
+              const affidavitWordOutput = path.resolve(
+                __dirname,
+                folioFolderAffidavitDPath +
+                  "/" +
+                  casee.name +
+                  "_" +
+                  (idx + 1) +
+                  ".docx"
+              );
+              fs.writeFileSync(affidavitWordOutput, buf);
+
+              console.log("Annexure D Document created successfully!");
+            });
+          } else {
+
+            const folioFolderAffidavitDPath = path.resolve(
+              __dirname,
+              `../../../static/word_output/${folderName}/${folioFolderName}/Affidavit`
+            );
+            if (!fs.existsSync(folioFolderAffidavitDPath)) {
+              fs.mkdirSync(folioFolderAffidavitDPath);
+            }
+            data.affidavits.forEach((i, idx) => {
+              const affidavitWordTemplate = path.resolve(
+                __dirname,
+                "../../../static/word_template/Affidavit2.docx"
+              );
+              const affidavitContent = fs.readFileSync(
+                affidavitWordTemplate,
+                "binary"
+              );
+
+              // Create a zip instance of the file
+              const affidavitZip = new PizZip(affidavitContent);
+
+              // Create a Docxtemplater instance
+              const affidavitDoc = new Docxtemplater(affidavitZip, {
+                paragraphLoop: true,
+                linebreaks: true,
+              });
+
+              const dataRender: any = { ...i };
+
+              affidavitDoc.render(dataRender);
+
+              // Get the generated document as a buffer
+              const buf = affidavitDoc
+                .getZip()
+                .generate({ type: "nodebuffer" });
+
+              // Write the buffer to a file (output.docx)
+              const affidavitWordOutput = path.resolve(
+                __dirname,
+                folioFolderAffidavitDPath +
+                  "/" +
+                  casee.name +
+                  "_" +
+                  (idx + 1) +
+                  ".docx"
+              );
+              fs.writeFileSync(affidavitWordOutput, buf);
+
+              console.log("Annexure D Document created successfully!");
+            });
+          }
+        }
+      } 
+      else {
+        // Load the docx file as a binary
+        const wordTemplate = path.resolve(
+          __dirname,
+          "../../../static/word_template/" + casee.name + ".docx"
+        );
+        const content = fs.readFileSync(wordTemplate, "binary");
+
+        // Create a zip instance of the file
+        const zip = new PizZip(content);
+
+        // Create a Docxtemplater instance
+        const doc = new Docxtemplater(zip, {
+          paragraphLoop: true,
+          linebreaks: true,
+        });
+
+        doc.render(data);
+
+        // Get the generated document as a buffer
+        const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+        // Write the buffer to a file (output.docx)
+        const wordOutput = path.resolve(
+          __dirname,
+          folioFolderPath + "/" + casee.name + "_" + (index + 1) + ".docx"
+        );
+        fs.writeFileSync(wordOutput, buf);
+
+        console.log("Document created successfully!");
+      }
 
       // Render the document by filling in the data
-      doc.render(data);
-
-      // Get the generated document as a buffer
-      const buf = doc.getZip().generate({ type: "nodebuffer" });
-
-      // Write the buffer to a file (output.docx)
-      const wordOutput = path.resolve(
-        __dirname,
-        folioFolderPath + "/" + casee.name + "_" + (index + 1) + ".docx"
-      );
-      fs.writeFileSync(wordOutput, buf);
-
-      console.log("Document created successfully!");
     });
 
   });
