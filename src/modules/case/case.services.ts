@@ -814,7 +814,6 @@ export async function generateDoc(
           ? dayjs(itmm.accountOpeningDate).format("DD-MM-YYYY")
           : null,
       }));
-    console.log(payload["non_clamaints"]);
     mainData.push(payload);
   })
 
