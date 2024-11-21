@@ -27,67 +27,56 @@ export class LegalHeirDetailModel {
             {
               namePan: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               nameAadhar: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               nameCml: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               phone: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               email: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               aadhar: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               dematAccountNo: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               bankName: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               bankAccountNo: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               DPID: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               bankIFS: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],

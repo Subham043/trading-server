@@ -1,3 +1,5 @@
+import { Decimal } from "@prisma/client/runtime/library";
+
 export type CompanyMasterQueryType = {
   id: number;
   registrarMasterBranch: {
@@ -30,9 +32,9 @@ export type CompanyMasterQueryType = {
   } | null;
   CIN: string | null;
   ISIN: string | null;
-  faceValue: number | null;
-  closingPriceNSE: number | null;
-  closingPriceBSE: number | null;
+  faceValue: Decimal | null;
+  closingPriceNSE: Decimal | null;
+  closingPriceBSE: Decimal | null;
   registeredOffice: string | null;
   city: string | null;
   state: string | null;

@@ -76,13 +76,11 @@ export class CorporateMasterModel {
             {
               numerator: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               denominator: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],

@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db";
+import { Decimal } from "@prisma/client/runtime/library";
 
 type CompanyMasterQueryType = {
   id?: number | undefined;
@@ -23,9 +24,9 @@ type CompanyMasterQueryType = {
   } | null;
   CIN?: string | null | undefined;
   ISIN?: string | null | undefined;
-  faceValue?: number | null | undefined;
-  closingPriceNSE?: number | null | undefined;
-  closingPriceBSE?: number | null | undefined;
+  faceValue?: Decimal | null | undefined;
+  closingPriceNSE?: Decimal | null | undefined;
+  closingPriceBSE?: Decimal | null | undefined;
   createdAt?: Date | null | undefined;
 };
 

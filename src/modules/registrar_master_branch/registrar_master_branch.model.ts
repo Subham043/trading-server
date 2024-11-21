@@ -156,92 +156,77 @@ export class RegistrarMasterBranchModel {
             {
               address: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               city: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               state: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               pincode: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               telephone1: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               telephone2: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               email: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               website: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               nameContactPerson: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               designationContactPerson: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               emailContactPerson: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               phoneContactPerson: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               officerAssigned: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               branch: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               registrarMaster: {
                 sebi_regn_id: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -249,7 +234,6 @@ export class RegistrarMasterBranchModel {
               registrarMaster: {
                 registrar_name: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },

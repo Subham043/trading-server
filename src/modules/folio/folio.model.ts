@@ -6,6 +6,7 @@ import {
   FolioType,
   FolioUpdateType,
 } from "../../@types/folio.type";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export type FolioExcelData = {
   equityType: "Bonus" | "Shares" | "Splits" | "Rights";
@@ -55,7 +56,7 @@ export type FolioExportExcelData = {
   noOfShares: string | null | undefined;
   noOfSharesWords: string | null | undefined;
   dateOfAllotment: Date | null | undefined;
-  faceValue: number | null | undefined;
+  faceValue: Decimal | null | undefined;
   distinctiveNosFrom: string | null | undefined;
   distinctiveNosTo: string | null | undefined;
   endorsement: "Yes" | "No";
@@ -195,26 +196,22 @@ export class FolioModel {
             {
               Folio: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               certificateNumber: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               certificateSerialNumber: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               shareholderName1: {
                 shareholderName: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -222,7 +219,6 @@ export class FolioModel {
               shareholderName2: {
                 shareholderName: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -230,33 +226,28 @@ export class FolioModel {
               shareholderName3: {
                 shareholderName: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
             {
               noOfShares: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               noOfSharesWords: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               endorsementFolio: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               endorsementShareholderName1: {
                 shareholderName: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -264,7 +255,6 @@ export class FolioModel {
               endorsementShareholderName2: {
                 shareholderName: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -272,7 +262,6 @@ export class FolioModel {
               endorsementShareholderName3: {
                 shareholderName: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },

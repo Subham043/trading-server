@@ -147,43 +147,36 @@ export class SecurityTypeMasterModel {
             {
               Symbol: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               Series: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               securityName: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               marketLot: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               isinNumber: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               distinctiveNosFrom: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               distinctiveNosTo: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],

@@ -6,6 +6,7 @@ import {
   NameChangeMasterRepoUpdateType,
   NameChangeMasterType,
 } from "../../@types/name_change_master.type";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export type NameChangeMasterExcelData = {
   NSE: string | undefined;
@@ -24,7 +25,7 @@ export type NameChangeMasterExportExcelData = {
   BSE: string | null | undefined;
   ISIN: string | null | undefined;
   CIN: string | null | undefined;
-  faceValue: number | null;
+  faceValue: Decimal | null;
   companyId: number;
   dateNameChange: Date | null | undefined;
 };
@@ -94,25 +95,21 @@ export class NameChangeMasterModel {
             {
               BSE: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               NSE: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               previousName: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               currentName: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],
@@ -188,7 +185,7 @@ export class NameChangeMasterModel {
         companyMaster: {
           CIN: string | null;
           ISIN: string | null;
-          faceValue: number | null;
+          faceValue: Decimal | null;
           id: number;
         } | null;
       })

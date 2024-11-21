@@ -295,14 +295,13 @@ export async function importExcel(
       });
       await createFolio({
         ...folioInsertData[i],
+        faceValue: folioInsertData[i].faceValue as any,
         shareCertificateId: folioInsertData[i].shareCertificateID,
         endorsement: folioInsertData[i].endorsement,
         endorsementFolio: folioInsertData[i].endorsementFolio,
         endorsementDate:
           folioInsertData[i].endorsementDate !== undefined
-            ? new Date(
-                folioInsertData[i].endorsementDate as string
-              )
+            ? new Date(folioInsertData[i].endorsementDate as string)
             : undefined,
         endorsementShareholderName1ID:
           folioInsertData[i].endorsementShareholderName1,

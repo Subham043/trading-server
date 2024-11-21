@@ -64,13 +64,11 @@ export class RegistrarMasterModel {
             {
               registrar_name: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               sebi_regn_id: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],

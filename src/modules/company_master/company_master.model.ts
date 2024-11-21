@@ -6,6 +6,7 @@ import {
   CompanyMasterQueryType,
   CompanyMasterUpdateType,
 } from "../../@types/company_master.type";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export type CompanyMasterExportExcelData = {
   id: number;
@@ -14,9 +15,9 @@ export type CompanyMasterExportExcelData = {
   BSE: string | null | undefined;
   ISIN: string | null | undefined;
   CIN: string | null | undefined;
-  faceValue: number | null;
-  closingPriceNSE: number | null;
-  closingPriceBSE: number | null;
+  faceValue: Decimal | null;
+  closingPriceNSE: Decimal | null;
+  closingPriceBSE: Decimal | null;
   registeredOffice: string | null | undefined;
   city: string | null | undefined;
   state: string | null | undefined;
@@ -270,92 +271,77 @@ export class CompanyMasterModel {
             {
               ISIN: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               CIN: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               registeredOffice: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               city: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               state: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               pincode: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               telephone: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               fax: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               email: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               website: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               nameContactPerson: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               designationContactPerson: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               emailContactPerson: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               phoneContactPerson: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               registrarMasterBranch: {
                 branch: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -363,7 +349,6 @@ export class CompanyMasterModel {
               registrarMasterBranch: {
                 city: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -371,7 +356,6 @@ export class CompanyMasterModel {
               registrarMasterBranch: {
                 state: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -379,7 +363,6 @@ export class CompanyMasterModel {
               registrarMasterBranch: {
                 pincode: {
                   contains: search,
-                  mode: "insensitive",
                 },
               },
             },
@@ -388,7 +371,6 @@ export class CompanyMasterModel {
                 registrarMaster: {
                   sebi_regn_id: {
                     contains: search,
-                    mode: "insensitive",
                   },
                 },
               },
@@ -398,7 +380,6 @@ export class CompanyMasterModel {
                 registrarMaster: {
                   registrar_name: {
                     contains: search,
-                    mode: "insensitive",
                   },
                 },
               },
@@ -408,7 +389,6 @@ export class CompanyMasterModel {
                 some: {
                   currentName: {
                     contains: search,
-                    mode: "insensitive",
                   },
                 },
               },
@@ -418,7 +398,6 @@ export class CompanyMasterModel {
                 some: {
                   NSE: {
                     contains: search,
-                    mode: "insensitive",
                   },
                 },
               },
@@ -428,7 +407,6 @@ export class CompanyMasterModel {
                 some: {
                   BSE: {
                     contains: search,
-                    mode: "insensitive",
                   },
                 },
               },

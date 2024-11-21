@@ -28,13 +28,11 @@ export class FailedExcelModel {
             {
               file_name: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               file_of: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],

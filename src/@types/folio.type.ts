@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db";
 import { ShareHolderDetailType } from "./share_holder_detail.type";
+import { Decimal } from "@prisma/client/runtime/library";
 
 type ShareCertificateMasterQueryType = {
   instrumentType:
@@ -28,7 +29,7 @@ export type FolioType = {
   noOfShares?: string | null | undefined;
   noOfSharesWords?: string | null | undefined;
   dateOfAllotment?: Date | null | undefined;
-  faceValue: number | null | undefined;
+  faceValue: Decimal | null | undefined;
   distinctiveNosFrom?: string | null | undefined;
   distinctiveNosTo?: string | null | undefined;
   endorsement: "Yes" | "No";

@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/library";
 import { CompanyMasterQueryType } from "../../@types/company_master.type";
 import {
   NameChangeMasterRepoCreateType,
@@ -170,7 +171,7 @@ export async function getByCompanyId(companyId: number): Promise<
       companyMaster: {
         CIN: string | null;
         ISIN: string | null;
-        faceValue: number | null;
+        faceValue: Decimal | null;
         id: number;
       } | null;
     })

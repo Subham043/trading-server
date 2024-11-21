@@ -71,13 +71,11 @@ export class DividendMasterModel {
             {
               financial_year: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               dividend_per_share: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],

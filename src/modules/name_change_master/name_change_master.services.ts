@@ -46,6 +46,7 @@ import {
   createNameChangeMasterUniqueSchema,
 } from "./schemas/create.schema";
 import { ZodError } from "zod";
+import { Decimal } from "@prisma/client/runtime/library";
 
 /**
  * Create a new nameChangeMaster with the provided nameChangeMaster information.
@@ -101,7 +102,7 @@ export async function findByCompanyId(params: GetCompanyIdParam): Promise<
         id: number;
         CIN: string | null;
         ISIN: string | null;
-        faceValue: number | null;
+        faceValue: Decimal | null;
       } | null;
     })
   | null
@@ -178,7 +179,7 @@ export async function listCompany(querystring: GetPaginationQuery): Promise<
     nameChangeMaster: (NameChangeMasterType & {
       CIN?: string | null | undefined;
       ISIN?: string | null | undefined;
-      faceValue?: number | null | undefined;
+      faceValue?: Decimal | null | undefined;
       companyId?: number | null | undefined;
     })[];
   } & PaginationType

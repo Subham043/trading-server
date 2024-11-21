@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db";
+import { Decimal } from "@prisma/client/runtime/library";
 
 type CompanyMasterQueryType = {
   id?: number | undefined;
@@ -23,7 +24,7 @@ type CompanyMasterQueryType = {
   } | null;
   CIN?: string | null | undefined;
   ISIN?: string | null | undefined;
-  faceValue?: number | null | undefined;
+  faceValue?: Decimal | null | undefined;
   createdAt?: Date | null | undefined;
 };
 
@@ -44,10 +45,10 @@ export type SecurityTypeMasterType = {
   dateOfAllotment?: Date | null;
   redemptionDate?: Date | null;
   conversionDate?: Date | null;
-  paidUpValue: number | null;
-  dividend: number | null;
-  redemptionAmount: number | null;
-  conversionAmount: number | null;
+  paidUpValue: Decimal | null;
+  dividend: Decimal | null;
+  redemptionAmount: Decimal | null;
+  conversionAmount: Decimal | null;
   marketLot?: string | null;
   isinNumber?: string | null;
   distinctiveNosFrom?: string | null;

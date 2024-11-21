@@ -40,49 +40,41 @@ export class PincodesModel {
             {
               region_name: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               circle_name: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               division_name: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               office_name: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               pincode: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               office_type: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               district: {
                 contains: search,
-                mode: "insensitive",
               },
             },
             {
               state_name: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],

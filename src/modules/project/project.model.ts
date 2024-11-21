@@ -55,7 +55,6 @@ export class ProjectModel {
             {
               name: {
                 contains: search,
-                mode: "insensitive",
               },
             },
           ],
