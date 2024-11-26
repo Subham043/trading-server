@@ -14,7 +14,7 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import {
   getIdParamSchema,
   getIdsBodySchema,
-  getShareCertificateMasterIdParamSchema,
+  getPaymentTrackerIdParamSchema,
 } from "../../common/schemas/id_param.schema";
 import { createReferralTrackerStageBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
@@ -35,7 +35,7 @@ export async function referralTrackerStageRoutes(app: FastifyInstance) {
     {
       schema: {
         querystring: getPaginationQuerySchema,
-        params: getShareCertificateMasterIdParamSchema,
+        params: getPaymentTrackerIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
@@ -46,7 +46,7 @@ export async function referralTrackerStageRoutes(app: FastifyInstance) {
     {
       schema: {
         querystring: getSearchQuerySchema,
-        params: getShareCertificateMasterIdParamSchema,
+        params: getPaymentTrackerIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },
@@ -57,7 +57,7 @@ export async function referralTrackerStageRoutes(app: FastifyInstance) {
     {
       schema: {
         body: createReferralTrackerStageBodySchema,
-        params: getShareCertificateMasterIdParamSchema,
+        params: getPaymentTrackerIdParamSchema,
       },
       preHandler: app.verifyJwt,
     },

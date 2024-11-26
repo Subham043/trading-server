@@ -84,14 +84,14 @@ export async function list(
   querystring: GetPaginationQuery
 ): Promise<
   {
-    referralTrackerStage: ReferralTrackerStageType[];
+    referralTrackerStages: ReferralTrackerStageType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const referralTrackerStage = await paginate(
+  const referralTrackerStages = await paginate(
     paymentTrackerId,
     limit,
     offset,
@@ -102,7 +102,7 @@ export async function list(
     querystring.search
   );
   return {
-    referralTrackerStage,
+    referralTrackerStages,
     ...getPaginationKeys({
       count: referralTrackerStageCount,
       page: querystring.page,
@@ -113,21 +113,21 @@ export async function list(
 
 export async function listAll(querystring: GetPaginationQuery): Promise<
   {
-    referralTrackerStage: ReferralTrackerStageType[];
+    referralTrackerStages: ReferralTrackerStageType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const referralTrackerStage = await paginateAll(
+  const referralTrackerStages = await paginateAll(
     limit,
     offset,
     querystring.search
   );
   const referralTrackerStageCount = await countAll(querystring.search);
   return {
-    referralTrackerStage,
+    referralTrackerStages,
     ...getPaginationKeys({
       count: referralTrackerStageCount,
       page: querystring.page,

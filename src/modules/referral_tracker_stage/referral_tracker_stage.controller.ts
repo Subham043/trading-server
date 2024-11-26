@@ -20,7 +20,7 @@ import {
   ReferralTrackerStageCreateType,
   ReferralTrackerStageUpdateType,
 } from "../../@types/referral_tracker_stage.type";
-import { updateReferralTrackerStageBodySchema } from "./schemas/update.schema";
+import { updateReferralTrackerStageIdSchema } from "./schemas/update.schema";
 
 export async function listReferralTrackerStages(
   request: FastifyRequest<{
@@ -131,7 +131,7 @@ export async function updateReferralTrackerStage(
   }>,
   reply: FastifyReply
 ): Promise<void> {
-  await updateReferralTrackerStageBodySchema.parseAsync({
+  await updateReferralTrackerStageIdSchema.parseAsync({
     id: request.params.id,
   });
   const result = await update(request.body, request.params);

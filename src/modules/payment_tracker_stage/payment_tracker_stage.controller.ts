@@ -17,7 +17,7 @@ import {
   paymentTrackerIdSchema,
 } from "./schemas/create.schema";
 import { PaymentTrackerStageCreateType, PaymentTrackerStageUpdateType } from "../../@types/payment_tracker_stage.type";
-import { updatePaymentTrackerStageBodySchema } from "./schemas/update.schema";
+import { updatePaymentTrackerStageIdSchema } from "./schemas/update.schema";
 
 export async function listPaymentTrackerStages(
   request: FastifyRequest<{
@@ -128,7 +128,7 @@ export async function updatePaymentTrackerStage(
   }>,
   reply: FastifyReply
 ): Promise<void> {
-  await updatePaymentTrackerStageBodySchema.parseAsync({
+  await updatePaymentTrackerStageIdSchema.parseAsync({
     id: request.params.id,
   });
   const result = await update(request.body, request.params);

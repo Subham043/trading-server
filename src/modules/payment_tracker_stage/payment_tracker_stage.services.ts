@@ -77,21 +77,21 @@ export async function findById(params: GetIdParam): Promise<PaymentTrackerStageT
  * Find paymentTrackerStage by pagination.
  *
  * @param {GetPaginationQuery} querystring - the parameters for finding the paymentTrackerStage
- * @return {Promise<{paymentTrackerStage:PaymentTrackerStageType[]} & PaginationType>} the paymentTrackerStage found by ID
+ * @return {Promise<{paymentTrackerStages:PaymentTrackerStageType[]} & PaginationType>} the paymentTrackerStage found by ID
  */
 export async function list(
   paymentTrackerId: number,
   querystring: GetPaginationQuery
 ): Promise<
   {
-    paymentTrackerStage: PaymentTrackerStageType[];
+    paymentTrackerStages: PaymentTrackerStageType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const paymentTrackerStage = await paginate(
+  const paymentTrackerStages = await paginate(
     paymentTrackerId,
     limit,
     offset,
@@ -99,7 +99,7 @@ export async function list(
   );
   const paymentTrackerStageCount = await count(paymentTrackerId, querystring.search);
   return {
-    paymentTrackerStage,
+    paymentTrackerStages,
     ...getPaginationKeys({
       count: paymentTrackerStageCount,
       page: querystring.page,
@@ -110,17 +110,17 @@ export async function list(
 
 export async function listAll(querystring: GetPaginationQuery): Promise<
   {
-    paymentTrackerStage: PaymentTrackerStageType[];
+    paymentTrackerStages: PaymentTrackerStageType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
     page: querystring.page,
     size: querystring.limit,
   });
-  const paymentTrackerStage = await paginateAll(limit, offset, querystring.search);
+  const paymentTrackerStages = await paginateAll(limit, offset, querystring.search);
   const paymentTrackerStageCount = await countAll(querystring.search);
   return {
-    paymentTrackerStage,
+    paymentTrackerStages,
     ...getPaginationKeys({
       count: paymentTrackerStageCount,
       page: querystring.page,

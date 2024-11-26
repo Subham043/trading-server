@@ -123,3 +123,23 @@ export const getShareHolderMasterIdParamSchema = z
   .required();
 
 export type GetShareHolderMasterIdParam = z.infer<typeof getShareHolderMasterIdParamSchema>;
+
+
+export const getPaymentTrackerIdParamSchema = z
+  .object({
+    paymentTrackerId: z
+      .string({
+        errorMap: () => ({
+          message: "Payment Tracker ID must be a number",
+        }),
+      })
+      .regex(/^\d+$/, {
+        message: "Payment Tracker ID must be a number",
+      })
+      .transform((value) => parseInt(value)),
+  })
+  .required();
+
+export type GetPaymentTrackerIdParam = z.infer<
+  typeof getPaymentTrackerIdParamSchema
+>;
