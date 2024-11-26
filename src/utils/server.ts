@@ -44,6 +44,9 @@ import { dividendMasterRoutes } from "../modules/dividend_master/dividend_master
 import { shareHolderDetailRoutes } from "../modules/share_holder_detail/share_holder_detail.routes";
 import { legalHeirDetailRoutes } from "../modules/legal_heir_detail/legal_heir_detail.routes";
 import { caseRoutes } from "../modules/case/case.routes";
+import { paymentTrackerRoutes } from "../modules/payment_tracker/payment_tracker.routes";
+import { paymentTrackerStageRoutes } from "../modules/payment_tracker_stage/payment_tracker_stage.routes";
+import { referralTrackerStageRoutes } from "../modules/referral_tracker_stage/referral_tracker_stage.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -157,6 +160,15 @@ export async function buildServer() {
   });
   await server.register(caseRoutes, {
     prefix: "/api/cases",
+  });
+  await server.register(paymentTrackerRoutes, {
+    prefix: "/api/payment-trackers",
+  });
+  await server.register(paymentTrackerStageRoutes, {
+    prefix: "/api/payment-tracker-stages",
+  });
+  await server.register(referralTrackerStageRoutes, {
+    prefix: "/api/referral-tracker-stages",
   });
 
   // delay is the number of milliseconds for the graceful close to finish
