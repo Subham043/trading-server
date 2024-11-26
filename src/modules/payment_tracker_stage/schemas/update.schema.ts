@@ -14,9 +14,6 @@ export const updatePaymentTrackerStageBodySchema = z.object({
         message: "Amount must be number",
       }),
     })
-    .positive({
-      message: "Amount must be a positive number",
-    })
     .optional()
     .default(0.0),
 });
