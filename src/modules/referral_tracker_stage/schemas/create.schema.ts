@@ -19,6 +19,15 @@ export const createReferralTrackerStageBodySchema = z.object({
     })
     .optional()
     .default(0.0),
+  date: z
+    .string({
+      errorMap: () => ({ message: "Date must be a string" }),
+    })
+    .datetime({
+      message: "Date must be a valid date",
+    })
+    .trim()
+    .optional(),
 });
 
 export const paymentTrackerIdSchema = z

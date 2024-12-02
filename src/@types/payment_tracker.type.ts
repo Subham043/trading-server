@@ -11,9 +11,8 @@ export type PaymentTrackerType = {
   noOfStagesReferral?: number | null;
   percentageStageReferral?: Decimal | null;
   amountReferral?: Decimal | null;
-  gstFlag:
-    | "Yes"
-    | "No";
+  tdsPercentage?: Decimal | null;
+  tdsFlag: "Yes" | "No";
   projectID?: number | null;
   createdAt?: Date | null;
 };

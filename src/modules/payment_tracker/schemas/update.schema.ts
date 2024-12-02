@@ -2,7 +2,7 @@ import { z } from "zod";
 import { getById } from "../payment_tracker.repository";
 
 export const updatePaymentTrackerBodySchema = z.object({
-  gstFlag: z.enum(["Yes", "No"], {
+  tdsFlag: z.enum(["Yes", "No"], {
     errorMap: () => ({
       message: "GST Flag must be one of [Yes, No]",
     }),
@@ -49,6 +49,14 @@ export const updatePaymentTrackerBodySchema = z.object({
     })
     .optional()
     .default(0.0),
+  tdsPercentage: z
+    .number({
+      errorMap: () => ({
+        message: "TDS Percentage each stage For Referral must be number",
+      }),
+    })
+    .optional()
+    .default(0),
 });
 
 export const updatePaymentTrackerUniqueSchema = z.object({

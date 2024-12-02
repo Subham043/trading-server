@@ -155,6 +155,7 @@ export async function exportExcel(
       id: paymentTrackerStage.id,
       amount: paymentTrackerStage.amount,
       status: paymentTrackerStage.status,
+      date: paymentTrackerStage.date,
       createdAt: paymentTrackerStage.createdAt,
       paymentTrackerID: paymentTrackerStage.paymentTrackerID,
     };

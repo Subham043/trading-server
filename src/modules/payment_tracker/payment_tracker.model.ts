@@ -9,13 +9,14 @@ import {
 import { Decimal } from "@prisma/client/runtime/library";
 
 export type PaymentTrackerExcelData = {
-  gstFlag: "Yes" | "No";
+  tdsFlag: "Yes" | "No";
   valuation: Decimal;
   percentageTotal: Decimal;
   noOfStages: number;
   percentageStage: Decimal;
   noOfStagesReferral: number;
   percentageStageReferral: Decimal;
+  tdsPercentage: Decimal;
   amountReferral: Decimal;
   projectID: number;
 };
@@ -29,8 +30,9 @@ export type PaymentTrackerExportExcelData = {
   noOfStagesReferral: number | null | undefined;
   percentageStageReferral: Decimal | null | undefined;
   amountReferral: Decimal | null | undefined;
+  tdsPercentage: Decimal | null | undefined;
   projectID: number | null | undefined;
-  gstFlag: "Yes" | "No";
+  tdsFlag: "Yes" | "No";
 };
 
 export const ExcelPaymentTrackersColumns: WorksheetColumnsType = [
@@ -48,7 +50,8 @@ export const ExcelPaymentTrackersColumns: WorksheetColumnsType = [
     key: "amountReferral",
     header: "Amount For Referral",
   },
-  { key: "gstFlag", header: "GST Flag" },
+  { key: "tdsFlag", header: "GST Flag" },
+  { key: "tdsPercentage", header: "TDS Percentage" },
   { key: "projectID", header: "Project Id" },
 ];
 
@@ -61,7 +64,8 @@ export const PaymentTrackerColumn = {
   noOfStagesReferral: true,
   percentageStageReferral: true,
   amountReferral: true,
-  gstFlag: true,
+  tdsFlag: true,
+  tdsPercentage: true,
   projectID: true,
   createdAt: true,
 };

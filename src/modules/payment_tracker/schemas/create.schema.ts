@@ -2,37 +2,29 @@ import { z } from "zod";
 import { getById as getByProjectId } from "../../project/project.repository";
 
 export const createPaymentTrackerBodySchema = z.object({
-  gstFlag: z.enum(
-    ["Yes", "No"],
-    {
-      errorMap: () => ({
-        message:
-          "GST Flag must be one of [Yes, No]",
-      }),
-    }
-  ),
-  valuation: z
-    .number({
-      errorMap: () => ({ message: "Valuation must be number" }),
+  tdsFlag: z.enum(["Yes", "No"], {
+    errorMap: () => ({
+      message: "GST Flag must be one of [Yes, No]",
     }),
-  percentageTotal: z
-    .number({
-      errorMap: () => ({
-        message: "Percentage Of Total Billing must be number",
-      }),
+  }),
+  valuation: z.number({
+    errorMap: () => ({ message: "Valuation must be number" }),
+  }),
+  percentageTotal: z.number({
+    errorMap: () => ({
+      message: "Percentage Of Total Billing must be number",
     }),
-  noOfStages: z
-    .number({
-      errorMap: () => ({
-        message: "No. of Stages must be number",
-      }),
+  }),
+  noOfStages: z.number({
+    errorMap: () => ({
+      message: "No. of Stages must be number",
     }),
-  percentageStage: z
-    .number({
-      errorMap: () => ({
-        message: "Percentage each stage must be number",
-      }),
+  }),
+  percentageStage: z.number({
+    errorMap: () => ({
+      message: "Percentage each stage must be number",
     }),
+  }),
   noOfStagesReferral: z
     .number({
       errorMap: () => ({
@@ -45,6 +37,14 @@ export const createPaymentTrackerBodySchema = z.object({
     .number({
       errorMap: () => ({
         message: "Percentage each stage For Referral must be number",
+      }),
+    })
+    .optional()
+    .default(0),
+  tdsPercentage: z
+    .number({
+      errorMap: () => ({
+        message: "TDS Percentage each stage For Referral must be number",
       }),
     })
     .optional()

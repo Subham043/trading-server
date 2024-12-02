@@ -7,14 +7,16 @@ export type ReferralTrackerStageType = {
   amount: Decimal | null | undefined;
   status: "InvoiceSent" | "Paid" | "ReceiptSent" | "ToBePaid";
   paymentTrackerID?: number | null;
+  date?: string | null | undefined;
   createdAt?: Date | null | undefined;
 };
 
 export type ReferralTrackerStageCreateType = Omit<
   ReferralTrackerStageType,
-  | "id"
-  | "createdAt"
->;
+  "id" | "createdAt" | "date"
+> & {
+  date: string | undefined;
+};
 
 export interface ReferralTrackerStageUpdateType extends ReferralTrackerStageCreateType {}
 

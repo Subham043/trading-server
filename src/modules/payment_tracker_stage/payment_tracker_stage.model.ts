@@ -12,15 +12,21 @@ export type PaymentTrackerStageExcelData = {
   amount: Decimal | null | undefined;
   status: "InvoiceSent" | "Paid" | "ReceiptSent" | "ToBePaid";
   paymentTrackerID: number;
+  date: string | undefined;
 };
 
 export type PaymentTrackerStageExportExcelData = {
   id: number;
   amount: Decimal | null | undefined;
-  status: "InvoiceSent" | "Paid" | "ReceiptSent" | "ToBePaid"
+  status:
+    | "InvoiceSent"
+    | "Paid"
+    | "ReceiptSent"
+    | "ToBePaid"
     | null
     | undefined;
   paymentTrackerID: number | null | undefined;
+  date: string | null | undefined;
   createdAt: Date | null | undefined;
 };
 
@@ -28,6 +34,7 @@ export const ExcelPaymentTrackerStageesColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "amount", header: "Amount" },
   { key: "status", header: "Status" },
+  { key: "date", header: "Date" },
   { key: "paymentTrackerID", header: "Payment Tracker Id" },
   { key: "createdAt", header: "Created At" },
 ];
@@ -36,6 +43,7 @@ export const PaymentTrackerStageColumn = {
   id: true,
   amount: true,
   status: true,
+  date: true,
   paymentTrackerID: true,
   createdAt: true,
 };

@@ -6,15 +6,18 @@ export type PaymentTrackerStageType = {
   id: number;
   amount: Decimal | null | undefined;
   status: "InvoiceSent" | "Paid" | "ReceiptSent" | "ToBePaid";
+  date?: string | null | undefined;
   paymentTrackerID?: number | null;
   createdAt?: Date | null | undefined;
 };
 
 export type PaymentTrackerStageCreateType = Omit<
   PaymentTrackerStageType,
-  | "id"
-  | "createdAt"
->;
+  "id" | "createdAt" |
+  "date"
+> & {
+  date: string | undefined;
+};
 
 export interface PaymentTrackerStageUpdateType extends PaymentTrackerStageCreateType {}
 

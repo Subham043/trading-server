@@ -11,15 +11,21 @@ import { Decimal } from "@prisma/client/runtime/library";
 export type ReferralTrackerStageExcelData = {
   amount: Decimal | null | undefined;
   status: "InvoiceSent" | "Paid" | "ReceiptSent" | "ToBePaid";
+  date: string | undefined;
   paymentTrackerID: number;
 };
 
 export type ReferralTrackerStageExportExcelData = {
   id: number;
   amount: Decimal | null | undefined;
-  status: "InvoiceSent" | "Paid" | "ReceiptSent" | "ToBePaid"
+  status:
+    | "InvoiceSent"
+    | "Paid"
+    | "ReceiptSent"
+    | "ToBePaid"
     | null
     | undefined;
+  date: string | null | undefined;
   paymentTrackerID: number | null | undefined;
   createdAt: Date | null | undefined;
 };
@@ -28,6 +34,7 @@ export const ExcelReferralTrackerStageesColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "amount", header: "Amount" },
   { key: "status", header: "Status" },
+  { key: "date", header: "Date" },
   { key: "paymentTrackerID", header: "Referral Tracker Id" },
   { key: "createdAt", header: "Created At" },
 ];
@@ -36,6 +43,7 @@ export const ReferralTrackerStageColumn = {
   id: true,
   amount: true,
   status: true,
+  date: true,
   paymentTrackerID: true,
   createdAt: true,
 };
