@@ -97,6 +97,10 @@ export async function list(querystring: GetPaginationQuery): Promise<
   };
 }
 
+export async function all(querystring: GetSearchQuery): Promise<StageNameType[]> {
+  return await getAll(querystring.search);
+}
+
 /**
  * Export project by pagination.
  *

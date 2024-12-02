@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
+  all,
   create,
   destroy,
   destroyMultiple,
@@ -23,6 +24,21 @@ export async function listStageNames(
   reply: FastifyReply
 ) {
   const result = await list(request.query);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "StageNames Fetched",
+    data: result,
+  });
+}
+
+export async function listAllStageNames(
+  request: FastifyRequest<{
+    Querystring: GetSearchQuery;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await all(request.query);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

@@ -7,6 +7,7 @@ import {
   removeStageName,
   removeMultipleStageName,
   updateStageName,
+  listAllStageNames,
 } from "./stageName.controller";
 import { updateStageNameBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
@@ -25,6 +26,14 @@ export async function stageNameRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     listStageNames
+  );
+  app.get(
+    "/all",
+    {
+      schema: { querystring: getSearchQuerySchema },
+      preHandler: app.verifyJwt,
+    },
+    listAllStageNames
   );
   app.get(
     "/export",
