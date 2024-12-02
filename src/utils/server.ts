@@ -47,6 +47,7 @@ import { caseRoutes } from "../modules/case/case.routes";
 import { paymentTrackerRoutes } from "../modules/payment_tracker/payment_tracker.routes";
 import { paymentTrackerStageRoutes } from "../modules/payment_tracker_stage/payment_tracker_stage.routes";
 import { referralTrackerStageRoutes } from "../modules/referral_tracker_stage/referral_tracker_stage.routes";
+import { stageNameRoutes } from "../modules/stage_name/stageName.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -121,6 +122,7 @@ export async function buildServer() {
   await server.register(userRoutes, { prefix: "/api/users" });
   await server.register(accountRoutes, { prefix: "/api/account" });
   await server.register(pincodeRoutes, { prefix: "/api/pincodes" });
+  await server.register(stageNameRoutes, { prefix: "/api/stage-names" });
   await server.register(uploadRoutes, { prefix: "/api/upload" });
   await server.register(registrarMasterBranchRoutes, {
     prefix: "/api/registrar-master-branches",
