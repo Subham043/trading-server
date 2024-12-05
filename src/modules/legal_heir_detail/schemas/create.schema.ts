@@ -266,6 +266,102 @@ export const createLegalHeirDetailBodySchema = z.object({
     })
     .trim()
     .optional(),
+  addressAadhar: z
+    .string({
+      errorMap: () => ({
+        message: "address as per aadhar must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  CIN: z
+    .string({
+      errorMap: () => ({
+        message: "CIN must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  firstName: z
+    .string({
+      errorMap: () => ({
+        message: "First Name must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  middleName: z
+    .string({
+      errorMap: () => ({
+        message: "Middle Name must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  lastName: z
+    .string({
+      errorMap: () => ({
+        message: "Last Name must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  fatherFirstName: z
+    .string({
+      errorMap: () => ({
+        message: "Father's First Name must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  fatherMiddleName: z
+    .string({
+      errorMap: () => ({
+        message: "Father's Middle Name must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  fatherLastName: z
+    .string({
+      errorMap: () => ({
+        message: "Father's Last Name must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  password: z
+    .string({
+      errorMap: () => ({
+        message: "Password must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  confirmPassword: z
+    .string({
+      errorMap: () => ({
+        message: "Confirm Password must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  hintQuestion: z
+    .string({
+      errorMap: () => ({
+        message: "Hint Question must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  hintAnswer: z
+    .string({
+      errorMap: () => ({
+        message: "Hint Answer must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
 });
 
 export const projectIdSchema = z

@@ -220,6 +220,7 @@ export const updateCaseBodySchema = z.object({
         message: "Dead Shareholder must be a number",
       }),
     })
+    .nullable()
     .optional(),
   document: z
     .any()
@@ -261,6 +262,7 @@ export const updateCaseUniqueSchema = z.object({
         message: "Dead Shareholder must be a number",
       }),
     })
+    .nullable()
     .optional()
     .superRefine(async (deadShareholderID, ctx) => {
       if (deadShareholderID) {

@@ -384,6 +384,19 @@ model ShareHolderDetail {
   bankAccountType  String? @db.VarChar(256)
   accountOpeningDate  String? @db.VarChar(256)
   addressBank  String? @db.Text
+  isCompany      TruthType     @default(No)
+  addressAadhar  String? @db.Text
+  CIN  String? @db.VarChar(256)
+  firstName  String? @db.VarChar(256)
+  middleName  String? @db.VarChar(256)
+  lastName  String? @db.VarChar(256)
+  fatherFirstName  String? @db.VarChar(256)
+  fatherMiddleName  String? @db.VarChar(256)
+  fatherLastName  String? @db.VarChar(256)
+  password  String? @db.VarChar(256)
+  confirmPassword  String? @db.VarChar(256)
+  hintQuestion  String? @db.Text
+  hintAnswer  String? @db.Text
   emailBank  String? @db.VarChar(256)
   phoneBank  String? @db.VarChar(256)
   pincodeBank  String? @db.VarChar(256)
@@ -434,6 +447,18 @@ model LegalHeirDetail {
   bankAccountType  String? @db.VarChar(256)
   accountOpeningDate  String? @db.VarChar(256)
   addressBank  String? @db.Text
+  addressAadhar  String? @db.Text
+  CIN  String? @db.VarChar(256)
+  firstName  String? @db.VarChar(256)
+  middleName  String? @db.VarChar(256)
+  lastName  String? @db.VarChar(256)
+  fatherFirstName  String? @db.VarChar(256)
+  fatherMiddleName  String? @db.VarChar(256)
+  fatherLastName  String? @db.VarChar(256)
+  password  String? @db.VarChar(256)
+  confirmPassword  String? @db.VarChar(256)
+  hintQuestion  String? @db.Text
+  hintAnswer  String? @db.Text
   emailBank  String? @db.VarChar(256)
   phoneBank  String? @db.VarChar(256)
   pincodeBank  String? @db.VarChar(256)

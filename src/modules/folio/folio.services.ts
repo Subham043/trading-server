@@ -387,7 +387,10 @@ export async function getCorporateMaster(
                     Number(corporateMaster.denominator ?? 0)
                 : 0
             );
-            const consolidatedHolding = Number(originalHolding) + exchange;
+            const consolidatedHolding =
+              corporateMaster.type === "Splits"
+                ? exchange
+                : Number(originalHolding) + exchange;
             test.push({
               type: corporateMaster.type,
               date: corporateMaster.date,
@@ -407,7 +410,8 @@ export async function getCorporateMaster(
                     Number(corporateMaster.denominator ?? 0)
                 : 0
             );
-            const consolidatedHolding = Number(originalHolding) + exchange;
+            const consolidatedHolding =
+              corporateMaster.type==="Splits" ? exchange : Number(originalHolding) + exchange;
             test.push({
               type: corporateMaster.type,
               date: corporateMaster.date,
@@ -560,7 +564,8 @@ export async function getConsolidatedHolding(
               : 0
           );
 
-          const consolidatedHolding = Number(originalHolding) + exchange;
+          const consolidatedHolding =
+            corporateMaster.type === "Splits" ? exchange : Number(originalHolding) + exchange;
 
           acc.push({
             type: corporateMaster.type,

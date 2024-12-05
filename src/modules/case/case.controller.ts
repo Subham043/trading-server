@@ -101,7 +101,10 @@ export async function createCase(
 ): Promise<void> {
   await shareCertificateIdSchema.parseAsync({
     shareCertificateId: request.params.shareCertificateId,
-    deadShareholderID: (request.body.deadShareholderID && +request.body.deadShareholderID) || null,
+    deadShareholderID:
+      request.body.deadShareholderID && !isNaN(Number(request.body.deadShareholderID))
+        ? Number(request.body.deadShareholderID)
+        : undefined,
   });
   const result = await create(request.body, request.params.shareCertificateId);
   return reply.code(201).type("application/json").send({
@@ -132,8 +135,10 @@ export async function updateCase(
   await updateCaseUniqueSchema.parseAsync({
     id: request.params.id,
     deadShareholderID:
-      (request.body.deadShareholderID && +request.body.deadShareholderID) ||
-      null,
+      request.body.deadShareholderID &&
+      !isNaN(Number(request.body.deadShareholderID))
+        ? Number(request.body.deadShareholderID)
+        : undefined,
   });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({

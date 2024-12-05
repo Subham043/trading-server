@@ -220,6 +220,7 @@ export const createCaseBodySchema = z.object({
         message: "Dead Shareholder must be a number",
       }),
     })
+    .nullable()
     .optional(),
   document: z
     .any()
@@ -262,13 +263,14 @@ export const shareCertificateIdSchema = z
         }),
       })
       .optional()
+      .nullable()
       .superRefine(async (deadShareholderID, ctx) => {
         if (deadShareholderID) {
-          const shareHolder = await getShareHolderDetailId(deadShareholderID);
+          const shareHolder = await getShareHolderDetailId(Number(deadShareholderID));
           if (!shareHolder) {
             ctx.addIssue({
               code: "custom",
-              message: "Invalid share holder detail Id",
+              message: "Invalid dead share holder detail Id",
               path: ["deadShareholderID"],
             });
             return false;
