@@ -5,6 +5,7 @@ import {
   destroyMultiple,
   exportExcel,
   findById,
+  findFoliosByProjectId,
   importExcel,
   list,
   update,
@@ -63,6 +64,22 @@ export async function getProject(
     code: 200,
     success: true,
     message: "Project Fetched",
+    data: result,
+  });
+}
+
+export async function getFoliosByProjectId(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+    Querystring: GetPaginationQuery;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await findFoliosByProjectId(request.query, request.params.id);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Folios Fetched",
     data: result,
   });
 }

@@ -238,3 +238,98 @@ export async function importExcel(
     fileName: null,
   };
 }
+
+
+export async function findFoliosByProjectId(
+  querystring: GetPaginationQuery,
+  projectID: number
+): Promise<
+  {
+    folios: {
+      id: number;
+      Folio: string;
+      company: string | null;
+    }[];
+  } & PaginationType
+> {
+  const { limit, offset } = getPaginationParams({
+    page: querystring.page,
+    size: querystring.limit,
+  });
+  const search = querystring.search
+    ? {
+        OR: [
+          {
+            Folio: {
+              contains: querystring.search,
+            },
+          },
+          {
+            shareCertificateMaster: {
+              companyMaster: {
+                nameChangeMasters: {
+                  some: {
+                    currentName: {
+                      contains: querystring.search,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      }
+    : undefined;
+  const folios = await prisma.folio.findMany({
+    skip: offset,
+    take: limit,
+    where: {
+      shareCertificateMaster: {
+        projectID: projectID,
+      },
+      ...search,
+    },
+    select: {
+      id: true,
+      Folio: true,
+      shareCertificateMaster: {
+        select: {
+          companyMaster: {
+            select: {
+              nameChangeMasters: {
+                select: {
+                  currentName: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  const folioCount = await prisma.folio.count({
+    where: {
+      shareCertificateMaster: {
+        projectID: projectID,
+      },
+      ...search,
+    },
+  });
+  const data = folios.map((folio) => {
+    return {
+      id: folio.id,
+      Folio: folio.Folio,
+      company:
+        folio.shareCertificateMaster?.companyMaster?.nameChangeMasters[0]
+          .currentName || null,
+    };
+  });
+  return {
+    folios: data,
+    ...getPaginationKeys({
+      count: folioCount,
+      page: querystring.page,
+      size: querystring.limit,
+    }),
+  };
+}

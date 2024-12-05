@@ -49,6 +49,7 @@ import { paymentTrackerStageRoutes } from "../modules/payment_tracker_stage/paym
 import { referralTrackerStageRoutes } from "../modules/referral_tracker_stage/referral_tracker_stage.routes";
 import { stageNameRoutes } from "../modules/stage_name/stageName.routes";
 import { stageTrackerRoutes } from "../modules/stage_tracker/stage_tracker.routes";
+import { communicationTrackerRoutes } from "../modules/communication_tracker/communication_tracker.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -166,6 +167,9 @@ export async function buildServer() {
   });
   await server.register(stageTrackerRoutes, {
     prefix: "/api/stage-trackers",
+  });
+  await server.register(communicationTrackerRoutes, {
+    prefix: "/api/communication-trackers",
   });
   await server.register(paymentTrackerRoutes, {
     prefix: "/api/payment-trackers",

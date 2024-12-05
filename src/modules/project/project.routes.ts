@@ -8,6 +8,7 @@ import {
   removeProject,
   removeMultipleProject,
   updateProject,
+  getFoliosByProjectId,
 } from "./project.controller";
 import { updateProjectBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
@@ -71,6 +72,17 @@ export async function projectRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     getProject
+  );
+  app.get(
+    "/:id/folios",
+    {
+      schema: {
+        querystring: getPaginationQuerySchema,
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    getFoliosByProjectId
   );
   app.put(
     "/:id",
