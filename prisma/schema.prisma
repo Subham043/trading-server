@@ -332,6 +332,7 @@ model Project {
   paymentTrackers PaymentTracker[]
   stageTrackers StageTracker[]
   communicationTrackers CommunicationTracker[]
+  iepfTrackers IEPFTracker[]
 
   @@index([userID], map: "userID_project")
 }
@@ -592,4 +593,17 @@ model CommunicationTracker {
   
 
   @@index([projectID], map: "projectID_communicationTrackerkey")
+}
+
+model IEPFTracker {
+  id        Int      @id @default(autoincrement())
+  shareHolderDetails  String? @db.Text
+  legalHeirDetails  String? @db.Text
+  project   Project? @relation(fields: [projectID], references: [id], onDelete: Cascade, onUpdate: SetNull)
+  projectID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  
+
+  @@index([projectID], map: "projectID_iepfTrackerkey")
 }
