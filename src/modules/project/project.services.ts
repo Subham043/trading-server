@@ -35,6 +35,7 @@ import { PostExcelBody } from "../../common/schemas/excel.schema";
 import { createProjectBodySchema } from "./schemas/create.schema";
 import { ZodError } from "zod";
 import { prisma } from "../../db";
+import { getConsolidatedHolding } from "../folio/folio.services";
 
 /**
  * Create a new project with the provided project information.
@@ -331,5 +332,81 @@ export async function findFoliosByProjectId(
       page: querystring.page,
       size: querystring.limit,
     }),
+  };
+}
+
+export async function findTotalValuationByProjectId(projectID: number): Promise<{
+  totalValuationInNse: number;
+  totalValuationInBse: number;
+}> {
+  const project = await prisma.project.findUnique({
+    where: {
+      id: projectID,
+    },
+  });
+  if (!project) {
+    throw new NotFoundError();
+  }
+  const shareCertificateMasterData =
+    await prisma.shareCertificateMaster.findMany({
+      where: {
+        projectID: project.id,
+      },
+      include: {
+        companyMaster: true,
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+  const shareCertificateMaster = await Promise.all(
+    shareCertificateMasterData.map(async (data) => {
+      const shares = await prisma.folio.findMany({
+        where: {
+          shareCertificateID: data.id,
+        },
+      });
+      const folio = await Promise.all(
+        shares.map(async (share) => {
+          const consolidatedHolding = await getConsolidatedHolding(share);
+          const totalMarketValueNSE =
+            Number(consolidatedHolding) *
+            Number(data.companyMaster?.closingPriceNSE ?? 0);
+          const totalMarketValueBSE =
+            Number(consolidatedHolding) *
+            Number(data.companyMaster?.closingPriceBSE ?? 0);
+          return {
+            consolidatedHolding,
+            totalMarketValueNSE,
+            totalMarketValueBSE,
+          };
+        })
+      );
+      const sumNSE = folio.reduce(
+        (acc, record) => acc + Number(record.totalMarketValueNSE ?? 0),
+        0
+      );
+      const sumBSE = folio.reduce(
+        (acc, record) => acc + Number(record.totalMarketValueBSE ?? 0),
+        0
+      );
+      return {
+        totalValuationInNse: sumNSE,
+        totalValuationInBse: sumBSE,
+      };
+    })
+  );
+
+  const totalValuationNse = shareCertificateMaster.reduce(
+    (acc, record) => acc + Number(record.totalValuationInNse ?? 0),
+    0
+  );
+  const totalValuationBse = shareCertificateMaster.reduce(
+    (acc, record) => acc + Number(record.totalValuationInBse ?? 0),
+    0
+  );
+  return {
+    totalValuationInNse: totalValuationNse,
+    totalValuationInBse: totalValuationBse,
   };
 }

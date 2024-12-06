@@ -37,6 +37,7 @@ import {
 } from "./schemas/create.schema";
 import { ZodError } from "zod";
 import { prisma } from "../../db";
+import { getConsolidatedHolding } from "../folio/folio.services";
 
 /**
  * Create a new shareCertificateMaster with the provided shareCertificateMaster information.
@@ -119,15 +120,39 @@ export async function list(
     const shares = await prisma.folio.findMany({
       where: {
         shareCertificateID: data.id
-      },
-      select: {
-        noOfShares: true,
-        Folio: true
       }
     })
+    const folio = await Promise.all(
+      shares.map(async (share) => {
+        const consolidatedHolding = await getConsolidatedHolding(share);
+        const totalMarketValueNSE =
+          Number(consolidatedHolding) *
+          Number(data.companyMaster?.closingPriceNSE ?? 0);
+        const totalMarketValueBSE =
+          Number(consolidatedHolding) *
+          Number(data.companyMaster?.closingPriceBSE ?? 0);
+        return {
+          consolidatedHolding,
+          totalMarketValueNSE,
+          totalMarketValueBSE,
+        };
+      })
+    );
     const folios = shares.map((share) => share.Folio);
-    const sum = shares.reduce(
-      (acc, record) => acc + Number(record.noOfShares ?? 0),
+    const sum = folio.reduce(
+      (acc, record) => acc + Number(record.consolidatedHolding ?? 0),
+      0
+    );
+    // const sum = shares.reduce(
+    //   (acc, record) => acc + Number(record.noOfShares ?? 0),
+    //   0
+    // );
+    const sumNSE = folio.reduce(
+      (acc, record) => acc + Number(record.totalMarketValueNSE ?? 0),
+      0
+    );
+    const sumBSE = folio.reduce(
+      (acc, record) => acc + Number(record.totalMarketValueBSE ?? 0),
       0
     );
     return {
@@ -135,10 +160,8 @@ export async function list(
       totalFolioCount: getFolioCount,
       totalShares: sum,
       folios: folios,
-      totalValuationInNse:
-        sum * Number(data.companyMaster?.closingPriceNSE ?? 0),
-      totalValuationInBse:
-        sum * Number(data.companyMaster?.closingPriceBSE ?? 0),
+      totalValuationInNse: sumNSE,
+      totalValuationInBse: sumBSE,
     };
   }));
   const shareCertificateMasterCount = await count(

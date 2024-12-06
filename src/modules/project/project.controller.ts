@@ -6,6 +6,7 @@ import {
   exportExcel,
   findById,
   findFoliosByProjectId,
+  findTotalValuationByProjectId,
   importExcel,
   list,
   update,
@@ -76,6 +77,23 @@ export async function getFoliosByProjectId(
   reply: FastifyReply
 ): Promise<void> {
   const result = await findFoliosByProjectId(request.query, request.params.id);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Folios Fetched",
+    data: result,
+  });
+}
+
+export async function getTotalValuationByProjectId(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await findTotalValuationByProjectId(
+    request.params.id
+  );
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

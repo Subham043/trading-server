@@ -9,6 +9,7 @@ import {
   removeMultipleProject,
   updateProject,
   getFoliosByProjectId,
+  getTotalValuationByProjectId,
 } from "./project.controller";
 import { updateProjectBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
@@ -83,6 +84,16 @@ export async function projectRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     getFoliosByProjectId
+  );
+  app.get(
+    "/:id/total-valuation",
+    {
+      schema: {
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    getTotalValuationByProjectId
   );
   app.put(
     "/:id",
