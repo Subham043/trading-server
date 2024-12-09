@@ -36,6 +36,7 @@ import { createProjectBodySchema } from "./schemas/create.schema";
 import { ZodError } from "zod";
 import { prisma } from "../../db";
 import { getConsolidatedHolding } from "../folio/folio.services";
+import { NameChangeMasterColumn } from "../company_master/company_master.model";
 
 /**
  * Create a new project with the provided project information.
@@ -70,14 +71,114 @@ export async function update(
  * @param {GetIdParam} params - the parameters for finding the project
  * @return {Promise<ProjectType>} the project found by ID
  */
-export async function findById(params: GetIdParam): Promise<ProjectType> {
+export async function findById(
+  params: GetIdParam
+): Promise<ProjectType & { totalShares: number; totalValuationInNse:number, totalValuationInBse:number }> {
   const { id } = params;
 
   const project = await getById(id);
   if (!project) {
     throw new NotFoundError();
   }
-  return project;
+  const data = await prisma.shareCertificateMaster.findMany({
+    where: {
+      projectID: params.id,
+    },
+    include: {
+      companyMaster: {
+        include: {
+          nameChangeMasters: {
+            select: NameChangeMasterColumn,
+            orderBy: {
+              id: "desc",
+            },
+            take: 1,
+          },
+        },
+      },
+    },
+    orderBy: {
+      id: "desc",
+    },
+  });
+  const shareCertificateMasterData = data.map((x) => ({
+    ...x,
+    companyMaster: {
+      ...x.companyMaster,
+      currentNameChangeMasters: x.companyMaster
+        ? x.companyMaster.nameChangeMasters[0]
+        : null,
+    },
+  }));
+  const shareCertificateMaster = await Promise.all(
+    shareCertificateMasterData.map(async (data) => {
+      const getFolioCount = await prisma.folio.count({
+        where: {
+          shareCertificateID: data.id,
+        },
+      });
+      const shares = await prisma.folio.findMany({
+        where: {
+          shareCertificateID: data.id,
+        },
+      });
+      const folio = await Promise.all(
+        shares.map(async (share) => {
+          const consolidatedHolding = await getConsolidatedHolding(share);
+          const totalMarketValueNSE =
+            Number(consolidatedHolding) *
+            Number(data.companyMaster?.closingPriceNSE ?? 0);
+          const totalMarketValueBSE =
+            Number(consolidatedHolding) *
+            Number(data.companyMaster?.closingPriceBSE ?? 0);
+          return {
+            consolidatedHolding,
+            totalMarketValueNSE,
+            totalMarketValueBSE,
+          };
+        })
+      );
+      const folios = shares.map((share) => share.Folio);
+      const sum = folio.reduce(
+        (acc, record) => acc + Number(record.consolidatedHolding ?? 0),
+        0
+      );
+      const sumNSE = folio.reduce(
+        (acc, record) => acc + Number(record.totalMarketValueNSE ?? 0),
+        0
+      );
+      const sumBSE = folio.reduce(
+        (acc, record) => acc + Number(record.totalMarketValueBSE ?? 0),
+        0
+      );
+      return {
+        ...data,
+        totalFolioCount: getFolioCount,
+        totalShares: sum,
+        folios: folios,
+        totalValuationInNse: sumNSE,
+        totalValuationInBse: sumBSE,
+      };
+    })
+  );
+  const sum = shareCertificateMaster.reduce(
+    (acc, record) => acc + Number(record.totalShares ?? 0),
+    0
+  );
+  const sumNSE = shareCertificateMaster.reduce(
+    (acc, record) => acc + Number(record.totalValuationInNse ?? 0),
+    0
+  );
+  const sumBSE = shareCertificateMaster.reduce(
+    (acc, record) => acc + Number(record.totalValuationInBse ?? 0),
+    0
+  );
+  return {
+    ...project,
+    totalShares: sum,
+    totalValuationInNse: sumNSE,
+    totalValuationInBse: sumBSE,
+  };
 }
 
 /**
@@ -107,9 +208,105 @@ export async function list(querystring: GetPaginationQuery): Promise<
       },
     })
     const noOfCompanies = [...new Set(share_certificate_master.map((x) => x.companyID))].length ?? 0;
+    const data = await prisma.shareCertificateMaster.findMany({
+      where: {
+        projectID: project.id,
+      },
+      include: {
+        companyMaster: {
+          include: {
+            nameChangeMasters: {
+              select: NameChangeMasterColumn,
+              orderBy: {
+                id: "desc",
+              },
+              take: 1,
+            },
+          },
+        },
+      },
+      orderBy: {
+        id: "desc",
+      },
+    });
+    const shareCertificateMasterData = data.map((x) => ({
+      ...x,
+      companyMaster: {
+        ...x.companyMaster,
+        currentNameChangeMasters: x.companyMaster
+          ? x.companyMaster.nameChangeMasters[0]
+          : null,
+      },
+    }));
+    const shareCertificateMaster = await Promise.all(
+      shareCertificateMasterData.map(async (data) => {
+        const getFolioCount = await prisma.folio.count({
+          where: {
+            shareCertificateID: data.id,
+          },
+        });
+        const shares = await prisma.folio.findMany({
+          where: {
+            shareCertificateID: data.id,
+          },
+        });
+        const folio = await Promise.all(
+          shares.map(async (share) => {
+            const consolidatedHolding = await getConsolidatedHolding(share);
+            const totalMarketValueNSE =
+              Number(consolidatedHolding) *
+              Number(data.companyMaster?.closingPriceNSE ?? 0);
+            const totalMarketValueBSE =
+              Number(consolidatedHolding) *
+              Number(data.companyMaster?.closingPriceBSE ?? 0);
+            return {
+              consolidatedHolding,
+              totalMarketValueNSE,
+              totalMarketValueBSE,
+            };
+          })
+        );
+        const folios = shares.map((share) => share.Folio);
+        const sum = folio.reduce(
+          (acc, record) => acc + Number(record.consolidatedHolding ?? 0),
+          0
+        );
+        const sumNSE = folio.reduce(
+          (acc, record) => acc + Number(record.totalMarketValueNSE ?? 0),
+          0
+        );
+        const sumBSE = folio.reduce(
+          (acc, record) => acc + Number(record.totalMarketValueBSE ?? 0),
+          0
+        );
+        return {
+          ...data,
+          totalFolioCount: getFolioCount,
+          totalShares: sum,
+          folios: folios,
+          totalValuationInNse: sumNSE,
+          totalValuationInBse: sumBSE,
+        };
+      })
+    );
+    const sum = shareCertificateMaster.reduce(
+      (acc, record) => acc + Number(record.totalShares ?? 0),
+      0
+    );
+    const sumNSE = shareCertificateMaster.reduce(
+      (acc, record) => acc + Number(record.totalValuationInNse ?? 0),
+      0
+    );
+    const sumBSE = shareCertificateMaster.reduce(
+      (acc, record) => acc + Number(record.totalValuationInBse ?? 0),
+      0
+    );
     return {
       ...project,
       noOfCompanies,
+      totalShares: sum,
+      totalValuationInNse: sumNSE,
+      totalValuationInBse: sumBSE,
     };
   }));
   const projectCount = await count(querystring.search);
