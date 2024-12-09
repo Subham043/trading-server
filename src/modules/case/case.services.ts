@@ -1329,7 +1329,7 @@ export async function generateDoc(
             if (!fs.existsSync(folioFolderAffidavitDPath)) {
               fs.mkdirSync(folioFolderAffidavitDPath);
             }
-            data.affidavits.forEach((i, idx) => {
+            data.affidavitLegalHeirs.forEach((i, idx) => {
               const affidavitWordTemplate = path.resolve(
                 __dirname,
                 "../../../static/word_template/Affidavit.docx"

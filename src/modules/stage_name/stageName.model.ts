@@ -57,8 +57,7 @@ export class StageNameModel {
   ): Promise<StageNameType | null> {
     // do some custom validation...
     const { ...projectData } = data;
-    console.log(projectData);
-    return await prisma.project.create({
+    return await prisma.stageNames.create({
       data: {
         ...projectData,
       },
@@ -73,7 +72,7 @@ export class StageNameModel {
     id: number
   ): Promise<StageNameType | null> {
     // do some custom validation...
-    return await prisma.project.update({
+    return await prisma.stageNames.update({
       where: {
         id,
       },
