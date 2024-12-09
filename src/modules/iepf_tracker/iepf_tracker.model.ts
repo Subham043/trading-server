@@ -21,6 +21,75 @@ export type IepfTrackerExportExcelData = {
   stage: "DocumentsCouriered" | "DocumentsReceived";
 };
 
+export const ExcelIepfTrackersDocColumns: WorksheetColumnsType = [
+  { key: "pan", header: "Income Tax PAN" },
+  { key: "CIN", header: "CIN/LLPIN/FLLPIN/FCRN " },
+  { key: "LLP", header: "Company/LLP Name" },
+  { key: "addressAadhar", header: "Address" },
+  { key: "phone", header: "Mobile" },
+  { key: "email", header: "Email ID" },
+  { key: "password", header: "Password" },
+  { key: "confirmPassword", header: "Confirm Password" },
+  { key: "hintQuestion", header: "Hint Questions" },
+  { key: "hintAnswer", header: "Hint Answers" },
+  {
+    key: "dematAccountNo",
+    header: "DP ID/Demat account number in which shares shall be credited",
+  },
+  {
+    key: "bankAccountNo",
+    header: "Bank account number",
+  },
+  {
+    key: "bankIFS",
+    header: "IFS Code",
+  },
+  {
+    key: "bankName",
+    header: "Bank Name",
+  },
+  {
+    key: "branchName",
+    header: "Bank Branch",
+  },
+  {
+    key: "firstName",
+    header: "First Name",
+  },
+  {
+    key: "middleName",
+    header: "Middle Name",
+  },
+  {
+    key: "lastName",
+    header: "Last Name",
+  },
+  {
+    key: "fatherFirstName",
+    header: "Father's First Name",
+  },
+  {
+    key: "fatherMiddleName",
+    header: "Father's Middle Name",
+  },
+  {
+    key: "fatherLastName",
+    header: "Father's Last Name",
+  },
+  {
+    key: "dob",
+    header: "Date of Birth",
+  },
+  {
+    key: "aadhar",
+    header: "Aadhaar Number",
+  },
+  {
+    key: "CIN",
+    header: "CIN Of The Company",
+  },
+];
+
 export const ExcelIepfTrackersColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "shareHolderDetails", header: "Share Holders" },

@@ -7,6 +7,7 @@ import {
   removeMultipleIepfTracker,
   removeIepfTracker,
   updateIepfTracker,
+  generateIepfTrackerDoc,
 } from "./iepf_tracker.controller";
 import { updateIepfTrackerBodySchema } from "./schemas/update.schema";
 import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.schema";
@@ -40,6 +41,16 @@ export async function iepfTrackerRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportIepfTracker
+  );
+  app.get(
+    "/generate-docs/:id",
+    {
+      schema: {
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    generateIepfTrackerDoc
   );
   app.get(
     "/:id",

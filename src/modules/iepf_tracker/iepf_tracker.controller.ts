@@ -5,6 +5,7 @@ import {
   destroyMultiple,
   exportExcel,
   findById,
+  generateDoc,
   list,
   update,
 } from "./iepf_tracker.services";
@@ -76,6 +77,18 @@ export async function getIepfTracker(
     message: "Iepf Tracker Fetched",
     data: result,
   });
+}
+
+export async function generateIepfTrackerDoc(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await generateDoc(request.params);
+  return reply
+    .header("Content-Disposition", 'attachment; filename="stage_trackers.xlsx"')
+    .send(result.file);
 }
 
 /**

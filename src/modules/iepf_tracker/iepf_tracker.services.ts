@@ -25,6 +25,7 @@ import {
 } from "../../utils/excel";
 import {
   ExcelIepfTrackersColumns,
+  ExcelIepfTrackersDocColumns,
 } from "./iepf_tracker.model";
 import { prisma } from "../../db";
 import { ShareHolderDetailType } from "../../@types/share_holder_detail.type";
@@ -261,4 +262,61 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
   const { id } = body;
 
   await removeMultiple(id);
+}
+
+export async function generateDoc(params: GetIdParam): Promise<{
+  file: ExcelBuffer;
+}> {
+  const { id } = params;
+  let shareHolderDetailSet: ShareHolderDetailType[] = [];
+  let legalHeirDetailSet: LegalHeirDetailType[] = [];
+
+  const iepfTracker = await getById(id);
+  if (!iepfTracker) {
+    throw new NotFoundError();
+  }
+  if (
+    iepfTracker.shareHolderDetails &&
+    iepfTracker.shareHolderDetails.split("_").length > 0
+  ) {
+    const inFolios = iepfTracker.shareHolderDetails
+      .split("_")
+      .map((folio) => (isNaN(Number(folio)) ? undefined : Number(folio)))
+      .filter((folio) => folio !== undefined) as number[];
+    if (inFolios.length > 0) {
+      shareHolderDetailSet = await prisma.shareHolderDetail.findMany({
+        where: {
+          id: {
+            in: inFolios,
+          },
+        },
+      });
+    }
+  }
+  if (
+    iepfTracker.legalHeirDetails &&
+    iepfTracker.legalHeirDetails.split("_").length > 0
+  ) {
+    const inFolios = iepfTracker.legalHeirDetails
+      .split("_")
+      .map((folio) => (isNaN(Number(folio)) ? undefined : Number(folio)))
+      .filter((folio) => folio !== undefined) as number[];
+    if (inFolios.length > 0) {
+      legalHeirDetailSet = await prisma.legalHeirDetail.findMany({
+        where: {
+          id: {
+            in: inFolios,
+          },
+        },
+      });
+    }
+  }
+  const excelData = [...legalHeirDetailSet, ...shareHolderDetailSet];
+  const buffer = await generateExcel<
+    ShareHolderDetailType | LegalHeirDetailType
+  >("Iepf Trackers", ExcelIepfTrackersDocColumns, excelData);
+
+  return {
+    file: buffer,
+  };
 }
