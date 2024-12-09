@@ -115,13 +115,16 @@ export async function findInfoById(params: GetIdParam): Promise<
     foliosSet: FolioType[];
     clamaints: LegalHeirDetailType[];
     order: ShareHolderDetailType[];
-    affidavits: (LegalHeirDetailType | ShareHolderDetailType)[];
+    affidavitShareholders: ShareHolderDetailType[];
+    affidavitLegalHeirs: LegalHeirDetailType[];
   }
 > {
   const { id } = params;
   let foliosSet: FolioType[] = [];
   let clamaints: LegalHeirDetailType[] = [];
-  let affidavits: (LegalHeirDetailType | ShareHolderDetailType)[] = [];
+  let affidavitShareholders: ShareHolderDetailType[] =
+    [];
+  let affidavitLegalHeirs: LegalHeirDetailType[] = [];
   let order: ShareHolderDetailType[] = [];
 
   const shareHolderMaster = await getInfoById(id);
@@ -168,29 +171,43 @@ export async function findInfoById(params: GetIdParam): Promise<
   }
   if (shareHolderMaster.allowAffidavit === "Yes") {
     if (
-      shareHolderMaster.selectAffidavit &&
-      shareHolderMaster.selectAffidavit.split("_").length > 0
+      shareHolderMaster.selectAffidavitShareholder &&
+      shareHolderMaster.selectAffidavitShareholder.split("_").length > 0
     ) {
-      const inAffidavits = shareHolderMaster.selectAffidavit
+      const inAffidavitShareholders = shareHolderMaster.selectAffidavitShareholder
         ?.split("_")
         .map((claimant) =>
           isNaN(Number(claimant)) ? undefined : Number(claimant)
         )
         .filter((claimant) => claimant !== undefined) as number[];
-      if (inAffidavits.length > 0) {
-        if (shareHolderMaster.caseType.includes("Transmission")) {
-          affidavits = await prisma.legalHeirDetail.findMany({
-            where: {
-              id: {
-                in: inAffidavits,
-              },
+      if (inAffidavitShareholders.length > 0) {
+        affidavitShareholders = await prisma.shareHolderDetail.findMany({
+          where: {
+            id: {
+              in: inAffidavitShareholders,
             },
-          });
-        } else {
-          affidavits = await prisma.shareHolderDetail.findMany({
+          },
+        });
+      }
+    }
+  }
+  if (shareHolderMaster.allowAffidavit === "Yes") {
+    if (
+      shareHolderMaster.selectAffidavitLegalHeir &&
+      shareHolderMaster.selectAffidavitLegalHeir.split("_").length > 0
+    ) {
+      const inAffidavitLegalHeirs = shareHolderMaster.selectAffidavitLegalHeir
+        ?.split("_")
+        .map((claimant) =>
+          isNaN(Number(claimant)) ? undefined : Number(claimant)
+        )
+        .filter((claimant) => claimant !== undefined) as number[];
+      if (inAffidavitLegalHeirs.length > 0) {
+        if (shareHolderMaster.caseType.includes("Transmission")) {
+          affidavitLegalHeirs = await prisma.legalHeirDetail.findMany({
             where: {
               id: {
-                in: inAffidavits,
+                in: inAffidavitLegalHeirs,
               },
             },
           });
@@ -221,7 +238,8 @@ export async function findInfoById(params: GetIdParam): Promise<
     foliosSet: foliosSet,
     clamaints,
     order,
-    affidavits,
+    affidavitShareholders,
+    affidavitLegalHeirs,
   };
 }
 
@@ -240,7 +258,8 @@ export async function list(
       foliosSet: FolioType[];
       clamaints: LegalHeirDetailType[];
       order: ShareHolderDetailType[];
-      affidavits: (LegalHeirDetailType | ShareHolderDetailType)[];
+      affidavitShareholders: ShareHolderDetailType[];
+      affidavitLegalHeirs: LegalHeirDetailType[];
     })[];
   } & PaginationType
 > {
@@ -264,7 +283,8 @@ export async function list(
       let foliosSet: FolioType[] = [];
       let clamaints: LegalHeirDetailType[] = [];
       let order: ShareHolderDetailType[] = [];
-      let affidavits: (LegalHeirDetailType | ShareHolderDetailType)[] = [];
+      let affidavitShareholders: ShareHolderDetailType[] = [];
+      let affidavitLegalHeirs: LegalHeirDetailType[] = [];
       if (
         shareHolderMaster.folios &&
         shareHolderMaster.folios.split("_").length > 0
@@ -305,33 +325,47 @@ export async function list(
       }
       if (shareHolderMaster.allowAffidavit === "Yes") {
         if (
-          shareHolderMaster.selectAffidavit &&
-          shareHolderMaster.selectAffidavit.split("_").length > 0
+          shareHolderMaster.selectAffidavitShareholder &&
+          shareHolderMaster.selectAffidavitShareholder.split("_").length > 0
         ) {
-          const inAffidavits = shareHolderMaster.selectAffidavit
+          const inAffidavitShareholders = shareHolderMaster.selectAffidavitShareholder
             ?.split("_")
             .map((claimant) =>
               isNaN(Number(claimant)) ? undefined : Number(claimant)
             )
             .filter((claimant) => claimant !== undefined) as number[];
-            if (inAffidavits.length > 0) {
-              if (shareHolderMaster.caseType.includes("Transmission")) {
-                affidavits = await prisma.legalHeirDetail.findMany({
-                  where: {
-                    id: {
-                      in: inAffidavits,
-                    },
+          if (inAffidavitShareholders.length > 0) {
+            affidavitShareholders = await prisma.shareHolderDetail.findMany({
+              where: {
+                id: {
+                  in: inAffidavitShareholders,
+                },
+              },
+            });
+          }
+        }
+      }
+      if (shareHolderMaster.allowAffidavit === "Yes") {
+        if (
+          shareHolderMaster.selectAffidavitLegalHeir &&
+          shareHolderMaster.selectAffidavitLegalHeir.split("_").length > 0
+        ) {
+          const inAffidavitLegalHeirs = shareHolderMaster.selectAffidavitLegalHeir
+            ?.split("_")
+            .map((claimant) =>
+              isNaN(Number(claimant)) ? undefined : Number(claimant)
+            )
+            .filter((claimant) => claimant !== undefined) as number[];
+          if (inAffidavitLegalHeirs.length > 0) {
+            if (shareHolderMaster.caseType.includes("Transmission")) {
+              affidavitLegalHeirs = await prisma.legalHeirDetail.findMany({
+                where: {
+                  id: {
+                    in: inAffidavitLegalHeirs,
                   },
-                });
-              }else{
-                affidavits = await prisma.shareHolderDetail.findMany({
-                  where: {
-                    id: {
-                      in: inAffidavits,
-                    },
-                  },
-                });
-              }
+                },
+              });
+            }
           }
         }
       }
@@ -358,7 +392,8 @@ export async function list(
         foliosSet: foliosSet,
         clamaints,
         order,
-        affidavits,
+        affidavitShareholders,
+        affidavitLegalHeirs,
       };
     })
   );
@@ -443,7 +478,8 @@ export async function generateDoc(
 
   let foliosSet: FolioType[] = [];
   let clamaints: LegalHeirDetailType[] = [];
-  let affidavits: (LegalHeirDetailType | ShareHolderDetailType)[] = [];
+  let affidavitShareholders: ShareHolderDetailType[] = [];
+  let affidavitLegalHeirs: LegalHeirDetailType[] = [];
   // let order: ShareHolderDetailType[] = [];
 
   if (
@@ -530,29 +566,43 @@ export async function generateDoc(
   // }
   if (shareHolderMaster.allowAffidavit === "Yes") {
     if (
-      shareHolderMaster.selectAffidavit &&
-      shareHolderMaster.selectAffidavit.split("_").length > 0
+      shareHolderMaster.selectAffidavitShareholder &&
+      shareHolderMaster.selectAffidavitShareholder.split("_").length > 0
     ) {
-      const inAffidavits = shareHolderMaster.selectAffidavit
+      const inAffidavitShareholders = shareHolderMaster.selectAffidavitShareholder
         ?.split("_")
         .map((claimant) =>
           isNaN(Number(claimant)) ? undefined : Number(claimant)
         )
         .filter((claimant) => claimant !== undefined) as number[];
-      if (inAffidavits.length > 0) {
-        if (shareHolderMaster.caseType.includes("Transmission")) {
-          affidavits = await prisma.legalHeirDetail.findMany({
-            where: {
-              id: {
-                in: inAffidavits,
-              },
+      if (inAffidavitShareholders.length > 0) {
+        affidavitShareholders = await prisma.shareHolderDetail.findMany({
+          where: {
+            id: {
+              in: inAffidavitShareholders,
             },
-          });
-        } else {
-          affidavits = await prisma.shareHolderDetail.findMany({
+          },
+        });
+      }
+    }
+  }
+  if (shareHolderMaster.allowAffidavit === "Yes") {
+    if (
+      shareHolderMaster.selectAffidavitLegalHeir &&
+      shareHolderMaster.selectAffidavitLegalHeir.split("_").length > 0
+    ) {
+      const inAffidavitLegalHeirs = shareHolderMaster.selectAffidavitLegalHeir
+        ?.split("_")
+        .map((claimant) =>
+          isNaN(Number(claimant)) ? undefined : Number(claimant)
+        )
+        .filter((claimant) => claimant !== undefined) as number[];
+      if (inAffidavitLegalHeirs.length > 0) {
+        if (shareHolderMaster.caseType.includes("Transmission")) {
+          affidavitLegalHeirs = await prisma.legalHeirDetail.findMany({
             where: {
               id: {
-                in: inAffidavits,
+                in: inAffidavitLegalHeirs,
               },
             },
           });
@@ -573,7 +623,14 @@ export async function generateDoc(
     payload["Case"] = shareHolderMaster.caseType;
     payload["allowAffidavit"] =
       shareHolderMaster.allowAffidavit === "Yes" ? true : false;
-    payload["affidavits"] = affidavits.map((item) => ({
+    payload["affidavits"] = affidavitShareholders.map((item) => ({
+      ...item,
+      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
+      accountOpeningDate: item.accountOpeningDate
+        ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
+        : null,
+    }));
+    payload["affidavitLegalHeirs"] = affidavitLegalHeirs.map((item) => ({
       ...item,
       dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
       accountOpeningDate: item.accountOpeningDate
@@ -1267,7 +1324,7 @@ export async function generateDoc(
             // Load the docx file as a binary
             const folioFolderAffidavitDPath = path.resolve(
               __dirname,
-              `../../../static/word_output/${folderName}/${folioFolderName}/Affidavit`
+              `../../../static/word_output/${folderName}/${folioFolderName}/AffidavitLegalHeir`
             );
             if (!fs.existsSync(folioFolderAffidavitDPath)) {
               fs.mkdirSync(folioFolderAffidavitDPath);
@@ -1318,11 +1375,11 @@ export async function generateDoc(
 
               console.log("Annexure D Document created successfully!");
             });
-          } else {
+          }
 
             const folioFolderAffidavitDPath = path.resolve(
               __dirname,
-              `../../../static/word_output/${folderName}/${folioFolderName}/Affidavit`
+              `../../../static/word_output/${folderName}/${folioFolderName}/AffidavitShareholder`
             );
             if (!fs.existsSync(folioFolderAffidavitDPath)) {
               fs.mkdirSync(folioFolderAffidavitDPath);
@@ -1369,7 +1426,6 @@ export async function generateDoc(
 
               console.log("Annexure D Document created successfully!");
             });
-          }
         }
       } 
       else {

@@ -158,10 +158,18 @@ export const createCaseBodySchema = z.object({
       }),
     })
     .optional(),
-  selectAffidavit: z
+  selectAffidavitShareholder: z
     .string({
       errorMap: () => ({
-        message: "select affidavit must be a string",
+        message: "select affidavit shareholder must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  selectAffidavitLegalHeir: z
+    .string({
+      errorMap: () => ({
+        message: "select affidavit legal heir must be a string",
       }),
     })
     .trim()
