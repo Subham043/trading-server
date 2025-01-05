@@ -85,7 +85,7 @@ export const ExcelIepfTrackersDocColumns: WorksheetColumnsType = [
     header: "Aadhaar Number",
   },
   {
-    key: "CIN",
+    key: "companyCIN",
     header: "CIN Of The Company",
   },
 ];

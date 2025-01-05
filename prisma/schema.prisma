@@ -388,6 +388,7 @@ model ShareHolderDetail {
   isCompany      TruthType     @default(No)
   addressAadhar  String? @db.Text
   CIN  String? @db.VarChar(256)
+  companyCIN  String? @db.VarChar(256)
   firstName  String? @db.VarChar(256)
   middleName  String? @db.VarChar(256)
   lastName  String? @db.VarChar(256)
@@ -450,6 +451,7 @@ model LegalHeirDetail {
   addressBank  String? @db.Text
   addressAadhar  String? @db.Text
   CIN  String? @db.VarChar(256)
+  companyCIN  String? @db.VarChar(256)
   firstName  String? @db.VarChar(256)
   middleName  String? @db.VarChar(256)
   lastName  String? @db.VarChar(256)

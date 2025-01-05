@@ -696,6 +696,7 @@ export async function generateDoc(
       payload["DPID_" + (1)] = folio.shareholderName1.DPID;
       payload["aadhar_" + (1)] = folio.shareholderName1.aadhar;
       payload["addressBank_" + (1)] = folio.shareholderName1.addressBank;
+      payload["addressAadhar_" + (1)] = folio.shareholderName1.addressAadhar;
       payload["age_" + (1)] = folio.shareholderName1.age;
       payload["bankAccountNo_" + (1)] = folio.shareholderName1.bankAccountNo;
       payload["bankAccountType_" + (1)] =
@@ -750,6 +751,7 @@ export async function generateDoc(
       payload["DPID_" + (2)] = folio.shareholderName2.DPID;
       payload["aadhar_" + (2)] = folio.shareholderName2.aadhar;
       payload["addressBank_" + (2)] = folio.shareholderName2.addressBank;
+      payload["addressAadhar_" + (2)] = folio.shareholderName2.addressAadhar;
       payload["age_" + (2)] = folio.shareholderName2.age;
       payload["bankAccountNo_" + (2)] = folio.shareholderName2.bankAccountNo;
       payload["bankAccountType_" + (2)] =
@@ -805,6 +807,7 @@ export async function generateDoc(
       payload["DPID_" + (3)] = folio.shareholderName3.DPID;
       payload["aadhar_" + (3)] = folio.shareholderName3.aadhar;
       payload["addressBank_" + (3)] = folio.shareholderName3.addressBank;
+      payload["addressAadhar_" + (3)] = folio.shareholderName3.addressAadhar;
       payload["age_" + (3)] = folio.shareholderName3.age;
       payload["bankAccountNo_" + (3)] = folio.shareholderName3.bankAccountNo;
       payload["bankAccountType_" + (3)] =
@@ -1115,6 +1118,7 @@ export async function generateDoc(
           dataRender["deceasedRelationship"] = data["deceasedRelationship"];
           dataRender["Folio"] = data["Folio"];
           dataRender["totalNoOfShares"] = data["totalNoOfShares"];
+          dataRender["totalNoOfSharesWords"] = data["totalNoOfSharesWords"];
           dataRender["legalHeirDetails"] = data.legalHeirDetails.filter(
             (_it, itx) => itx !== idx
           );
@@ -1177,6 +1181,7 @@ export async function generateDoc(
           dataRender["annualIncomeClaimant"] = data["annualIncomeClaimant"];
           dataRender["Folio"] = data["Folio"];
           dataRender["totalNoOfShares"] = data["totalNoOfShares"];
+          dataRender["totalNoOfSharesWords"] = data["totalNoOfSharesWords"];
           ISR5Doc.render(dataRender);
 
           // Get the generated document as a buffer

@@ -282,6 +282,14 @@ export const createLegalHeirDetailBodySchema = z.object({
     })
     .trim()
     .optional(),
+  companyCIN: z
+    .string({
+      errorMap: () => ({
+        message: "CIN must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
   firstName: z
     .string({
       errorMap: () => ({
