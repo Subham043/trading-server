@@ -52,6 +52,8 @@ import { stageTrackerRoutes } from "../modules/stage_tracker/stage_tracker.route
 import { communicationTrackerRoutes } from "../modules/communication_tracker/communication_tracker.routes";
 import { iepfTrackerRoutes } from "../modules/iepf_tracker/iepf_tracker.routes";
 import { dashboardRoutes } from "../modules/dashboard/dashboard.routes";
+import { suretyRoutes } from "../modules/surety/surety.routes";
+import { nominationRoutes } from "../modules/nomination/nomination.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -175,6 +177,12 @@ export async function buildServer() {
   });
   await server.register(iepfTrackerRoutes, {
     prefix: "/api/iepf-trackers",
+  });
+  await server.register(suretyRoutes, {
+    prefix: "/api/surety",
+  });
+  await server.register(nominationRoutes, {
+    prefix: "/api/nomination",
   });
   await server.register(paymentTrackerRoutes, {
     prefix: "/api/payment-trackers",

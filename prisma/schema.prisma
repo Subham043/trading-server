@@ -333,6 +333,8 @@ model Project {
   stageTrackers StageTracker[]
   communicationTrackers CommunicationTracker[]
   iepfTrackers IEPFTracker[]
+  surety Surety[]
+  nomination Nomination[]
 
   @@index([userID], map: "userID_project")
 }
@@ -609,4 +611,64 @@ model IEPFTracker {
   
 
   @@index([projectID], map: "projectID_iepfTrackerkey")
+}
+
+model Surety {
+  id        Int      @id @default(autoincrement())
+  companyName  String @db.VarChar(256)
+  fullName  String @db.VarChar(256)
+  age  String? @db.VarChar(256)
+  address  String? @db.Text
+  isEmployed      TruthType     @default(No)
+  employerName  String? @db.VarChar(256)
+  salary  String? @db.VarChar(256)
+  employerAddress  String? @db.Text
+  isBusiness      TruthType     @default(No)
+  businessName  String? @db.VarChar(256)
+  businessNature  String? @db.VarChar(256)
+  businessIncome  String? @db.VarChar(256)
+  businessProfit  String? @db.VarChar(256)
+  businessAddress  String? @db.Text
+  isProperty      TruthType     @default(No)
+  propertyType  String? @db.VarChar(256)
+  propertySituation  String? @db.VarChar(256)
+  propertyValue  String? @db.VarChar(256)
+  propertyRent  String? @db.VarChar(256)
+  project   Project? @relation(fields: [projectID], references: [id], onDelete: Cascade, onUpdate: SetNull)
+  projectID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  
+
+  @@index([projectID], map: "projectID_suretykey")
+}
+
+model Nomination {
+  id        Int      @id @default(autoincrement())
+  companyName  String @db.VarChar(256)
+  fullName  String @db.VarChar(256)
+  age  String? @db.VarChar(256)
+  address  String? @db.Text
+  isEmployed      TruthType     @default(No)
+  employerName  String? @db.VarChar(256)
+  salary  String? @db.VarChar(256)
+  employerAddress  String? @db.Text
+  isBusiness      TruthType     @default(No)
+  businessName  String? @db.VarChar(256)
+  businessNature  String? @db.VarChar(256)
+  businessIncome  String? @db.VarChar(256)
+  businessProfit  String? @db.VarChar(256)
+  businessAddress  String? @db.Text
+  isProperty      TruthType     @default(No)
+  propertyType  String? @db.VarChar(256)
+  propertySituation  String? @db.VarChar(256)
+  propertyValue  String? @db.VarChar(256)
+  propertyRent  String? @db.VarChar(256)
+  project   Project? @relation(fields: [projectID], references: [id], onDelete: Cascade, onUpdate: SetNull)
+  projectID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  
+
+  @@index([projectID], map: "projectID_nominationkey")
 }
