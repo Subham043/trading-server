@@ -11,8 +11,6 @@ import { Decimal } from "@prisma/client/runtime/library";
 export type FolioExcelData = {
   equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   Folio: string;
-  certificateNumber: string | undefined;
-  certificateSerialNumber: string | undefined;
   shareholderName1: number | undefined;
   shareholderName2: number | undefined;
   shareholderName3: number | undefined;
@@ -45,8 +43,6 @@ export type FolioExportExcelData = {
     | undefined;
   equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   Folio: string;
-  certificateNumber: string | null | undefined;
-  certificateSerialNumber: string | null | undefined;
   shareholderName1ID: number | null | undefined;
   shareholderName1: string | null | undefined;
   shareholderName2ID: number | null | undefined;
@@ -75,8 +71,6 @@ export type FolioExportExcelData = {
 export const ExcelFailedFolioColumn: WorksheetColumnsType = [
   { key: "equityType", header: "Equity Type" },
   { key: "Folio", header: "Folio" },
-  { key: "certificateNumber", header: "Certificate Number" },
-  { key: "certificateSerialNumber", header: "Certificate Serial Number" },
   { key: "shareholderName1", header: "Shareholder Name 1" },
   { key: "shareholderName2", header: "Shareholder Name 2" },
   { key: "shareholderName3", header: "Shareholder Name 3" },
@@ -110,8 +104,6 @@ export const ExcelFolioesColumns: WorksheetColumnsType = [
   { key: "instrumentType", header: "Instrument Type" },
   { key: "equityType", header: "Equity Type" },
   { key: "Folio", header: "Folio" },
-  { key: "certificateNumber", header: "Certificate Number" },
-  { key: "certificateSerialNumber", header: "Certificate Serial Number" },
   { key: "shareholderName1", header: "Shareholder Name 1" },
   { key: "shareholderName2", header: "Shareholder Name 2" },
   { key: "shareholderName3", header: "Shareholder Name 3" },
@@ -148,8 +140,6 @@ export const FolioColumn = {
   id: true,
   equityType: true,
   Folio: true,
-  certificateNumber: true,
-  certificateSerialNumber: true,
   shareholderName1ID: true,
   shareholderName1: true,
   shareholderName2: true,
@@ -195,16 +185,6 @@ export class FolioModel {
           OR: [
             {
               Folio: {
-                contains: search,
-              },
-            },
-            {
-              certificateNumber: {
-                contains: search,
-              },
-            },
-            {
-              certificateSerialNumber: {
                 contains: search,
               },
             },

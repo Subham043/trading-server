@@ -177,8 +177,6 @@ export async function exportExcel(
       instrumentType: folio.shareCertificateMaster?.instrumentType,
       equityType: folio.equityType,
       Folio: folio.Folio,
-      certificateNumber: folio.certificateNumber,
-      certificateSerialNumber: folio.certificateSerialNumber,
       shareholderName1ID: folio.shareholderName1ID,
       shareholderName1: folio.shareholderName1?.shareholderName,
       shareholderName2ID: folio.shareholderName2ID,
@@ -255,34 +253,32 @@ export async function importExcel(
       const folioData = {
         faceValue: isNaN(Number(row.getCell(10).value?.toString()))
           ? undefined
-          : Number(row.getCell(11).value?.toString()),
+          : Number(row.getCell(9).value?.toString()),
         equityType: row.getCell(1).value?.toString() as
           | "Bonus"
           | "Shares"
           | "Splits"
           | "Rights",
         Folio: row.getCell(2).value?.toString() as string,
-        certificateNumber: row.getCell(3).value?.toString(),
-        certificateSerialNumber: row.getCell(4).value?.toString(),
-        shareholderName1: Number(row.getCell(5).value?.toString()),
-        shareholderName2: Number(row.getCell(6).value?.toString()),
-        shareholderName3: Number(row.getCell(7).value?.toString()),
-        noOfShares: row.getCell(8).value?.toString(),
-        noOfSharesWords: row.getCell(9).value?.toString(),
+        shareholderName1: Number(row.getCell(3).value?.toString()),
+        shareholderName2: Number(row.getCell(4).value?.toString()),
+        shareholderName3: Number(row.getCell(5).value?.toString()),
+        noOfShares: row.getCell(6).value?.toString(),
+        noOfSharesWords: row.getCell(7).value?.toString(),
         dateOfAllotment: (
-          row.getCell(10).value as Date | undefined
+          row.getCell(8).value as Date | undefined
         )?.toISOString(),
-        distinctiveNosFrom: row.getCell(12).value?.toString(),
-        distinctiveNosTo: row.getCell(13).value?.toString(),
-        endorsement: row.getCell(14).value?.toString() as "Yes" | "No",
-        endorsementFolio: row.getCell(15).value?.toString(),
+        distinctiveNosFrom: row.getCell(10).value?.toString(),
+        distinctiveNosTo: row.getCell(11).value?.toString(),
+        endorsement: row.getCell(12).value?.toString() as "Yes" | "No",
+        endorsementFolio: row.getCell(13).value?.toString(),
         endorsementDate: (
-          row.getCell(16).value as Date | undefined
+          row.getCell(14).value as Date | undefined
         )?.toISOString(),
-        endorsementShareholderName1: Number(row.getCell(17).value?.toString()),
-        endorsementShareholderName2: Number(row.getCell(18).value?.toString()),
-        endorsementShareholderName3: Number(row.getCell(19).value?.toString()),
-        shareCertificateID: Number(row.getCell(20).value?.toString()),
+        endorsementShareholderName1: Number(row.getCell(15).value?.toString()),
+        endorsementShareholderName2: Number(row.getCell(16).value?.toString()),
+        endorsementShareholderName3: Number(row.getCell(17).value?.toString()),
+        shareCertificateID: Number(row.getCell(18).value?.toString()),
       };
       folioInsertData.push(folioData);
     }

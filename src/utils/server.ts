@@ -54,6 +54,7 @@ import { iepfTrackerRoutes } from "../modules/iepf_tracker/iepf_tracker.routes";
 import { dashboardRoutes } from "../modules/dashboard/dashboard.routes";
 import { suretyRoutes } from "../modules/surety/surety.routes";
 import { nominationRoutes } from "../modules/nomination/nomination.routes";
+import { certificateRoutes } from "../modules/certificate/certificate.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -156,6 +157,9 @@ export async function buildServer() {
   });
   await server.register(folioRoutes, {
     prefix: "/api/folios",
+  });
+  await server.register(certificateRoutes, {
+    prefix: "/api/certificates",
   });
   await server.register(corporateMasterRoutes, {
     prefix: "/api/corporate-masters",

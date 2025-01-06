@@ -31,6 +31,7 @@ import AdmZip from "adm-zip";
 import { NameChangeMasterColumn } from "../company_master/company_master.model";
 import dayjs from "dayjs";
 import { LegalHeirDetailType } from "../../@types/legal_heir_detail.type";
+import { CertificateType } from "../../@types/certificate.type";
 
 /**
  * Create a new shareHolderMaster with the provided shareHolderMaster information.
@@ -476,7 +477,7 @@ export async function generateDoc(
     throw new NotFoundError();
   }
 
-  let foliosSet: FolioType[] = [];
+  let foliosSet: (FolioType & { certificate: CertificateType[] })[] = [];
   let clamaints: LegalHeirDetailType[] = [];
   let affidavitShareholders: ShareHolderDetailType[] = [];
   let affidavitLegalHeirs: LegalHeirDetailType[] = [];
@@ -501,8 +502,6 @@ export async function generateDoc(
           id: true,
           equityType: true,
           Folio: true,
-          certificateNumber: true,
-          certificateSerialNumber: true,
           shareholderName1ID: true,
           shareholderName2ID: true,
           shareholderName3ID: true,
@@ -522,6 +521,7 @@ export async function generateDoc(
           shareholderName2: true,
           shareholderName3: true,
           shareCertificateMaster: true,
+          certificate: true,
         },
       });
     }
@@ -666,8 +666,8 @@ export async function generateDoc(
     payload["totalFaceValue"] = folio.faceValue;
     payload["totalNoOfShares"] = folio.noOfShares;
     payload["totalNoOfSharesWords"] = folio.noOfSharesWords;
-    payload["certificateNumber"] = folio.certificateNumber;
-    payload["certificateSerialNumber"] = folio.certificateSerialNumber;
+    payload["certificateNumber"] = folio.certificate.map((item) => item.certificateNumber).join(", ");
+    payload["certificateSerialNumber"] = folio.certificate.map((item) => item.certificateSerialNumber).filter((item) => item !== null).join(", ");
     payload["distinctiveNosFrom"] = folio.distinctiveNosFrom;
     payload["distinctiveNosTo"] = folio.distinctiveNosTo;
     payload["distinctiveNos"] =

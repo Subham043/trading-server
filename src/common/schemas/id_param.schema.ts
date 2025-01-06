@@ -90,6 +90,25 @@ export type GetShareCertificateMasterIdParam = z.infer<
   typeof getShareCertificateMasterIdParamSchema
 >;
 
+export const getFolioIdParamSchema = z
+  .object({
+    folioId: z
+      .string({
+        errorMap: () => ({
+          message: "Folio ID must be a number",
+        }),
+      })
+      .regex(/^\d+$/, {
+        message: "Folio ID must be a number",
+      })
+      .transform((value) => parseInt(value)),
+  })
+  .required();
+
+export type GetFolioIdParam = z.infer<
+  typeof getFolioIdParamSchema
+>;
+
 export const getProjectIdParamSchema = z
   .object({
     projectId: z

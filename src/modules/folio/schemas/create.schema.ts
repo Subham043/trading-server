@@ -13,20 +13,6 @@ export const createFolioBodySchema = z.object({
       errorMap: () => ({ message: "Folio must be a string" }),
     })
     .trim(),
-  certificateNumber: z
-    .string({
-      errorMap: () => ({ message: "Certificate Number must be a string" }),
-    })
-    .trim()
-    .optional(),
-  certificateSerialNumber: z
-    .string({
-      errorMap: () => ({
-        message: "Certificate Serial Number must be a string",
-      }),
-    })
-    .trim()
-    .optional(),
   shareholderName1ID: z
     .number({
       errorMap: () => ({

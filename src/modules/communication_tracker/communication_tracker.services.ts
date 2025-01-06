@@ -108,7 +108,6 @@ export async function findById(params: GetIdParam): Promise<
           id: true,
           Folio: true,
           equityType: true,
-          certificateNumber: true,
           faceValue: true,
           shareCertificateMaster: {
             select: {
@@ -190,7 +189,6 @@ export async function list(
               id: true,
               Folio: true,
               equityType: true,
-              certificateNumber: true,
               faceValue: true,
               shareCertificateMaster: {
                 select: {

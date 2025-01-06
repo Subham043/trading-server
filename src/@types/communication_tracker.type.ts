@@ -6,7 +6,6 @@ export type CommunicationTrackerFolioType = {
   id: number;
   equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   Folio: string;
-  certificateNumber?: string | null | undefined;
   faceValue: Decimal | null | undefined;
   shareCertificateMaster: {
     companyMaster: {

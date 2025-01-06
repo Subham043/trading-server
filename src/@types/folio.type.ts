@@ -18,8 +18,6 @@ export type FolioType = {
   id: number;
   equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   Folio: string;
-  certificateNumber?: string | null | undefined;
-  certificateSerialNumber?: string | null | undefined;
   shareholderName1?: ShareHolderDetailType | null | undefined;
   shareholderName1ID?: number | null | undefined;
   shareholderName2?: ShareHolderDetailType | null | undefined;
