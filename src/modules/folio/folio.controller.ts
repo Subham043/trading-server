@@ -23,6 +23,7 @@ import {
 } from "./schemas/create.schema";
 import { FolioCreateType, FolioUpdateType } from "../../@types/folio.type";
 import { updateFolioIdSchema } from "./schemas/update.schema";
+import { GetRightQuery } from "../../common/schemas/right_query.schema";
 
 export async function listFolios(
   request: FastifyRequest<{
@@ -96,10 +97,11 @@ export async function getFolio(
 export async function listCorporateMaster(
   request: FastifyRequest<{
     Params: GetIdParam;
+    Querystring: GetRightQuery;
   }>,
   reply: FastifyReply
 ): Promise<void> {
-  const result = await getCorporateMaster(request.params);
+  const result = await getCorporateMaster(request.params, request.query);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

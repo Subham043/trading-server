@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   createSurety,
   exportSurety,
+  generateSuretyDoc,
   getSurety,
   listSurety,
   removeMultipleSurety,
@@ -61,6 +62,16 @@ export async function suretyRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     createSurety
+  );
+  app.get(
+    "/generate-docs/:id",
+    {
+      schema: {
+        params: getIdParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    generateSuretyDoc
   );
   app.put(
     "/:id",

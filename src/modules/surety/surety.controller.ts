@@ -5,6 +5,7 @@ import {
   destroyMultiple,
   exportExcel,
   findById,
+  generateDoc,
   list,
   update,
 } from "./surety.services";
@@ -23,6 +24,8 @@ import {
 } from "./schemas/create.schema";
 import { updateSuretyUniqueSchema } from "./schemas/update.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import fs from "fs";
+import path from "path";
 
 export async function listSurety(
   request: FastifyRequest<{
@@ -164,4 +167,18 @@ export async function removeMultipleSurety(
     success: true,
     message: "Surety Removed",
   });
+}
+
+export async function generateSuretyDoc(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await generateDoc(request.params);
+  const filePath = path.resolve(__dirname, result);
+  const fileStream = fs.createReadStream(filePath);
+  return reply
+    .header("Content-Disposition", 'attachment; filename="surety.zip"')
+    .send(fileStream);
 }

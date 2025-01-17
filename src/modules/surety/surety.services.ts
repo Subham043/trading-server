@@ -27,6 +27,12 @@ import {
   ExcelSuretysColumns,
 } from "./surety.model";
 
+import fs from "fs";
+import path from "path";
+import PizZip from "pizzip";
+import Docxtemplater from "docxtemplater";
+import AdmZip from "adm-zip";
+
 /**
  * Create a new surety with the provided surety information.
  *
@@ -165,4 +171,68 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
   const { id } = body;
 
   await removeMultiple(id);
+}
+
+export async function generateDoc(params: GetIdParam): Promise<string> {
+  const { id } = params;
+
+  const folderName = "surety_" + id + "_" + Date.now();
+
+  const folderPath = path.resolve(
+    __dirname,
+    "../../../static/word_output/" + folderName
+  );
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+  }
+
+  const surety = await getById(id);
+  if (!surety) {
+    throw new NotFoundError();
+  }
+
+  // Load the docx file as a binary
+  const wordTemplate = path.resolve(
+    __dirname,
+    "../../../static/word_template/SURETY.docx"
+  );
+  const content = fs.readFileSync(wordTemplate, "binary");
+
+  // Create a zip instance of the file
+  const zip = new PizZip(content);
+
+  // Create a Docxtemplater instance
+  const doc = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+
+  doc.render(surety);
+
+  // Get the generated document as a buffer
+  const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+  // Write the buffer to a file (output.docx)
+  const wordOutput = path.resolve(
+    __dirname,
+    folderPath + "/" + "SURETY.docx"
+  );
+  fs.writeFileSync(wordOutput, buf);
+
+  console.log("Document created successfully!");
+
+  const folderZip = new AdmZip();
+  folderZip.addLocalFolder(folderPath);
+  await folderZip.writeZipPromise(
+    path.resolve(
+      __dirname,
+      "../../../static/word_output/" + folderName + ".zip"
+    )
+  );
+  fs.rm(folderPath, { recursive: true }, (err) => {});
+
+  return path.resolve(
+    __dirname,
+    "../../../static/word_output/" + folderName + ".zip"
+  );
 }

@@ -44,6 +44,8 @@ import { ZodError } from "zod";
 import { prisma } from "../../db";
 import { CorporateMasterColumn } from "../corporate_master/corporate_master.model";
 import { Prisma } from "@prisma/client";
+import { GetRightQuery } from "../../common/schemas/right_query.schema";
+import { CorporateMasterType } from "../../@types/corporate_master.type";
 
 /**
  * Create a new folio with the provided folio information.
@@ -307,8 +309,9 @@ type OutputRow = {
   consolidatedHolding: number;
 };
 
-export async function getCorporateMaster(params: GetIdParam): Promise<OutputRow[]> {
+export async function getCorporateMaster(params: GetIdParam, querystring: GetRightQuery): Promise<OutputRow[]> {
   const folio = await findById(params);
+  const rights = querystring.rights ? querystring.rights.split(";").map(i => Number(i)) : []; 
   const certificates = await prisma.certificate.findMany({
     where: {
       folioID: params.id,
@@ -337,6 +340,18 @@ export async function getCorporateMaster(params: GetIdParam): Promise<OutputRow[
             date: "asc",
           },
         });
+        let corporateMasterDataMain: CorporateMasterType[] = [
+          ...corporateMasterData,
+        ];
+
+        if(rights.length>0){
+          const excludedRightsCorporateMasterData = corporateMasterDataMain.filter(i => i.type !== "Rights");
+          corporateMasterDataMain = [
+            ...excludedRightsCorporateMasterData,
+            ...corporateMasterDataMain.filter((i) => i.type==="Rights" && rights.includes(i.id)),
+          ];
+        }
+
         const combinedData = [
           ...certificates.map((cert) => ({
             date: cert.dateOfAction,
@@ -345,7 +360,7 @@ export async function getCorporateMaster(params: GetIdParam): Promise<OutputRow[
             numerator: Number(0),
             denominator: Number(0),
           })),
-          ...corporateMasterData.map((corp) => ({
+          ...corporateMasterDataMain.map((corp) => ({
             date: corp.date,
             type: corp.type,
             noOfShares: Number(0),
