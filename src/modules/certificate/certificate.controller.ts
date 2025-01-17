@@ -106,6 +106,9 @@ export async function createCertificate(
 ): Promise<void> {
   await folioIdSchema.parseAsync({
     folioId: request.params.folioId,
+    endorsementShareholderName1ID: request.body.endorsementShareholderName1ID,
+    endorsementShareholderName2ID: request.body.endorsementShareholderName2ID,
+    endorsementShareholderName3ID: request.body.endorsementShareholderName3ID,
   });
   const result = await create(request.body, request.params.folioId);
   return reply.code(201).type("application/json").send({
@@ -132,6 +135,9 @@ export async function updateCertificate(
 ): Promise<void> {
   await updateCertificateIdSchema.parseAsync({
     id: request.params.id,
+    endorsementShareholderName1ID: request.body.endorsementShareholderName1ID,
+    endorsementShareholderName2ID: request.body.endorsementShareholderName2ID,
+    endorsementShareholderName3ID: request.body.endorsementShareholderName3ID,
   });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({

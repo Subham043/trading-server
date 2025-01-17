@@ -151,7 +151,40 @@ export async function exportExcel(
 ): Promise<{
   file: ExcelBuffer;
 }> {
-  const excelData = await getAll(folioId, querystring.search);
+  const certificates = await getAll(folioId, querystring.search);
+
+  const excelData = certificates.map((folio) => {
+    return {
+      id: folio.id,
+      equityType: folio.equityType,
+      certificateNumber: folio.certificateNumber,
+      certificateSerialNumber: folio.certificateSerialNumber,
+      shareholderName1Txt: folio.shareholderName1Txt,
+      shareholderName2Txt: folio.shareholderName2Txt,
+      shareholderName3Txt: folio.shareholderName3Txt,
+      noOfShares: folio.noOfShares,
+      noOfSharesWords: folio.noOfSharesWords,
+      dateOfAllotment: folio.dateOfAllotment,
+      dateOfAction: folio.dateOfAction,
+      faceValue: folio.faceValue,
+      distinctiveNosFrom: folio.distinctiveNosFrom,
+      distinctiveNosTo: folio.distinctiveNosTo,
+      endorsement: folio.endorsement,
+      endorsementFolio: folio.endorsementFolio,
+      endorsementDate: folio.endorsementDate,
+      endorsementShareholderName1ID: folio.endorsementShareholderName1ID,
+      endorsementShareholderName1:
+        folio.endorsementShareholderName1?.shareholderName,
+      endorsementShareholderName2ID: folio.endorsementShareholderName2ID,
+      endorsementShareholderName2:
+        folio.endorsementShareholderName2?.shareholderName,
+      endorsementShareholderName3ID: folio.endorsementShareholderName3ID,
+      endorsementShareholderName3:
+        folio.endorsementShareholderName3?.shareholderName,
+      createdAt: folio.createdAt,
+      folioID: folio.folioID,
+    };
+  });
 
   const buffer = await generateExcel<CertificateExportExcelData>(
     "Certificates",
@@ -201,9 +234,40 @@ export async function importExcel(
   worksheet?.eachRow(async function (row, rowNumber) {
     if (rowNumber > 1) {
       const certificateData = {
-        certificateNumber: row.getCell(1).value?.toString() as string,
-        certificateSerialNumber: row.getCell(2).value?.toString(),
-        folioID: Number(row.getCell(3).value?.toString()),
+        equityType: row.getCell(1).value?.toString() as
+          | "Bonus"
+          | "ShareBought"
+          | "Equity"
+          | "Splits"
+          | "Rights",
+        certificateNumber: row.getCell(2).value?.toString() as string,
+        certificateSerialNumber: row.getCell(3).value?.toString(),
+        faceValue: isNaN(Number(row.getCell(4).value?.toString()))
+          ? undefined
+          : Number(row.getCell(4).value?.toString()),
+        noOfShares: row.getCell(5).value?.toString(),
+        noOfSharesWords: row.getCell(6).value?.toString(),
+        dateOfAllotment: (
+          row.getCell(7).value as Date | undefined
+        )?.toISOString(),
+        dateOfAction: (row.getCell(8).value as Date | undefined)?.toISOString(),
+        distinctiveNosFrom: row.getCell(9).value?.toString(),
+        distinctiveNosTo: row.getCell(10).value?.toString(),
+        endorsement: row.getCell(11).value?.toString() as "Yes" | "No",
+        endorsementFolio: row.getCell(12).value?.toString(),
+        endorsementDate: (
+          row.getCell(13).value as Date | undefined
+        )?.toISOString(),
+        endorsementShareholderName1ID: Number(
+          row.getCell(14).value?.toString()
+        ),
+        endorsementShareholderName2ID: Number(
+          row.getCell(15).value?.toString()
+        ),
+        endorsementShareholderName3ID: Number(
+          row.getCell(16).value?.toString()
+        ),
+        folioID: Number(row.getCell(17).value?.toString()),
       };
       certificateInsertData.push(certificateData);
     }
@@ -213,10 +277,29 @@ export async function importExcel(
       await createCertificateBodySchema.parseAsync(certificateInsertData[i]);
       await folioIdSchema.parseAsync({
         folioId: certificateInsertData[i].folioID,
+        endorsementShareholderName1ID:
+          certificateInsertData[i].endorsementShareholderName1ID,
+        endorsementShareholderName2ID:
+          certificateInsertData[i].endorsementShareholderName2ID,
+        endorsementShareholderName3ID:
+          certificateInsertData[i].endorsementShareholderName3ID,
       });
       await createCertificate({
         ...certificateInsertData[i],
         folioId: certificateInsertData[i].folioID,
+        faceValue: certificateInsertData[i].faceValue as any,
+        endorsement: certificateInsertData[i].endorsement,
+        endorsementFolio: certificateInsertData[i].endorsementFolio,
+        endorsementDate:
+          certificateInsertData[i].endorsementDate !== undefined
+            ? new Date(certificateInsertData[i].endorsementDate as string)
+            : undefined,
+        endorsementShareholderName1ID:
+          certificateInsertData[i].endorsementShareholderName1ID,
+        endorsementShareholderName2ID:
+          certificateInsertData[i].endorsementShareholderName2ID,
+        endorsementShareholderName3ID:
+          certificateInsertData[i].endorsementShareholderName3ID,
       });
       successCount = successCount + 1;
     } catch (error) {

@@ -12,7 +12,7 @@ import {
 } from "./folio.repository";
 import { NotFoundError } from "../../utils/exceptions";
 import {
-  FolioCorporateMasterType,
+  // FolioCorporateMasterType,
   FolioCreateType,
   FolioDividendMasterType,
   FolioType,
@@ -175,7 +175,6 @@ export async function exportExcel(
     return {
       id: folio.id,
       instrumentType: folio.shareCertificateMaster?.instrumentType,
-      equityType: folio.equityType,
       Folio: folio.Folio,
       shareholderName1ID: folio.shareholderName1ID,
       shareholderName1: folio.shareholderName1?.shareholderName,
@@ -183,21 +182,6 @@ export async function exportExcel(
       shareholderName2: folio.shareholderName2?.shareholderName,
       shareholderName3ID: folio.shareholderName3ID,
       shareholderName3: folio.shareholderName3?.shareholderName,
-      noOfShares: folio.noOfShares,
-      noOfSharesWords: folio.noOfSharesWords,
-      dateOfAllotment: folio.dateOfAllotment,
-      faceValue: folio.faceValue,
-      distinctiveNosFrom: folio.distinctiveNosFrom,
-      distinctiveNosTo: folio.distinctiveNosTo,
-      endorsement: folio.endorsement,
-      endorsementFolio: folio.endorsementFolio,
-      endorsementDate: folio.endorsementDate,
-      endorsementShareholderName1ID: folio.endorsementShareholderName1ID,
-      endorsementShareholderName1: folio.endorsementShareholderName1?.shareholderName,
-      endorsementShareholderName2ID: folio.endorsementShareholderName2ID,
-      endorsementShareholderName2: folio.endorsementShareholderName2?.shareholderName,
-      endorsementShareholderName3ID: folio.endorsementShareholderName3ID,
-      endorsementShareholderName3: folio.endorsementShareholderName3?.shareholderName,
       createdAt: folio.createdAt,
       shareCertificateID: folio.shareCertificateID,
     };
@@ -251,34 +235,11 @@ export async function importExcel(
   worksheet?.eachRow(async function (row, rowNumber) {
     if (rowNumber > 1) {
       const folioData = {
-        faceValue: isNaN(Number(row.getCell(10).value?.toString()))
-          ? undefined
-          : Number(row.getCell(9).value?.toString()),
-        equityType: row.getCell(1).value?.toString() as
-          | "Bonus"
-          | "Shares"
-          | "Splits"
-          | "Rights",
-        Folio: row.getCell(2).value?.toString() as string,
-        shareholderName1: Number(row.getCell(3).value?.toString()),
-        shareholderName2: Number(row.getCell(4).value?.toString()),
-        shareholderName3: Number(row.getCell(5).value?.toString()),
-        noOfShares: row.getCell(6).value?.toString(),
-        noOfSharesWords: row.getCell(7).value?.toString(),
-        dateOfAllotment: (
-          row.getCell(8).value as Date | undefined
-        )?.toISOString(),
-        distinctiveNosFrom: row.getCell(10).value?.toString(),
-        distinctiveNosTo: row.getCell(11).value?.toString(),
-        endorsement: row.getCell(12).value?.toString() as "Yes" | "No",
-        endorsementFolio: row.getCell(13).value?.toString(),
-        endorsementDate: (
-          row.getCell(14).value as Date | undefined
-        )?.toISOString(),
-        endorsementShareholderName1: Number(row.getCell(15).value?.toString()),
-        endorsementShareholderName2: Number(row.getCell(16).value?.toString()),
-        endorsementShareholderName3: Number(row.getCell(17).value?.toString()),
-        shareCertificateID: Number(row.getCell(18).value?.toString()),
+        Folio: row.getCell(1).value?.toString() as string,
+        shareholderName1ID: Number(row.getCell(2).value?.toString()),
+        shareholderName2ID: Number(row.getCell(3).value?.toString()),
+        shareholderName3ID: Number(row.getCell(4).value?.toString()),
+        shareCertificateID: Number(row.getCell(5).value?.toString()),
       };
       folioInsertData.push(folioData);
     }
@@ -288,23 +249,16 @@ export async function importExcel(
       await createFolioBodySchema.parseAsync(folioInsertData[i]);
       await shareCertificateIdSchema.parseAsync({
         shareCertificateId: folioInsertData[i].shareCertificateID,
+        shareholderName1ID: folioInsertData[i].shareholderName1ID,
+        shareholderName2ID: folioInsertData[i].shareholderName2ID,
+        shareholderName3ID: folioInsertData[i].shareholderName3ID,
       });
       await createFolio({
         ...folioInsertData[i],
-        faceValue: folioInsertData[i].faceValue as any,
+        shareholderName1ID: folioInsertData[i].shareholderName1ID,
+        shareholderName2ID: folioInsertData[i].shareholderName2ID,
+        shareholderName3ID: folioInsertData[i].shareholderName3ID,
         shareCertificateId: folioInsertData[i].shareCertificateID,
-        endorsement: folioInsertData[i].endorsement,
-        endorsementFolio: folioInsertData[i].endorsementFolio,
-        endorsementDate:
-          folioInsertData[i].endorsementDate !== undefined
-            ? new Date(folioInsertData[i].endorsementDate as string)
-            : undefined,
-        endorsementShareholderName1ID:
-          folioInsertData[i].endorsementShareholderName1,
-        endorsementShareholderName2ID:
-          folioInsertData[i].endorsementShareholderName2,
-        endorsementShareholderName3ID:
-          folioInsertData[i].endorsementShareholderName3,
       });
       successCount = successCount + 1;
     } catch (error) {
@@ -342,11 +296,28 @@ export async function importExcel(
   };
 }
 
-export async function getCorporateMaster(
-  params: GetIdParam
-): Promise<FolioCorporateMasterType[]> {
+type OutputRow = {
+  serialNo: number;
+  date: Date;
+  type: string;
+  numerator: string | null;
+  denominator: string | null;
+  originalHolding: number;
+  exchange: number;
+  consolidatedHolding: number;
+};
+
+export async function getCorporateMaster(params: GetIdParam): Promise<OutputRow[]> {
   const folio = await findById(params);
-  if (folio.shareCertificateID) {
+  const certificates = await prisma.certificate.findMany({
+    where: {
+      folioID: params.id,
+    },
+    orderBy: {
+      dateOfAction: "asc",
+    },
+  });
+  if (folio.shareCertificateID && certificates.length > 0) {
     const shareCertificateMaster =
       await prisma.shareCertificateMaster.findUnique({
         where: {
@@ -358,11 +329,6 @@ export async function getCorporateMaster(
         const corporateMasterData = await prisma.corporateMaster.findMany({
           where: {
             companyID: shareCertificateMaster.companyID,
-            date: folio.dateOfAllotment
-              ? {
-                  gte: folio.dateOfAllotment,
-                }
-              : undefined,
           },
           select: {
             ...CorporateMasterColumn,
@@ -371,149 +337,228 @@ export async function getCorporateMaster(
             date: "asc",
           },
         });
-        const test: FolioCorporateMasterType[] = [];
-        corporateMasterData.map((corporateMaster, i) => {
-          if (i === 0) {
-            const originalHolding = folio.noOfShares;
-            const exchange = Math.floor(
-              Number(corporateMaster.numerator) !== 0 &&
-                Number(corporateMaster.denominator) !== 0
-                ? (Number(originalHolding ?? 0) *
-                    Number(corporateMaster.numerator ?? 0)) /
-                    Number(corporateMaster.denominator ?? 0)
-                : 0
-            );
-            const consolidatedHolding =
-              corporateMaster.type === "Splits"
-                ? exchange
-                : Number(originalHolding) + exchange;
-            test.push({
-              type: corporateMaster.type,
-              date: corporateMaster.date,
-              numerator: corporateMaster.numerator,
-              denominator: corporateMaster.denominator,
-              originalHolding,
-              exchange: exchange.toString(),
-              consolidatedHolding: consolidatedHolding.toString(),
-            });
-          } else {
-            const originalHolding = test[i - 1].consolidatedHolding;
-            const exchange = Math.floor(
-              Number(corporateMaster.numerator) !== 0 &&
-                Number(corporateMaster.denominator) !== 0
-                ? (Number(originalHolding ?? 0) *
-                    Number(corporateMaster.numerator ?? 0)) /
-                    Number(corporateMaster.denominator ?? 0)
-                : 0
-            );
-            const consolidatedHolding =
-              corporateMaster.type==="Splits" ? exchange : Number(originalHolding) + exchange;
-            test.push({
-              type: corporateMaster.type,
-              date: corporateMaster.date,
-              numerator: corporateMaster.numerator,
-              denominator: corporateMaster.denominator,
-              originalHolding,
-              exchange: exchange.toString(),
-              consolidatedHolding: consolidatedHolding.toString(),
-            });
-          }
-        });
-        return [
-          {
-            type:
-              folio.equityType === "Shares" ? "ShareBought" : folio.equityType,
-            date: folio.dateOfAllotment ?? new Date(),
-            numerator: "0",
-            denominator: "0",
-            originalHolding: folio.noOfShares ?? "0",
-            exchange: "0",
-            consolidatedHolding: folio.noOfShares ?? "0",
-          },
-          ...test,
+        const combinedData = [
+          ...certificates.map((cert) => ({
+            date: cert.dateOfAction,
+            type: cert.equityType,
+            noOfShares: cert.noOfShares ? Number(cert.noOfShares) : Number(0),
+            numerator: Number(0),
+            denominator: Number(0),
+          })),
+          ...corporateMasterData.map((corp) => ({
+            date: corp.date,
+            type: corp.type,
+            noOfShares: Number(0),
+            numerator: corp.numerator ? Number(corp.numerator) : Number(0),
+            denominator: corp.denominator
+              ? Number(corp.denominator)
+              : Number(0),
+          })),
         ];
+
+        // Merge entries with the same date and type
+        const mergedData = combinedData.reduce((acc, entry) => {
+          const existingEntry = acc.find(
+            (e) =>
+              e.date?.getTime() === entry.date?.getTime() &&
+              e.type === entry.type
+          );
+
+          if (
+            existingEntry &&
+            (existingEntry.type === "Bonus" ||
+              existingEntry.type === "Splits" ||
+              existingEntry.type === "Rights")
+          ) {
+            // existingEntry.noOfShares = existingEntry.noOfShares.add(
+            //   entry.noOfShares
+            // );
+            existingEntry.numerator =
+              entry.numerator || existingEntry.numerator;
+            existingEntry.denominator =
+              entry.denominator || existingEntry.denominator;
+          } else {
+            acc.push(entry);
+          }
+
+          return acc;
+        }, [] as typeof combinedData);
+
+        // Sort merged data by date
+        mergedData.sort((a, b) =>
+          a.date && b.date ? a.date.getTime() - b.date.getTime() : 0
+        );
+
+        const output: OutputRow[] = [];
+        let consolidatedHolding = Number(0);
+
+        mergedData.forEach((entry, index) => {
+          const originalHolding =
+            index === 0 ? entry.noOfShares : consolidatedHolding;
+          const exchange =
+            entry.type==="ShareBought" ? entry.noOfShares : (entry.numerator && entry.denominator
+              ? parseInt((originalHolding * (entry.numerator / entry.denominator)).toString())
+              : Number(0));
+          consolidatedHolding =
+            entry.type === "Splits" ? exchange : originalHolding + exchange;
+
+          output.push({
+            serialNo: index + 1,
+            date: entry.date!,
+            type: entry.type,
+            numerator: entry.numerator?.toString() || '0',
+            denominator: entry.denominator?.toString() || '0',
+            originalHolding: originalHolding,
+            exchange: exchange,
+            consolidatedHolding: consolidatedHolding,
+          });
+        });
+        return output;
       }
     }
   }
   return [];
 }
 
-export async function getDividendMaster(
-  params: GetIdParam
-): Promise<FolioDividendMasterType[]> {
+export async function getCorporateMasterRights(
+  params: GetIdParam,
+  querystring: GetPaginationQuery
+): Promise<
+  {
+    rights: any[];
+  } & PaginationType
+> {
   const folio = await findById(params);
-  if(folio && folio.dateOfAllotment && folio.shareCertificateID) {
+  const { limit, offset } = getPaginationParams({
+    page: querystring.page,
+    size: querystring.limit,
+  });
+  if (folio.shareCertificateID) {
     const shareCertificateMaster =
       await prisma.shareCertificateMaster.findUnique({
         where: {
           id: folio.shareCertificateID,
         },
       });
-    if (shareCertificateMaster){
-      const folios: { year: string; total_shares: string }[] =
-        await prisma.$queryRaw`SELECT EXTRACT(YEAR FROM "dateOfAllotment") as year, SUM(NULLIF("noOfShares", '')::INTEGER)::text as total_shares FROM public."Folio" WHERE "dateOfAllotment" >= ${folio.dateOfAllotment} AND "shareCertificateID" = ${shareCertificateMaster.id} GROUP BY EXTRACT(YEAR FROM "dateOfAllotment") ORDER BY EXTRACT(YEAR FROM "dateOfAllotment") ASC`;
-      if(folios.length > 0) {
-        const folio_collection = folios.reduce((acc, obj) => {
-          const { year, total_shares } = obj;
-          acc[year] = total_shares;
-          return acc;
-        }, {});
-        const folio_year = folios.map((folio) => "'" +folio.year+"'" ).join(",");
-        const query = `
-          SELECT "recorded_date", EXTRACT(YEAR FROM "recorded_date") as recorded_year, "financial_year", "dividend_per_share"
-          FROM public."DividendMaster"
-          WHERE EXTRACT(YEAR FROM "recorded_date") IN (${folio_year}) AND "companyID" = ${shareCertificateMaster.companyID}
-          ORDER BY "recorded_date" ASC;
-        `;
-        const dividend_master: FolioDividendMasterType[] = await prisma.$queryRawUnsafe(
-          query,
-          folio_year
-        );
-        const test: FolioDividendMasterType[] = [];
-        dividend_master.map((dividendMaster, i) => {
-          if (i === 0) {
-            const no_of_shares = Number(
-              folio_collection[dividendMaster.recorded_year] ?? 0
-            );
-            const total_dividend = Math.floor(
-              no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
-            );
-            const cumulative_dividend = total_dividend;
-            test.push({
-              recorded_date: dividendMaster.recorded_date,
-              recorded_year: dividendMaster.recorded_year,
-              financial_year: dividendMaster.financial_year,
-              dividend_per_share: dividendMaster.dividend_per_share,
-              no_of_shares: no_of_shares.toString(),
-              total_dividend: total_dividend.toString(),
-              cumulative_dividend: cumulative_dividend.toString(),
-            });
-          } else {
-            const old_cumulative_dividend = Number(test[i - 1].cumulative_dividend ?? 0);
-            const no_of_shares = Number(
-              folio_collection[dividendMaster.recorded_year] ?? 0
-            );
-            const total_dividend = Math.floor(
-              no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
-            );
-            const cumulative_dividend = total_dividend + old_cumulative_dividend;
-            test.push({
-              recorded_date: dividendMaster.recorded_date,
-              recorded_year: dividendMaster.recorded_year,
-              financial_year: dividendMaster.financial_year,
-              dividend_per_share: dividendMaster.dividend_per_share,
-              no_of_shares: no_of_shares.toString(),
-              total_dividend: total_dividend.toString(),
-              cumulative_dividend: cumulative_dividend.toString(),
-            });
-          }
+    if (shareCertificateMaster) {
+      if (shareCertificateMaster.companyID) {
+        const corporateMasterData = await prisma.corporateMaster.findMany({
+          skip: offset,
+          take: limit,
+          where: {
+            companyID: shareCertificateMaster.companyID,
+            type: "Rights",
+          },
+          select: {
+            ...CorporateMasterColumn,
+          },
+          orderBy: {
+            date: "asc",
+          },
         });
-        return [
-          ...test,
-        ];
+        const corporateMasterDataCount = await prisma.corporateMaster.count({
+          where: {
+            companyID: shareCertificateMaster.companyID,
+            type: "Rights",
+          },
+        });
+        return {
+          rights: corporateMasterData,
+          ...getPaginationKeys({
+            count: corporateMasterDataCount,
+            page: querystring.page,
+            size: querystring.limit,
+          }),
+        };
       }
     }
   }
+  return {
+    rights: [],
+    ...getPaginationKeys({
+      count: 0,
+      page: querystring.page,
+      size: querystring.limit,
+    }),
+  };
+}
+
+export async function getDividendMaster(
+  params: GetIdParam
+): Promise<FolioDividendMasterType[]> {
+  // const folio = await findById(params);
+  // if(folio && folio.dateOfAllotment && folio.shareCertificateID) {
+  //   const shareCertificateMaster =
+  //     await prisma.shareCertificateMaster.findUnique({
+  //       where: {
+  //         id: folio.shareCertificateID,
+  //       },
+  //     });
+  //   if (shareCertificateMaster){
+  //     const folios: { year: string; total_shares: string }[] =
+  //       await prisma.$queryRaw`SELECT EXTRACT(YEAR FROM "dateOfAllotment") as year, SUM(NULLIF("noOfShares", '')::INTEGER)::text as total_shares FROM public."Folio" WHERE "dateOfAllotment" >= ${folio.dateOfAllotment} AND "shareCertificateID" = ${shareCertificateMaster.id} GROUP BY EXTRACT(YEAR FROM "dateOfAllotment") ORDER BY EXTRACT(YEAR FROM "dateOfAllotment") ASC`;
+  //     if(folios.length > 0) {
+  //       const folio_collection = folios.reduce((acc, obj) => {
+  //         const { year, total_shares } = obj;
+  //         acc[year] = total_shares;
+  //         return acc;
+  //       }, {});
+  //       const folio_year = folios.map((folio) => "'" +folio.year+"'" ).join(",");
+  //       const query = `
+  //         SELECT "recorded_date", EXTRACT(YEAR FROM "recorded_date") as recorded_year, "financial_year", "dividend_per_share"
+  //         FROM public."DividendMaster"
+  //         WHERE EXTRACT(YEAR FROM "recorded_date") IN (${folio_year}) AND "companyID" = ${shareCertificateMaster.companyID}
+  //         ORDER BY "recorded_date" ASC;
+  //       `;
+  //       const dividend_master: FolioDividendMasterType[] = await prisma.$queryRawUnsafe(
+  //         query,
+  //         folio_year
+  //       );
+  //       const test: FolioDividendMasterType[] = [];
+  //       dividend_master.map((dividendMaster, i) => {
+  //         if (i === 0) {
+  //           const no_of_shares = Number(
+  //             folio_collection[dividendMaster.recorded_year] ?? 0
+  //           );
+  //           const total_dividend = Math.floor(
+  //             no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
+  //           );
+  //           const cumulative_dividend = total_dividend;
+  //           test.push({
+  //             recorded_date: dividendMaster.recorded_date,
+  //             recorded_year: dividendMaster.recorded_year,
+  //             financial_year: dividendMaster.financial_year,
+  //             dividend_per_share: dividendMaster.dividend_per_share,
+  //             no_of_shares: no_of_shares.toString(),
+  //             total_dividend: total_dividend.toString(),
+  //             cumulative_dividend: cumulative_dividend.toString(),
+  //           });
+  //         } else {
+  //           const old_cumulative_dividend = Number(test[i - 1].cumulative_dividend ?? 0);
+  //           const no_of_shares = Number(
+  //             folio_collection[dividendMaster.recorded_year] ?? 0
+  //           );
+  //           const total_dividend = Math.floor(
+  //             no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
+  //           );
+  //           const cumulative_dividend = total_dividend + old_cumulative_dividend;
+  //           test.push({
+  //             recorded_date: dividendMaster.recorded_date,
+  //             recorded_year: dividendMaster.recorded_year,
+  //             financial_year: dividendMaster.financial_year,
+  //             dividend_per_share: dividendMaster.dividend_per_share,
+  //             no_of_shares: no_of_shares.toString(),
+  //             total_dividend: total_dividend.toString(),
+  //             cumulative_dividend: cumulative_dividend.toString(),
+  //           });
+  //         }
+  //       });
+  //       return [
+  //         ...test,
+  //       ];
+  //     }
+  //   }
+  // }
   return [];
 }
 
@@ -528,16 +573,24 @@ export async function getConsolidatedHolding(
       },
     }
   );
-  if (shareCertificateMaster) {
+  const certificates = await prisma.certificate.findMany({
+    where: {
+      folioID: folio.id,
+    },
+    orderBy: {
+      dateOfAction: "asc",
+    },
+  });
+  if (shareCertificateMaster && certificates.length > 0) {
     if (shareCertificateMaster.companyID) {
       const corporateMasterData = await prisma.corporateMaster.findMany({
         where: {
           companyID: shareCertificateMaster.companyID,
-          date: folio.dateOfAllotment
-            ? {
-                gte: folio.dateOfAllotment,
-              }
-            : undefined,
+          // date: folio.dateOfAllotment
+          //   ? {
+          //       gte: folio.dateOfAllotment,
+          //     }
+          //   : undefined,
         },
         select: {
           ...CorporateMasterColumn,
@@ -546,50 +599,133 @@ export async function getConsolidatedHolding(
           date: "asc",
         },
       });
-      const test = corporateMasterData.reduce(
-        (acc, corporateMaster, i) => {
-          const originalHolding =
-            i === 0 ? folio.noOfShares : acc[i - 1].consolidatedHolding;
+      const combinedData = [
+        ...certificates.map((cert) => ({
+          date: cert.dateOfAction,
+          type: cert.equityType,
+          noOfShares: cert.noOfShares ? Number(cert.noOfShares) : Number(0),
+          numerator: Number(0),
+          denominator: Number(0),
+        })),
+        ...corporateMasterData.map((corp) => ({
+          date: corp.date,
+          type: corp.type,
+          noOfShares: Number(0),
+          numerator: corp.numerator ? Number(corp.numerator) : Number(0),
+          denominator: corp.denominator ? Number(corp.denominator) : Number(0),
+        })),
+      ];
 
-          const exchange = Math.floor(
-            Number(corporateMaster.numerator) !== 0 &&
-              Number(corporateMaster.denominator) !== 0
-              ? (Number(originalHolding ?? 0) *
-                  Number(corporateMaster.numerator ?? 0)) /
-                  Number(corporateMaster.denominator ?? 0)
-              : 0
-          );
+      // Merge entries with the same date and type
+      const mergedData = combinedData.reduce((acc, entry) => {
+        const existingEntry = acc.find(
+          (e) =>
+            e.date?.getTime() === entry.date?.getTime() && e.type === entry.type
+        );
 
-          const consolidatedHolding =
-            corporateMaster.type === "Splits" ? exchange : Number(originalHolding) + exchange;
+        if (
+          existingEntry &&
+          (existingEntry.type === "Bonus" ||
+            existingEntry.type === "Splits" ||
+            existingEntry.type === "Rights")
+        ) {
+          // existingEntry.noOfShares = existingEntry.noOfShares.add(
+          //   entry.noOfShares
+          // );
+          existingEntry.numerator = entry.numerator || existingEntry.numerator;
+          existingEntry.denominator =
+            entry.denominator || existingEntry.denominator;
+        } else {
+          acc.push(entry);
+        }
 
-          acc.push({
-            type: corporateMaster.type,
-            date: corporateMaster.date,
-            numerator: corporateMaster.numerator,
-            denominator: corporateMaster.denominator,
-            originalHolding,
-            exchange: exchange.toString(),
-            consolidatedHolding: consolidatedHolding.toString(),
-          });
+        return acc;
+      }, [] as typeof combinedData);
 
-          return acc;
-        },
-        [] as Array<{
-          type: string;
-          date: Date;
-          numerator: string | null | undefined;
-          denominator: string | null | undefined;
-          originalHolding: string | null | undefined;
-          exchange: string;
-          consolidatedHolding: string;
-        }>
+      // Sort merged data by date
+      mergedData.sort((a, b) =>
+        a.date && b.date ? a.date.getTime() - b.date.getTime() : 0
       );
+
+      const output: OutputRow[] = [];
+      let consolidatedHolding = Number(0);
+
+      mergedData.forEach((entry, index) => {
+        const originalHolding =
+          index === 0 ? entry.noOfShares : consolidatedHolding;
+        const exchange =
+          entry.type === "ShareBought"
+            ? entry.noOfShares
+            : entry.numerator && entry.denominator
+            ? parseInt(
+                (
+                  originalHolding *
+                  (entry.numerator / entry.denominator)
+                ).toString()
+              )
+            : Number(0);
+        consolidatedHolding =
+          entry.type === "Splits" ? exchange : originalHolding + exchange;
+
+        output.push({
+          serialNo: index + 1,
+          date: entry.date!,
+          type: entry.type,
+          numerator: entry.numerator?.toString() || "0",
+          denominator: entry.denominator?.toString() || "0",
+          originalHolding: originalHolding,
+          exchange: exchange,
+          consolidatedHolding: consolidatedHolding,
+        });
+      });
+      // return output;
+      // const test = corporateMasterData.reduce(
+      //   (acc, corporateMaster, i) => {
+      //     const originalHolding = "0";
+      //     // const originalHolding =
+      //     //   i === 0 ? folio.noOfShares : acc[i - 1].consolidatedHolding;
+
+      //     const exchange = Math.floor(
+      //       Number(corporateMaster.numerator) !== 0 &&
+      //         Number(corporateMaster.denominator) !== 0
+      //         ? (Number(originalHolding ?? 0) *
+      //             Number(corporateMaster.numerator ?? 0)) /
+      //             Number(corporateMaster.denominator ?? 0)
+      //         : 0
+      //     );
+
+      //     const consolidatedHolding =
+      //       corporateMaster.type === "Splits"
+      //         ? exchange
+      //         : Number(originalHolding) + exchange;
+
+      //     acc.push({
+      //       type: corporateMaster.type,
+      //       date: corporateMaster.date,
+      //       numerator: corporateMaster.numerator,
+      //       denominator: corporateMaster.denominator,
+      //       originalHolding,
+      //       exchange: exchange.toString(),
+      //       consolidatedHolding: consolidatedHolding.toString(),
+      //     });
+
+      //     return acc;
+      //   },
+      //   [] as Array<{
+      //     type: string;
+      //     date: Date;
+      //     numerator: string | null | undefined;
+      //     denominator: string | null | undefined;
+      //     originalHolding: string | null | undefined;
+      //     exchange: string;
+      //     consolidatedHolding: string;
+      //   }>
+      // );
 
       // Final consolidated holding
       const finalConsolidatedHolding =
-        test[test.length - 1]?.consolidatedHolding;
-      return finalConsolidatedHolding;
+        output[output.length - 1]?.consolidatedHolding;
+      return finalConsolidatedHolding.toString();
     }
   }
   return "0";

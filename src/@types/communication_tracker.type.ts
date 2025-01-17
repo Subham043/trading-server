@@ -1,12 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../db";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export type CommunicationTrackerFolioType = {
   id: number;
-  equityType: "Bonus" | "Shares" | "Splits" | "Rights";
   Folio: string;
-  faceValue: Decimal | null | undefined;
   shareCertificateMaster: {
     companyMaster: {
       nameChangeMasters: { currentName: string | null }[];

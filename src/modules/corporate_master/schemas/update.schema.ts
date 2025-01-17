@@ -2,15 +2,12 @@ import { z } from "zod";
 import { getById } from "../corporate_master.repository";
 
 export const updateCorporateMasterBodySchema = z.object({
-  type: z.enum(
-    ["Equity", "Bonus", "Shares", "Splits", "Rights", "ShareBought"],
-    {
-      errorMap: () => ({
-        message:
-          "Equity Type must be one of [Equity, Bonus , Shares , Splits , Rights, ShareBought]",
-      }),
-    }
-  ),
+  type: z.enum(["Bonus", "Splits", "Rights"], {
+    errorMap: () => ({
+      message:
+        "Equity Type must be one of [Bonus , Splits , Rights]",
+    }),
+  }),
   date: z
     .string({
       errorMap: () => ({ message: "Date of Allotment must be a string" }),

@@ -30,11 +30,6 @@ export class ShareHolderDetailModel {
               },
             },
             {
-              shareholderNameCertificate: {
-                contains: search,
-              },
-            },
-            {
               namePan: {
                 contains: search,
               },

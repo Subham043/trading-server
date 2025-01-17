@@ -202,11 +202,9 @@ export async function importExcel(
     if (rowNumber > 1) {
       const corporateMasterData = {
         type: row.getCell(1).value?.toString() as
-          | "Equity"
           | "Bonus"
           | "Splits"
-          | "Rights"
-          | "ShareBought",
+          | "Rights",
         date: (row.getCell(2).value as Date | undefined)?.toISOString(),
         numerator: Number(row.getCell(3).value?.toString()),
         denominator: Number(row.getCell(4).value?.toString()),

@@ -3,11 +3,11 @@ import { getById } from "../../company_master/company_master.repository";
 
 export const createCorporateMasterBodySchema = z.object({
   type: z.enum(
-    ["Equity", "Bonus", "Shares", "Splits", "Rights", "ShareBought"],
+    ["Bonus", "Splits", "Rights"],
     {
       errorMap: () => ({
         message:
-          "Equity Type must be one of [Equity, Bonus , Shares , Splits , Rights, ShareBought]",
+          "Equity Type must be one of [Bonus , Splits , Rights]",
       }),
     }
   ),

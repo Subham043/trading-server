@@ -8,7 +8,7 @@ import {
 } from "../../@types/corporate_master.type";
 
 export type CorporateMasterExcelData = {
-  type: "Equity" | "Bonus" | "Splits" | "Rights" | "ShareBought";
+  type: "Bonus" | "Splits" | "Rights";
   date: string | undefined;
   numerator: number | undefined;
   denominator: number | undefined;
@@ -17,7 +17,7 @@ export type CorporateMasterExcelData = {
 
 export type CorporateMasterExportExcelData = {
   id: number;
-  type: "Equity" | "Bonus" | "Splits" | "Rights" | "ShareBought";
+  type: "Bonus" | "Splits" | "Rights";
   date: Date;
   numerator?: string | null | undefined;
   denominator?: string | null | undefined;

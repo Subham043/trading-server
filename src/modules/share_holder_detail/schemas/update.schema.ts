@@ -7,13 +7,6 @@ export const updateShareHolderDetailBodySchema = z.object({
       errorMap: () => ({ message: "shareholder name must be a string" }),
     })
     .trim(),
-  shareholderNameCertificate: z
-    .string({
-      errorMap: () => ({
-        message: "shareholder name as per certificate must be a string",
-      }),
-    })
-    .trim(),
   namePan: z
     .string({
       errorMap: () => ({

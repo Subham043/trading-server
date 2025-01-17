@@ -6,6 +6,7 @@ import {
   exportExcel,
   findById,
   getCorporateMaster,
+  getCorporateMasterRights,
   getDividendMaster,
   importExcel,
   list,
@@ -107,6 +108,22 @@ export async function listCorporateMaster(
   });
 }
 
+export async function listCorporateMasterRights(
+  request: FastifyRequest<{
+    Params: GetIdParam;
+    Querystring: GetSearchQuery;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await getCorporateMasterRights(request.params, request.query);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Folio Fetched",
+    data: result,
+  });
+}
+
 export async function listDividendMaster(
   request: FastifyRequest<{
     Params: GetIdParam;
@@ -141,9 +158,6 @@ export async function createFolio(
     shareholderName1ID: request.body.shareholderName1ID,
     shareholderName2ID: request.body.shareholderName2ID,
     shareholderName3ID: request.body.shareholderName3ID,
-    endorsementShareholderName1ID: request.body.endorsementShareholderName1ID,
-    endorsementShareholderName2ID: request.body.endorsementShareholderName2ID,
-    endorsementShareholderName3ID: request.body.endorsementShareholderName3ID,
   });
   const result = await create(request.body, request.params.shareCertificateId);
   return reply.code(201).type("application/json").send({
@@ -173,9 +187,6 @@ export async function updateFolio(
     shareholderName1ID: request.body.shareholderName1ID,
     shareholderName2ID: request.body.shareholderName2ID,
     shareholderName3ID: request.body.shareholderName3ID,
-    endorsementShareholderName1ID: request.body.endorsementShareholderName1ID,
-    endorsementShareholderName2ID: request.body.endorsementShareholderName2ID,
-    endorsementShareholderName3ID: request.body.endorsementShareholderName3ID,
   });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({

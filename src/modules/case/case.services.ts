@@ -500,28 +500,34 @@ export async function generateDoc(
         },
         select: {
           id: true,
-          equityType: true,
           Folio: true,
           shareholderName1ID: true,
           shareholderName2ID: true,
           shareholderName3ID: true,
-          noOfShares: true,
-          noOfSharesWords: true,
-          dateOfAllotment: true,
-          faceValue: true,
-          distinctiveNosFrom: true,
-          distinctiveNosTo: true,
-          endorsement: true,
-          endorsementFolio: true,
-          endorsementDate: true,
-          endorsementShareholderName1ID: true,
-          endorsementShareholderName2ID: true,
-          endorsementShareholderName3ID: true,
           shareholderName1: true,
           shareholderName2: true,
           shareholderName3: true,
+          certificate: {
+            select: {
+              id: true,
+              equityType: true,
+              certificateNumber: true,
+              certificateSerialNumber: true,
+              noOfShares: true,
+              noOfSharesWords: true,
+              dateOfAllotment: true,
+              faceValue: true,
+              distinctiveNosFrom: true,
+              distinctiveNosTo: true,
+              endorsement: true,
+              endorsementFolio: true,
+              endorsementDate: true,
+              endorsementShareholderName1ID: true,
+              endorsementShareholderName2ID: true,
+              endorsementShareholderName3ID: true,
+            },
+          },
           shareCertificateMaster: true,
-          certificate: true,
         },
       });
     }
@@ -661,20 +667,17 @@ export async function generateDoc(
     payload["annualIncomeClaimant"] = shareHolderMaster.annualIncomeClaimant;
 
 
-    payload["equityType"] = folio.equityType;
     payload["Folio"] = folio.Folio;
-    payload["totalFaceValue"] = folio.faceValue;
-    payload["totalNoOfShares"] = folio.noOfShares;
-    payload["totalNoOfSharesWords"] = folio.noOfSharesWords;
-    payload["certificateNumber"] = folio.certificate.map((item) => item.certificateNumber).join(", ");
-    payload["certificateSerialNumber"] = folio.certificate.map((item) => item.certificateSerialNumber).filter((item) => item !== null).join(", ");
-    payload["distinctiveNosFrom"] = folio.distinctiveNosFrom;
-    payload["distinctiveNosTo"] = folio.distinctiveNosTo;
-    payload["distinctiveNos"] =
-      folio.distinctiveNosFrom + "-" + folio.distinctiveNosTo;
-    payload["certificateYear"] = folio.dateOfAllotment
-      ? dayjs(folio.dateOfAllotment).format("YYYY")
-      : null;
+    payload["certificate"] = folio.certificate.map((item) => ({
+      ...item,
+      totalFaceValue: item.faceValue,
+      totalNoOfShares: item.noOfShares,
+      totalNoOfSharesWords: item.noOfSharesWords,
+      distinctiveNos: item.distinctiveNosFrom + "-" + item.distinctiveNosTo,
+      certificateYear: item.dateOfAllotment
+      ? dayjs(item.dateOfAllotment).format("YYYY")
+      : null
+    }));
     payload["instrumentType"] = folio.shareCertificateMaster!.instrumentType;
     payload["companyRTA"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.registrarMaster?.registrar_name || null;
     payload["companyRTAAddress"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.address || null;
@@ -735,8 +738,6 @@ export async function generateDoc(
         folio.shareholderName1.accountOpeningDate ? dayjs(folio.shareholderName1.accountOpeningDate).format("DD-MM-YYYY") : null;
       payload["shareholderName_" + (1)] =
         folio.shareholderName1.shareholderName;
-      payload["shareholderNameCertificate_" + (1)] =
-        folio.shareholderName1.shareholderNameCertificate;
       payload["state_" + (1)] = folio.shareholderName1.state;
     }else{
       payload["hasShareholder_" + (1)] = false;
@@ -791,8 +792,6 @@ export async function generateDoc(
         : null;
       payload["shareholderName_" + (2)] =
         folio.shareholderName2.shareholderName;
-      payload["shareholderNameCertificate_" + (2)] =
-        folio.shareholderName2.shareholderNameCertificate;
       payload["state_" + (2)] = folio.shareholderName2.state;
     }else{
       payload["hasShareholder_" + (2)] = false;
@@ -847,8 +846,6 @@ export async function generateDoc(
         : null;
       payload["shareholderName_" + (3)] =
         folio.shareholderName3.shareholderName;
-      payload["shareholderNameCertificate_" + (3)] =
-        folio.shareholderName3.shareholderNameCertificate;
       payload["state_" + (3)] = folio.shareholderName3.state;
     }else{
       payload["hasShareholder_" + (3)] = false;

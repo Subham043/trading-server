@@ -3,7 +3,7 @@ import { prisma } from "../db";
 
 export type CorporateMasterType = {
   id: number;
-  type: "Equity" | "Bonus" | "Splits" | "Rights" | "ShareBought";
+  type: "Bonus" | "Splits" | "Rights";
   date: Date;
   numerator?: string | null;
   denominator?: string | null;

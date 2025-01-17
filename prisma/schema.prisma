@@ -34,18 +34,17 @@ enum IntrumentType {
 }
 
 enum EquityType {
-  Bonus
-  Rights
-  Splits
-  Shares
-}
-
-enum CorporateActionType {
   Equity
   Bonus
   Rights
   Splits
   ShareBought
+}
+
+enum CorporateActionType {
+  Bonus
+  Rights
+  Splits
 }
 
 enum TruthType {
@@ -272,7 +271,6 @@ model ShareCertificateMaster {
 
 model Folio {
   id        Int      @id @default(autoincrement())
-  equityType      EquityType     @default(Bonus)
   Folio  String @db.VarChar(256)
   shareholderName1   ShareHolderDetail? @relation(fields: [shareholderName1ID], references: [id], onDelete: Cascade, onUpdate: SetNull, name: "shareholderName1")
   shareholderName1ID Int?
@@ -280,9 +278,27 @@ model Folio {
   shareholderName2ID Int?
   shareholderName3   ShareHolderDetail? @relation(fields: [shareholderName3ID], references: [id], onDelete: Cascade, onUpdate: SetNull, name: "shareholderName3")
   shareholderName3ID Int?
+  shareCertificateMaster   ShareCertificateMaster? @relation(fields: [shareCertificateID], references: [id], onDelete: Cascade, onUpdate: SetNull)
+  shareCertificateID Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  certificate Certificate[]
+
+  @@index([shareCertificateID], map: "shareCertificateID_foliokey")
+}
+
+model Certificate {
+  id        Int      @id @default(autoincrement())
+  equityType      EquityType     @default(Equity)
+  certificateNumber  String @db.VarChar(256)
+  certificateSerialNumber  String? @db.VarChar(256)
+  shareholderName1Txt  String? @db.VarChar(256)
+  shareholderName2Txt  String? @db.VarChar(256)
+  shareholderName3Txt  String? @db.VarChar(256)
   noOfShares  String? @db.VarChar(256)
   noOfSharesWords  String? @db.VarChar(256)
   dateOfAllotment DateTime @default(now())
+  dateOfAction DateTime @default(now())
   faceValue  Decimal? @db.Decimal(11,4) @default(0.0)
   distinctiveNosFrom  String? @db.VarChar(256)
   distinctiveNosTo  String? @db.VarChar(256)
@@ -295,19 +311,6 @@ model Folio {
   endorsementShareholderName2ID Int?
   endorsementShareholderName3   ShareHolderDetail? @relation(fields: [endorsementShareholderName3ID], references: [id], onDelete: Cascade, onUpdate: SetNull, name: "endorsementShareholderName3")
   endorsementShareholderName3ID Int?
-  shareCertificateMaster   ShareCertificateMaster? @relation(fields: [shareCertificateID], references: [id], onDelete: Cascade, onUpdate: SetNull)
-  shareCertificateID Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
-  certificate Certificate[]
-
-  @@index([shareCertificateID], map: "shareCertificateID_foliokey")
-}
-
-model Certificate {
-  id        Int      @id @default(autoincrement())
-  certificateNumber  String @db.VarChar(256)
-  certificateSerialNumber  String? @db.VarChar(256)
   folio   Folio? @relation(fields: [folioID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   folioID Int?
   createdAt DateTime @default(now())
@@ -367,7 +370,6 @@ model DividendMaster {
 model ShareHolderDetail {
   id        Int      @id @default(autoincrement())
   shareholderName  String? @db.VarChar(256)
-  shareholderNameCertificate  String? @db.VarChar(256)
   namePan  String? @db.VarChar(256)
   nameAadhar  String? @db.VarChar(256)
   nameCml  String? @db.VarChar(256)
@@ -422,9 +424,9 @@ model ShareHolderDetail {
   folio1 Folio[] @relation(name: "shareholderName1")
   folio2 Folio[] @relation(name: "shareholderName2")
   folio3 Folio[] @relation(name: "shareholderName3")
-  endorsementFolio1 Folio[] @relation(name: "endorsementShareholderName1")
-  endorsementFolio2 Folio[] @relation(name: "endorsementShareholderName2")
-  endorsementFolio3 Folio[] @relation(name: "endorsementShareholderName3")
+  endorsementFolio1 Certificate[] @relation(name: "endorsementShareholderName1")
+  endorsementFolio2 Certificate[] @relation(name: "endorsementShareholderName2")
+  endorsementFolio3 Certificate[] @relation(name: "endorsementShareholderName3")
   deadShareholder Case[] @relation(name: "deadShareholder")
 
   @@index([projectID], map: "projectID_shareHolderDetailkey")
