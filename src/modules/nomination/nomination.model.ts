@@ -11,74 +11,91 @@ export type NominationExcelData = NominationType;
 
 export type NominationExportExcelData = {
   id: number;
-  companyName: string | null | undefined;
   fullName: string | null | undefined;
-  age: string | null | undefined;
+  fatherName: string | null | undefined;
+  occupation: string | null | undefined;
+  nationality: string | null | undefined;
+  email: string | null | undefined;
+  relationship: string | null | undefined;
+  mobile: string | null | undefined;
+  pan: string | null | undefined;
   address: string | null | undefined;
-  isEmployed: string | null | undefined;
-  employerName: string | null | undefined;
-  salary: string | null | undefined;
-  employerAddress: string | null | undefined;
-  isBusiness: string | null | undefined;
-  businessName: string | null | undefined;
-  businessNature: string | null | undefined;
-  businessIncome: string | null | undefined;
-  businessProfit: string | null | undefined;
-  businessAddress: string | null | undefined;
-  isProperty: string | null | undefined;
-  propertyType: string | null | undefined;
-  propertySituation: string | null | undefined;
-  propertyValue: string | null | undefined;
-  propertyRent: string | null | undefined;
+  isMinor: string | null | undefined;
+  dobMinor: Date | null | undefined;
+  dateMajority: Date | null | undefined;
+  gurdianName: string | null | undefined;
+  gurdianAddress: string | null | undefined;
+  isDeceased: string | null | undefined;
+  deceasedName: string | null | undefined;
+  dobDeceased: Date | null | undefined;
+  deceasedFatherName: string | null | undefined;
+  deceasedOccupation: string | null | undefined;
+  deceasedNationality: string | null | undefined;
+  deceasedEmail: string | null | undefined;
+  deceasedRelationship: string | null | undefined;
+  deceasedRelationshipMinor: string | null | undefined;
   projectID: number | null | undefined;
-  stage: "DocumentsCouriered" | "DocumentsReceived";
 };
 
 export const ExcelNominationsColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
-  { key: "companyName", header: "Company Name" },
   { key: "fullName", header: "Full Name" },
-  { key: "age", header: "Age" },
+  { key: "fatherName", header: "Father/Mother/Spouse Name" },
+  { key: "occupation", header: "Occupation" },
+  { key: "nationality", header: "Nationality" },
+  { key: "email", header: "Email" },
+  { key: "relationship", header: "Relationship with the security holder" },
+  { key: "mobile", header: "Mobile" },
+  { key: "pan", header: "PAN" },
   { key: "address", header: "Address" },
-  { key: "isEmployed", header: "Is Employed" },
-  { key: "employerName", header: "Employer Name" },
-  { key: "salary", header: "Salary" },
-  { key: "employerAddress", header: "Employer Address" },
-  { key: "isBusiness", header: "Is Business" },
-  { key: "businessName", header: "Business Name" },
-  { key: "businessNature", header: "Business Nature" },
-  { key: "businessIncome", header: "Business Income" },
-  { key: "businessProfit", header: "Business Profit" },
-  { key: "businessAddress", header: "Business Address" }, 
-  { key: "isProperty", header: "Is Property" },
-  { key: "propertyType", header: "Property Type" },
-  { key: "propertySituation", header: "Property Situation" },
-  { key: "propertyValue", header: "Property Value" },
-  { key: "propertyRent", header: "Property Rent" },
+  { key: "isMinor", header: "Is Minor" },
+  { key: "dobMinor", header: "Date of Birth" },
+  { key: "dateMajority", header: "Date of attaining Majority" },
+  { key: "gurdianName", header: "Gurdian Address" },
+  { key: "gurdianAddress", header: "Gurdian Address" },
+  { key: "isDeceased", header: "Is Deceased" },
+  { key: "deceasedName", header: "Name" },
+  { key: "dobDeceased", header: "Date of Birth" },
+  { key: "deceasedFatherName", header: "Father/Mother/Spouse Name" },
+  { key: "deceasedOccupation", header: "Occupation" },
+  { key: "deceasedNationality", header: "Nationality" },
+  { key: "deceasedEmail", header: "Email" },
+  {
+    key: "deceasedRelationship",
+    header: "Relationship with the security holder",
+  },
+  {
+    key: "deceasedRelationshipMinor",
+    header: "Relationship with the minor nominee",
+  },
   { key: "projectID", header: "Project Id" },
 ];
 
 export const NominationColumn = {
   id: true,
-  companyName: true,
   fullName: true,
-  age: true,
+  fatherName: true,
+  occupation: true,
+  nationality: true,
+  email: true,
+  relationship: true,
+  mobile: true,
+  pan: true,
   address: true,
-  isEmployed: true,
-  employerName: true,
-  salary: true,
-  employerAddress: true,
-  isBusiness: true,
-  businessName: true,
-  businessNature: true,
-  businessIncome: true,
-  businessProfit: true,
-  businessAddress: true,
-  isProperty: true,
-  propertyType: true,
-  propertySituation: true,
-  propertyValue: true,
-  propertyRent: true,
+  isMinor: true,
+  dobMinor: true,
+  dateMajority: true,
+  gurdianName: true,
+  gurdianAddress: true,
+  isDeceased: true,
+  deceasedName: true,
+  dobDeceased: true,
+  deceasedFatherName: true,
+  deceasedOccupation: true,
+  deceasedNationality: true,
+  deceasedEmail: true,
+  deceasedRelationship: true,
+  deceasedRelationshipMinor: true,
   projectID: true,
   createdAt: true,
 };

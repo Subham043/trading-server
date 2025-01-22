@@ -174,6 +174,14 @@ export const createCaseBodySchema = z.object({
     })
     .trim()
     .optional(),
+  selectNomination: z
+    .string({
+      errorMap: () => ({
+        message: "select nominations must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
   selectClaimant: z
     .string({
       errorMap: () => ({

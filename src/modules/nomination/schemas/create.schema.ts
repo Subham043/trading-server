@@ -2,9 +2,11 @@ import { z } from "zod";
 import { getById as getByProjectId } from "../../project/project.repository";
 
 export const createNominationBodySchema = z.object({
-  companyName: z
+  fatherName: z
     .string({
-      errorMap: () => ({ message: "Company Name must be a string" }),
+      errorMap: () => ({
+        message: "Father/Mother/Spouse Name must be a string",
+      }),
     })
     .trim(),
   fullName: z
@@ -12,9 +14,41 @@ export const createNominationBodySchema = z.object({
       errorMap: () => ({ message: "Full Name must be a string" }),
     })
     .trim(),
-  age: z
+  occupation: z
     .string({
-      errorMap: () => ({ message: "Age must be a string" }),
+      errorMap: () => ({ message: "Occupation must be a string" }),
+    })
+    .trim()
+    .optional(),
+  nationality: z
+    .string({
+      errorMap: () => ({ message: "Nationality must be a string" }),
+    })
+    .trim()
+    .optional(),
+  email: z
+    .string({
+      errorMap: () => ({ message: "Email must be a string" }),
+    })
+    .trim()
+    .optional(),
+  relationship: z
+    .string({
+      errorMap: () => ({
+        message: "Relationship with the security holder must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  mobile: z
+    .string({
+      errorMap: () => ({ message: "Mobile must be a string" }),
+    })
+    .trim()
+    .optional(),
+  pan: z
+    .string({
+      errorMap: () => ({ message: "Pan must be a string" }),
     })
     .trim()
     .optional(),
@@ -24,97 +58,99 @@ export const createNominationBodySchema = z.object({
     })
     .trim()
     .optional(),
-  isEmployed: z
+  isMinor: z
     .enum(["Yes", "No"], {
       errorMap: () => ({
-        message: "is Employed must be one of [Yes, No]",
+        message: "is Minor must be one of [Yes, No]",
       }),
     })
     .optional(),
-  employerName: z
+  dobMinor: z
+    .string({
+      errorMap: () => ({
+        message: "date of birth must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  dateMajority: z
+    .string({
+      errorMap: () => ({
+        message: "Date of attaining Majority must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
+  gurdianName: z
+    .string({
+      errorMap: () => ({ message: "Gurdian Name must be a string" }),
+    })
+    .trim()
+    .optional(),
+  gurdianAddress: z
+    .string({
+      errorMap: () => ({ message: "Gurdian Address must be a string" }),
+    })
+    .trim()
+    .optional(),
+  isDeceased: z
+    .enum(["Yes", "No"], {
+      errorMap: () => ({
+        message: "is Deceased must be one of [Yes, No]",
+      }),
+    })
+    .optional(),
+  deceasedName: z
     .string({
       errorMap: () => ({ message: "Name must be a string" }),
     })
     .trim()
     .optional(),
-  salary: z
+  dobDeceased: z
     .string({
-      errorMap: () => ({ message: "Salary must be a string" }),
+      errorMap: () => ({ message: "Date of Birth must be a string" }),
     })
     .trim()
     .optional(),
-  employerAddress: z
+  deceasedFatherName: z
     .string({
-      errorMap: () => ({ message: "Address must be a string" }),
-    })
-    .trim()
-    .optional(),
-  isBusiness: z
-    .enum(["Yes", "No"], {
       errorMap: () => ({
-        message: "is Self-Occupied/Business must be one of [Yes, No]",
+        message: "Father/Mother/Spouse Name must be a string",
       }),
     })
+    .trim()
     .optional(),
-  businessName: z
+  deceasedOccupation: z
     .string({
-      errorMap: () => ({ message: "Business Name must be a string" }),
+      errorMap: () => ({ message: "Occupation must be a string" }),
     })
     .trim()
     .optional(),
-  businessNature: z
+  deceasedNationality: z
     .string({
-      errorMap: () => ({ message: "Business Nature must be a string" }),
+      errorMap: () => ({ message: "Nationality must be a string" }),
     })
     .trim()
     .optional(),
-  businessIncome: z
+  deceasedEmail: z
     .string({
-      errorMap: () => ({ message: "Annual Income must be a string" }),
+      errorMap: () => ({ message: "Email must be a string" }),
     })
     .trim()
     .optional(),
-  businessProfit: z
+  deceasedRelationship: z
     .string({
-      errorMap: () => ({ message: "Annual Profit must be a string" }),
-    })
-    .trim()
-    .optional(),
-  businessAddress: z
-    .string({
-      errorMap: () => ({ message: "Address must be a string" }),
-    })
-    .trim()
-    .optional(),
-  isProperty: z
-    .enum(["Yes", "No"], {
       errorMap: () => ({
-        message:
-          "Own Property within the municipal limits must be one of [Yes, No]",
+        message: "Relationship with security holder must be a string",
       }),
     })
-    .optional(),
-  propertyType: z
-    .string({
-      errorMap: () => ({ message: "Property Type must be a string" }),
-    })
     .trim()
     .optional(),
-  propertySituation: z
+  deceasedRelationshipMinor: z
     .string({
-      errorMap: () => ({ message: "Property Situation must be a string" }),
-    })
-    .trim()
-    .optional(),
-  propertyValue: z
-    .string({
-      errorMap: () => ({ message: "Property Value must be a string" }),
-    })
-    .trim()
-    .optional(),
-  propertyRent: z
-    .string({
-      errorMap: () => ({ message: "Annual Rent Received must be a string" }),
+      errorMap: () => ({
+        message: "Relationship with the minor nominee must be a string",
+      }),
     })
     .trim()
     .optional(),

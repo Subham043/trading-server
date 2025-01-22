@@ -32,6 +32,7 @@ import { NameChangeMasterColumn } from "../company_master/company_master.model";
 import dayjs from "dayjs";
 import { LegalHeirDetailType } from "../../@types/legal_heir_detail.type";
 import { CertificateType } from "../../@types/certificate.type";
+import { NominationType } from "../../@types/nomination.type";
 
 /**
  * Create a new shareHolderMaster with the provided shareHolderMaster information.
@@ -118,6 +119,7 @@ export async function findInfoById(params: GetIdParam): Promise<
     order: ShareHolderDetailType[];
     affidavitShareholders: ShareHolderDetailType[];
     affidavitLegalHeirs: LegalHeirDetailType[];
+    nominations: NominationType[];
   }
 > {
   const { id } = params;
@@ -126,6 +128,7 @@ export async function findInfoById(params: GetIdParam): Promise<
   let affidavitShareholders: ShareHolderDetailType[] =
     [];
   let affidavitLegalHeirs: LegalHeirDetailType[] = [];
+  let nominations: NominationType[] = [];
   let order: ShareHolderDetailType[] = [];
 
   const shareHolderMaster = await getInfoById(id);
@@ -217,6 +220,26 @@ export async function findInfoById(params: GetIdParam): Promise<
     }
   }
   if (
+    shareHolderMaster.selectNomination &&
+    shareHolderMaster.selectNomination.split("_").length > 0
+  ) {
+    const inNominations = shareHolderMaster.selectNomination
+      ?.split("_")
+      .map((claimant) =>
+        isNaN(Number(claimant)) ? undefined : Number(claimant)
+      )
+      .filter((claimant) => claimant !== undefined) as number[];
+    if (inNominations.length > 0) {
+      nominations = await prisma.nomination.findMany({
+        where: {
+          id: {
+            in: inNominations,
+          },
+        },
+      });
+    }
+  }
+  if (
     shareHolderMaster.transpositionOrder &&
     shareHolderMaster.transpositionOrder.split("_").length > 0
   ) {
@@ -241,6 +264,7 @@ export async function findInfoById(params: GetIdParam): Promise<
     order,
     affidavitShareholders,
     affidavitLegalHeirs,
+    nominations,
   };
 }
 
@@ -261,6 +285,7 @@ export async function list(
       order: ShareHolderDetailType[];
       affidavitShareholders: ShareHolderDetailType[];
       affidavitLegalHeirs: LegalHeirDetailType[];
+      nominations: NominationType[];
     })[];
   } & PaginationType
 > {
@@ -286,6 +311,7 @@ export async function list(
       let order: ShareHolderDetailType[] = [];
       let affidavitShareholders: ShareHolderDetailType[] = [];
       let affidavitLegalHeirs: LegalHeirDetailType[] = [];
+      let nominations: NominationType[] = [];
       if (
         shareHolderMaster.folios &&
         shareHolderMaster.folios.split("_").length > 0
@@ -371,6 +397,26 @@ export async function list(
         }
       }
       if (
+        shareHolderMaster.selectNomination &&
+        shareHolderMaster.selectNomination.split("_").length > 0
+      ) {
+        const inNominations = shareHolderMaster.selectNomination
+          ?.split("_")
+          .map((claimant) =>
+            isNaN(Number(claimant)) ? undefined : Number(claimant)
+          )
+          .filter((claimant) => claimant !== undefined) as number[];
+        if (inNominations.length > 0) {
+          nominations = await prisma.nomination.findMany({
+            where: {
+              id: {
+                in: inNominations,
+              },
+            },
+          });
+        }
+      }
+      if (
         shareHolderMaster.transpositionOrder &&
         shareHolderMaster.transpositionOrder.split("_").length > 0
       ) {
@@ -395,6 +441,7 @@ export async function list(
         order,
         affidavitShareholders,
         affidavitLegalHeirs,
+        nominations,
       };
     })
   );
@@ -481,6 +528,7 @@ export async function generateDoc(
   let clamaints: LegalHeirDetailType[] = [];
   let affidavitShareholders: ShareHolderDetailType[] = [];
   let affidavitLegalHeirs: LegalHeirDetailType[] = [];
+  let nominations: NominationType[] = [];
   // let order: ShareHolderDetailType[] = [];
 
   if (
@@ -616,6 +664,26 @@ export async function generateDoc(
       }
     }
   }
+  if (
+    shareHolderMaster.selectNomination &&
+    shareHolderMaster.selectNomination.split("_").length > 0
+  ) {
+    const inNominations = shareHolderMaster.selectNomination
+      ?.split("_")
+      .map((claimant) =>
+        isNaN(Number(claimant)) ? undefined : Number(claimant)
+      )
+      .filter((claimant) => claimant !== undefined) as number[];
+    if (inNominations.length > 0) {
+      nominations = await prisma.nomination.findMany({
+        where: {
+          id: {
+            in: inNominations,
+          },
+        },
+      });
+    }
+  }
 
   const legalHeirDetails = await prisma.legalHeirDetail.findMany({
     where: {
@@ -642,6 +710,20 @@ export async function generateDoc(
       accountOpeningDate: item.accountOpeningDate
         ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
         : null,
+    }));
+    payload["nominations"] = nominations.map((item) => ({
+      ...item,
+      dobMinor: item.dobMinor
+        ? dayjs(item.dobMinor).format("DD-MM-YYYY")
+        : null,
+      dobDeceased: item.dobDeceased
+        ? dayjs(item.dobDeceased).format("DD-MM-YYYY")
+        : null,
+      dateMajority: item.dateMajority
+        ? dayjs(item.dateMajority).format("DD-MM-YYYY")
+        : null,
+      isMinor: item.isMinor==="Yes" ? true : false,
+      isDeceased: item.isDeceased==="Yes" ? true : false,
     }));
     payload["isDeceased"] = shareHolderMaster.isDeceased==="Yes" ? true : false;
     payload["shareholderNameDeath"] = shareHolderMaster.shareholderNameDeath;
