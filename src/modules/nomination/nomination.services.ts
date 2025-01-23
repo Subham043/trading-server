@@ -39,6 +39,8 @@ export async function create(
 ): Promise<NominationType | null> {
   const nomination = await createNomination({
     ...data,
+    deceasedFatherName: data.deceasedFatherName ? data.deceasedFatherName : '',
+    gurdianName: data.gurdianName ? data.gurdianName : '',
     projectID,
   });
   if(!nomination){
@@ -58,7 +60,11 @@ export async function update(
   data: NominationUpdateType,
   param: GetIdParam
 ): Promise<NominationType | null> {
-  const nomination = await updateNomination(data, param.id);
+  const nomination = await updateNomination({
+    ...data, 
+    deceasedFatherName: data.deceasedFatherName ? data.deceasedFatherName : '',
+    gurdianName: data.gurdianName ? data.gurdianName : '',
+  }, param.id);
   if (!nomination) {
     throw new NotFoundError();
   }
