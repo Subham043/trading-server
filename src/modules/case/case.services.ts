@@ -497,6 +497,7 @@ export async function generateDoc(
       id: Number(id),
     },
     include: {
+      deadShareholder: true,
       shareCertificateMaster: {
         include:{
           companyMaster: {
@@ -561,6 +562,9 @@ export async function generateDoc(
               equityType: true,
               certificateNumber: true,
               certificateSerialNumber: true,
+              shareholderName1Txt: true,
+              shareholderName2Txt: true,
+              shareholderName3Txt: true,
               noOfShares: true,
               noOfSharesWords: true,
               dateOfAllotment: true,
@@ -697,47 +701,49 @@ export async function generateDoc(
     payload["Case"] = shareHolderMaster.caseType;
     payload["allowAffidavit"] =
       shareHolderMaster.allowAffidavit === "Yes" ? true : false;
-    payload["affidavits"] = affidavitShareholders.map((item) => ({
+    payload["affidavits"] = affidavitShareholders.map((item, i) => ({
       ...item,
-      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
+      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : "",
       accountOpeningDate: item.accountOpeningDate
         ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
-        : null,
+        : "",
+      index: i + 1,
     }));
-    payload["affidavitLegalHeirs"] = affidavitLegalHeirs.map((item) => ({
+    payload["affidavitLegalHeirs"] = affidavitLegalHeirs.map((item, i) => ({
       ...item,
-      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
+      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : "",
       accountOpeningDate: item.accountOpeningDate
         ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
-        : null,
+        : "",
+      index: i + 1,
     }));
-    payload["nominations"] = nominations.map((item) => ({
+    payload["nominations"] = nominations.map((item, i) => ({
       ...item,
-      dobMinor: item.dobMinor
-        ? dayjs(item.dobMinor).format("DD-MM-YYYY")
-        : null,
+      dobMinor: item.dobMinor ? dayjs(item.dobMinor).format("DD-MM-YYYY") : "",
       dobDeceased: item.dobDeceased
         ? dayjs(item.dobDeceased).format("DD-MM-YYYY")
-        : null,
+        : "",
       dateMajority: item.dateMajority
         ? dayjs(item.dateMajority).format("DD-MM-YYYY")
-        : null,
-      isMinor: item.isMinor==="Yes" ? true : false,
-      isDeceased: item.isDeceased==="Yes" ? true : false,
+        : "",
+      isMinor: item.isMinor === "Yes" ? true : false,
+      isDeceased: item.isDeceased === "Yes" ? true : false,
+      index: i + 1,
     }));
     payload["isDeceased"] = shareHolderMaster.isDeceased==="Yes" ? true : false;
+    payload["deadShareholder"] = shareHolderMaster.deadShareholder;
     payload["shareholderNameDeath"] = shareHolderMaster.shareholderNameDeath;
     payload["deceasedRelationship"] = shareHolderMaster.deceasedRelationship;
     payload["placeOfDeath"] = shareHolderMaster.placeOfDeath;
     payload["dod"] = shareHolderMaster.dod
       ? dayjs(shareHolderMaster.dod).format("DD-MM-YYYY")
-      : null;
+      : "";
     payload["isTestate"] = shareHolderMaster.isTestate==="Yes" ? true : false;
     payload["isInTestate"] = shareHolderMaster.isTestate==="No" ? true : false;
     payload["isMinor"] = shareHolderMaster.isMinor==="Yes" ? true : false;
     payload["dobMinor"] = shareHolderMaster.dobMinor
       ? dayjs(shareHolderMaster.dobMinor).format("DD-MM-YYYY")
-      : null;
+      : "";
     payload["guardianName"] = shareHolderMaster.guardianName;
     payload["guardianRelationship"] = shareHolderMaster.guardianRelationship;
     payload["guardianPan"] = shareHolderMaster.guardianPan;
@@ -750,7 +756,12 @@ export async function generateDoc(
 
 
     payload["Folio"] = folio.Folio;
-    payload["certificate"] = folio.certificate.map((item) => ({
+    payload["certificateCount"] = folio.certificate.length;
+    payload["grandTotalNoOfShares"] = folio.certificate.reduce(
+      (total, item) => total + (Number(item.noOfShares) || 0),
+      0
+    )
+    payload["certificate"] = folio.certificate.map((item, i) => ({
       ...item,
       totalFaceValue: item.faceValue,
       totalNoOfShares: item.noOfShares,
@@ -758,24 +769,36 @@ export async function generateDoc(
       distinctiveNos: item.distinctiveNosFrom + "-" + item.distinctiveNosTo,
       certificateYear: item.dateOfAllotment
       ? dayjs(item.dateOfAllotment).format("YYYY")
-      : null
+      : "",
+      index: i + 1,
     }));
     payload["instrumentType"] = folio.shareCertificateMaster!.instrumentType;
-    payload["companyRTA"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.registrarMaster?.registrar_name || null;
-    payload["companyRTAAddress"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.address || null;
-    payload["companyRTAPincode"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.pincode || null;
-    payload["companyCIN"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.CIN || null;
-    payload["companyCity"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.city || null;
+    payload["companyRTA"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.registrarMaster?.registrar_name || "";
+    payload["companyRTAAddress"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.address || "";
+    payload["companyRTAPincode"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.pincode || "";
+    payload["companyCIN"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.CIN || "";
+    payload["companyCity"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.city || "";
     payload["companyState"] =
-      shareHolderMaster.shareCertificateMaster?.companyMaster?.state || null;
+      shareHolderMaster.shareCertificateMaster?.companyMaster?.state || "";
     payload["companyPincode"] =
-      shareHolderMaster.shareCertificateMaster?.companyMaster?.pincode || null;
+      shareHolderMaster.shareCertificateMaster?.companyMaster?.pincode || "";
     payload["companyName"] =
       shareHolderMaster.shareCertificateMaster?.companyMaster?.nameChangeMasters[0].currentName ||
-      null;
+      "";
+    payload["companyOldName"] =
+      shareHolderMaster.shareCertificateMaster?.companyMaster
+        ?.nameChangeMasters[
+        (shareHolderMaster.shareCertificateMaster?.companyMaster
+          ?.nameChangeMasters.length - 1) || 0
+      ].previousName || "";
+    payload["companyOldName2"] =
+      shareHolderMaster.shareCertificateMaster?.companyMaster
+        ?.nameChangeMasters[
+        (shareHolderMaster.shareCertificateMaster?.companyMaster
+          ?.nameChangeMasters.length - 1) || 0
+      ].previousName || (shareHolderMaster.shareCertificateMaster?.companyMaster?.nameChangeMasters[0].currentName || "");
     payload["shareHolderDetails"] = [];
     if(folio.shareholderName1){
-      payload["shareHolderDetails"] = [folio.shareholderName1, ...payload["shareHolderDetails"]];
       payload["hasShareholder_" + (1)] = true;
       payload["namePan_" + (1)] = folio.shareholderName1.namePan;
       payload["DPID_" + (1)] = folio.shareholderName1.DPID;
@@ -800,7 +823,7 @@ export async function generateDoc(
       payload["dob_" + 1] = folio.shareholderName1
         .dob
         ? dayjs(folio.shareholderName1.dob).format("DD-MM-YYYY")
-        : null;
+        : "";
       payload["email_" + (1)] = folio.shareholderName1.email;
       payload["emailBank_" + (1)] = folio.shareholderName1.emailBank;
       payload["nameAadhar_" + (1)] = folio.shareholderName1.nameAadhar;
@@ -817,18 +840,30 @@ export async function generateDoc(
       payload["occupation_" + 1] = folio.shareholderName1.occupation;
       payload["branchName_" + 1] = folio.shareholderName1.branchName;
       payload["accountOpeningDate_" + 1] =
-        folio.shareholderName1.accountOpeningDate ? dayjs(folio.shareholderName1.accountOpeningDate).format("DD-MM-YYYY") : null;
+        folio.shareholderName1.accountOpeningDate ? dayjs(folio.shareholderName1.accountOpeningDate).format("DD-MM-YYYY") : "";
       payload["shareholderName_" + (1)] =
         folio.shareholderName1.shareholderName;
       payload["state_" + (1)] = folio.shareholderName1.state;
+      payload["shareholderNameCertificate_" + 1] =
+        folio.certificate.length > 0
+          ? (folio.certificate[folio.certificate.length-1].shareholderName1Txt || "")
+          : "";
+      payload["shareHolderDetails"] = [
+        {
+          ...folio.shareholderName1,
+          shareholderNameCertificate:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName1Txt || ""
+              : "",
+          index: 1,
+        },
+        ...payload["shareHolderDetails"],
+      ];
     }else{
       payload["hasShareholder_" + (1)] = false;
     }
     if(folio.shareholderName2){
-      payload["shareHolderDetails"] = [
-        folio.shareholderName2,
-        ...payload["shareHolderDetails"],
-      ];
       payload["hasShareholder_" + (2)] = true;
       payload["namePan_" + (2)] = folio.shareholderName2.namePan;
       payload["DPID_" + (2)] = folio.shareholderName2.DPID;
@@ -852,7 +887,7 @@ export async function generateDoc(
         folio.shareholderName2.dematAccountNo;
       payload["dob_" + 2] = folio.shareholderName2.dob
         ? dayjs(folio.shareholderName2.dob).format("DD-MM-YYYY")
-        : null;
+        : "";
       payload["email_" + (2)] = folio.shareholderName2.email;
       payload["emailBank_" + (2)] = folio.shareholderName2.emailBank;
       payload["nameAadhar_" + (2)] = folio.shareholderName2.nameAadhar;
@@ -871,18 +906,31 @@ export async function generateDoc(
       payload["accountOpeningDate_" + 2] = folio.shareholderName2
         .accountOpeningDate
         ? dayjs(folio.shareholderName2.accountOpeningDate).format("DD-MM-YYYY")
-        : null;
+        : "";
       payload["shareholderName_" + (2)] =
         folio.shareholderName2.shareholderName;
       payload["state_" + (2)] = folio.shareholderName2.state;
+      payload["shareholderNameCertificate_" + 2] =
+        folio.certificate.length > 0
+          ? folio.certificate[folio.certificate.length - 1]
+              .shareholderName2Txt || ""
+          : "";
+      payload["shareHolderDetails"] = [
+        {
+          ...folio.shareholderName2,
+          shareholderNameCertificate:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName2Txt || ""
+              : "",
+          index: 2
+        },
+        ...payload["shareHolderDetails"],
+      ];
     }else{
       payload["hasShareholder_" + (2)] = false;
     }
     if(folio.shareholderName3){
-      payload["shareHolderDetails"] = [
-        folio.shareholderName3,
-        ...payload["shareHolderDetails"],
-      ];
       payload["hasShareholder_" + (3)] = true;
       payload["namePan_" + (3)] = folio.shareholderName3.namePan;
       payload["DPID_" + (3)] = folio.shareholderName3.DPID;
@@ -906,7 +954,7 @@ export async function generateDoc(
         folio.shareholderName3.dematAccountNo;
       payload["dob_" + 3] = folio.shareholderName3.dob
         ? dayjs(folio.shareholderName3.dob).format("DD-MM-YYYY")
-        : null;
+        : "";
       payload["email_" + (3)] = folio.shareholderName3.email;
       payload["emailBank_" + (3)] = folio.shareholderName3.emailBank;
       payload["nameAadhar_" + (3)] = folio.shareholderName3.nameAadhar;
@@ -925,33 +973,62 @@ export async function generateDoc(
       payload["accountOpeningDate_" + 3] = folio.shareholderName3
         .accountOpeningDate
         ? dayjs(folio.shareholderName3.accountOpeningDate).format("DD-MM-YYYY")
-        : null;
+        : "";
       payload["shareholderName_" + (3)] =
         folio.shareholderName3.shareholderName;
       payload["state_" + (3)] = folio.shareholderName3.state;
+      payload["shareholderNameCertificate_" + 3] =
+        folio.certificate.length > 0
+          ? folio.certificate[folio.certificate.length - 1]
+              .shareholderName3Txt || ""
+          : "";
+      payload["shareHolderDetails"] = [
+        {
+          ...folio.shareholderName3,
+          shareholderNameCertificate:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName3Txt || ""
+              : "",
+          index: 3
+        },
+        ...payload["shareHolderDetails"],
+      ];
     }else{
       payload["hasShareholder_" + (3)] = false;
     }
     payload["legalHeirDetails"] = legalHeirDetails.map((item) => ({
       ...item,
-      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
-      accountOpeningDate: item.accountOpeningDate ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY") : null,
+      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : "",
+      accountOpeningDate: item.accountOpeningDate ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY") : "",
     }));
-    payload["clamaints"] = clamaints.map((item) => ({
+    payload["clamaints"] = clamaints.map((item, i) => ({
       ...item,
-      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : null,
+      dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : "",
       accountOpeningDate: item.accountOpeningDate
         ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
-        : null,
+        : "",
+      index: i + 1,
     }));
     payload["non_clamaints"] = legalHeirDetails
-      .filter((itmm) => clamaints.map(i => i.id).includes(itmm.id) === false)
-      .map((itmm) => ({
+      .filter((itmm) => clamaints.map((i) => i.id).includes(itmm.id) === false)
+      .map((itmm, i) => ({
         ...itmm,
-        dob: itmm.dob ? dayjs(itmm.dob).format("DD-MM-YYYY") : null,
+        dob: itmm.dob ? dayjs(itmm.dob).format("DD-MM-YYYY") : "",
         accountOpeningDate: itmm.accountOpeningDate
           ? dayjs(itmm.accountOpeningDate).format("DD-MM-YYYY")
-          : null,
+          : "",
+        index: i + 1,
+      }));
+    payload["survivors"] = payload["shareHolderDetails"]
+      .filter((itmm) => itmm.id !== payload["deadShareholder"]?.id)
+      .map((itmm, i) => ({
+        ...itmm,
+        dob: itmm.dob ? dayjs(itmm.dob).format("DD-MM-YYYY") : "",
+        accountOpeningDate: itmm.accountOpeningDate
+          ? dayjs(itmm.accountOpeningDate).format("DD-MM-YYYY")
+          : "",
+        index: i + 1,
       }));
     mainData.push(payload);
   })
@@ -1069,13 +1146,23 @@ export async function generateDoc(
   }
 
   const caseType = {
-    Claim: [ISR1, ISR2, ISR3, ISR4, form_no_sh_13, Affidavit],
-    ClaimTransposition: [ISR1, ISR2, ISR3, ISR4, form_no_sh_13, Affidavit],
+    Claim: [ISR1, ISR2, ISR3, ISR4, form_no_sh_13, Form_SH_14, Affidavit],
+    ClaimTransposition: [
+      ISR1,
+      ISR2,
+      ISR3,
+      ISR4,
+      form_no_sh_13,
+      Form_SH_14,
+      Affidavit,
+    ],
     ClaimIssueDuplicate: [
       ISR1,
       ISR2,
       ISR3,
       ISR4,
+      form_no_sh_13,
+      Form_SH_14,
       Form_A_Duplicate,
       Form_B_Duplicate,
       Affidavit,
@@ -1193,11 +1280,12 @@ export async function generateDoc(
           });
           const dataRender:any = {...i};
           dataRender["companyName"] = data["companyName"];
+          dataRender["companyOldName"] = data["companyOldName"];
+          dataRender["companyOldName2"] = data["companyOldName2"];
           dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
           dataRender["deceasedRelationship"] = data["deceasedRelationship"];
           dataRender["Folio"] = data["Folio"];
-          dataRender["totalNoOfShares"] = data["totalNoOfShares"];
-          dataRender["totalNoOfSharesWords"] = data["totalNoOfSharesWords"];
+          dataRender["certificate"] = data["certificate"];
           dataRender["legalHeirDetails"] = data.legalHeirDetails.filter(
             (_it, itx) => itx !== idx
           );
@@ -1241,6 +1329,11 @@ export async function generateDoc(
           });
           const dataRender: any = { ...i };
           dataRender["companyName"] = data["companyName"];
+          dataRender["companyOldName"] = data["companyOldName"];
+          dataRender["companyOldName2"] = data["companyOldName2"];
+          dataRender["companyRTA"] = data["companyRTA"];
+          dataRender["companyRTAAddress"] = data["companyRTAAddress"];
+          dataRender["companyRTAPincode"] = data["companyRTAPincode"];
           dataRender["isDeceased"] = data["isDeceased"];
           dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
           dataRender["deceasedRelationship"] = data["deceasedRelationship"];
@@ -1259,8 +1352,7 @@ export async function generateDoc(
           dataRender["politicalExposureClaimant"] = data["politicalExposureClaimant"];
           dataRender["annualIncomeClaimant"] = data["annualIncomeClaimant"];
           dataRender["Folio"] = data["Folio"];
-          dataRender["totalNoOfShares"] = data["totalNoOfShares"];
-          dataRender["totalNoOfSharesWords"] = data["totalNoOfSharesWords"];
+          dataRender["certificate"] = data["certificate"];
           ISR5Doc.render(dataRender);
 
           // Get the generated document as a buffer
@@ -1434,6 +1526,8 @@ export async function generateDoc(
 
               const dataRender: any = { ...i };
               dataRender["companyName"] = data["companyName"];
+              dataRender["companyOldName"] = data["companyOldName"];
+              dataRender["companyOldName2"] = data["companyOldName2"];
               dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
               dataRender["deceasedRelationship"] = data["deceasedRelationship"];
               dataRender["placeOfDeath"] = data["placeOfDeath"];
@@ -1488,6 +1582,13 @@ export async function generateDoc(
               });
 
               const dataRender: any = { ...i };
+
+              const indx = data["shareHolderDetails"].findIndex(
+                (i: any) => i.id === i.id
+              );
+
+              dataRender["shareholderNameCertificate"] = indx !== -1 ? 
+                data["shareHolderDetails"][indx]["shareholderNameCertificate"] : "";
 
               affidavitDoc.render(dataRender);
 
