@@ -207,7 +207,12 @@ export async function generateDoc(params: GetIdParam): Promise<string> {
     linebreaks: true,
   });
 
-  doc.render(surety);
+  doc.render({
+    ...surety,
+    isEmployed: surety.isEmployed === "Yes" ? true : false,
+    isBusiness: surety.isBusiness === "Yes" ? true : false,
+    isProperty: surety.isProperty === "Yes" ? true : false,
+  });
 
   // Get the generated document as a buffer
   const buf = doc.getZip().generate({ type: "nodebuffer" });

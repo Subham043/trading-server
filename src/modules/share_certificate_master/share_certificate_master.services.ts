@@ -250,7 +250,7 @@ export async function importExcel(
           | "REiT"
           | "Equity"
           | "Warrant",
-        companyID: Number(row.getCell(8).value?.toString()),
+        companyID: Number(row.getCell(2).value?.toString()),
         projectID,
       };
       shareCertificateMasterInsertData.push(shareCertificateMasterData);

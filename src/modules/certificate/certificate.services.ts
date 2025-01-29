@@ -242,32 +242,35 @@ export async function importExcel(
           | "Rights",
         certificateNumber: row.getCell(2).value?.toString() as string,
         certificateSerialNumber: row.getCell(3).value?.toString(),
-        faceValue: isNaN(Number(row.getCell(4).value?.toString()))
+        shareholderName1Txt: row.getCell(4).value?.toString(),
+        shareholderName2Txt: row.getCell(5).value?.toString(),
+        shareholderName3Txt: row.getCell(6).value?.toString(),
+        faceValue: isNaN(Number(row.getCell(7).value?.toString()))
           ? undefined
-          : Number(row.getCell(4).value?.toString()),
-        noOfShares: row.getCell(5).value?.toString(),
-        noOfSharesWords: row.getCell(6).value?.toString(),
+          : Number(row.getCell(7).value?.toString()),
+        noOfShares: row.getCell(8).value?.toString(),
+        noOfSharesWords: row.getCell(9).value?.toString(),
         dateOfAllotment: (
-          row.getCell(7).value as Date | undefined
+          row.getCell(10).value as Date | undefined
         )?.toISOString(),
-        dateOfAction: (row.getCell(8).value as Date | undefined)?.toISOString(),
-        distinctiveNosFrom: row.getCell(9).value?.toString(),
-        distinctiveNosTo: row.getCell(10).value?.toString(),
-        endorsement: row.getCell(11).value?.toString() as "Yes" | "No",
-        endorsementFolio: row.getCell(12).value?.toString(),
+        dateOfAction: (row.getCell(11).value as Date | undefined)?.toISOString(),
+        distinctiveNosFrom: row.getCell(12).value?.toString(),
+        distinctiveNosTo: row.getCell(13).value?.toString(),
+        endorsement: row.getCell(14).value?.toString() as "Yes" | "No",
+        endorsementFolio: row.getCell(15).value?.toString(),
         endorsementDate: (
-          row.getCell(13).value as Date | undefined
+          row.getCell(16).value as Date | undefined
         )?.toISOString(),
         endorsementShareholderName1ID: Number(
-          row.getCell(14).value?.toString()
+          row.getCell(17).value?.toString()
         ),
         endorsementShareholderName2ID: Number(
-          row.getCell(15).value?.toString()
+          row.getCell(18).value?.toString()
         ),
         endorsementShareholderName3ID: Number(
-          row.getCell(16).value?.toString()
+          row.getCell(19).value?.toString()
         ),
-        folioID: Number(row.getCell(17).value?.toString()),
+        folioID: Number(row.getCell(20).value?.toString()),
       };
       certificateInsertData.push(certificateData);
     }

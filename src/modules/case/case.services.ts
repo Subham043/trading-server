@@ -1612,8 +1612,115 @@ export async function generateDoc(
               console.log("Annexure D Document created successfully!");
             });
         }
+      }
+      else if (casee.name === "form_no_sh_13") {
+        const folioFolderSH13Path = path.resolve(
+          __dirname,
+          `../../../static/word_output/${folderName}/${folioFolderName}/form_no_sh_13`
+        );
+        if (!fs.existsSync(folioFolderSH13Path)) {
+          fs.mkdirSync(folioFolderSH13Path);
+        }
+        data.nominations.forEach((i, idx) => {
+          const sh13WordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/form_no_sh_13.docx"
+          );
+          const sh13Content = fs.readFileSync(
+            sh13WordTemplate,
+            "binary"
+          );
+
+          // Create a zip instance of the file
+          const sh13Zip = new PizZip(sh13Content);
+
+          // Create a Docxtemplater instance
+          const sh13Doc = new Docxtemplater(sh13Zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+
+          const dataRender: any = { ...i, ...data };
+
+          const indx = data["shareHolderDetails"].findIndex(
+            (i: any) => i.id === i.id
+          );
+
+          dataRender["shareholderNameCertificate"] =
+            indx !== -1
+              ? data["shareHolderDetails"][indx]["shareholderNameCertificate"]
+              : "";
+
+          sh13Doc.render(dataRender);
+
+          // Get the generated document as a buffer
+          const buf = sh13Doc.getZip().generate({ type: "nodebuffer" });
+
+          // Write the buffer to a file (output.docx)
+          const sh13WordOutput = path.resolve(
+            __dirname,
+            folioFolderSH13Path +
+              "/" +
+              casee.name +
+              "_" +
+              (idx + 1) +
+              ".docx"
+          );
+          fs.writeFileSync(sh13WordOutput, buf);
+
+          console.log("Annexure D Document created successfully!");
+        });
       } 
-      else {
+      else if (casee.name === "Form_SH_14") {
+        const folioFolderSH14Path = path.resolve(
+          __dirname,
+          `../../../static/word_output/${folderName}/${folioFolderName}/Form_SH_14`
+        );
+        if (!fs.existsSync(folioFolderSH14Path)) {
+          fs.mkdirSync(folioFolderSH14Path);
+        }
+        data.nominations.forEach((i, idx) => {
+          const sh14WordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/Form_SH_14.docx"
+          );
+          const sh14Content = fs.readFileSync(sh14WordTemplate, "binary");
+
+          // Create a zip instance of the file
+          const sh14Zip = new PizZip(sh14Content);
+
+          // Create a Docxtemplater instance
+          const sh14Doc = new Docxtemplater(sh14Zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+
+          const dataRender: any = { ...i, ...data };
+
+          const indx = data["shareHolderDetails"].findIndex(
+            (i: any) => i.id === i.id
+          );
+
+          dataRender["shareholderNameCertificate"] =
+            indx !== -1
+              ? data["shareHolderDetails"][indx]["shareholderNameCertificate"]
+              : "";
+
+          sh14Doc.render(dataRender);
+
+          // Get the generated document as a buffer
+          const buf = sh14Doc.getZip().generate({ type: "nodebuffer" });
+
+          // Write the buffer to a file (output.docx)
+          const sh14WordOutput = path.resolve(
+            __dirname,
+            folioFolderSH14Path + "/" + casee.name + "_" + (idx + 1) + ".docx"
+          );
+          fs.writeFileSync(sh14WordOutput, buf);
+
+          console.log("Annexure D Document created successfully!");
+        });
+      } else {
         // Load the docx file as a binary
         const wordTemplate = path.resolve(
           __dirname,

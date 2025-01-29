@@ -216,9 +216,9 @@ export async function importExcel(
   worksheet?.eachRow(async function (row, rowNumber) {
     if (rowNumber > 1) {
       const companyMasterData = {
-        currentName: row.getCell(3).value?.toString(),
         NSE: row.getCell(1).value?.toString(),
         BSE: row.getCell(2).value?.toString(),
+        currentName: row.getCell(3).value?.toString(),
         ISIN: row.getCell(4).value?.toString(),
         CIN: row.getCell(5).value?.toString(),
         faceValue: Number(row.getCell(6).value),
@@ -239,11 +239,11 @@ export async function importExcel(
           ? row.getCell(16).toCsvString().replace("mailto:", "")
           : row.getCell(16).value?.toString(),
         nameContactPerson: row.getCell(17).value?.toString(),
-        designationContactPerson: row.getCell(20).value?.toString(),
         emailContactPerson: row.getCell(18).isHyperlink
           ? row.getCell(18).toCsvString().replace("mailto:", "")
           : row.getCell(18).value?.toString(),
         phoneContactPerson: row.getCell(19).value?.toString(),
+        designationContactPerson: row.getCell(20).value?.toString(),
         registrarMasterBranchId: isNaN(
           Number(row.getCell(21).value?.toString())
         )
@@ -330,9 +330,9 @@ export async function importUpdateExcel(
     if (rowNumber > 1) {
       const companyMasterData = {
         id: row.getCell(1).value as number,
-        currentName: row.getCell(4).value?.toString(),
         NSE: row.getCell(2).value?.toString(),
         BSE: row.getCell(3).value?.toString(),
+        currentName: row.getCell(4).value?.toString(),
         ISIN: row.getCell(5).value?.toString(),
         CIN: row.getCell(6).value?.toString(),
         faceValue: isNaN(Number(row.getCell(7).value?.toString()))
