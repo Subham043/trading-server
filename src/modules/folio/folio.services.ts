@@ -501,79 +501,91 @@ export async function getCorporateMasterRights(
 export async function getDividendMaster(
   params: GetIdParam
 ): Promise<FolioDividendMasterType[]> {
-  // const folio = await findById(params);
-  // if(folio && folio.dateOfAllotment && folio.shareCertificateID) {
-  //   const shareCertificateMaster =
-  //     await prisma.shareCertificateMaster.findUnique({
-  //       where: {
-  //         id: folio.shareCertificateID,
-  //       },
-  //     });
-  //   if (shareCertificateMaster){
-  //     const folios: { year: string; total_shares: string }[] =
-  //       await prisma.$queryRaw`SELECT EXTRACT(YEAR FROM "dateOfAllotment") as year, SUM(NULLIF("noOfShares", '')::INTEGER)::text as total_shares FROM public."Folio" WHERE "dateOfAllotment" >= ${folio.dateOfAllotment} AND "shareCertificateID" = ${shareCertificateMaster.id} GROUP BY EXTRACT(YEAR FROM "dateOfAllotment") ORDER BY EXTRACT(YEAR FROM "dateOfAllotment") ASC`;
-  //     if(folios.length > 0) {
-  //       const folio_collection = folios.reduce((acc, obj) => {
-  //         const { year, total_shares } = obj;
-  //         acc[year] = total_shares;
-  //         return acc;
-  //       }, {});
-  //       const folio_year = folios.map((folio) => "'" +folio.year+"'" ).join(",");
-  //       const query = `
-  //         SELECT "recorded_date", EXTRACT(YEAR FROM "recorded_date") as recorded_year, "financial_year", "dividend_per_share"
-  //         FROM public."DividendMaster"
-  //         WHERE EXTRACT(YEAR FROM "recorded_date") IN (${folio_year}) AND "companyID" = ${shareCertificateMaster.companyID}
-  //         ORDER BY "recorded_date" ASC;
-  //       `;
-  //       const dividend_master: FolioDividendMasterType[] = await prisma.$queryRawUnsafe(
-  //         query,
-  //         folio_year
-  //       );
-  //       const test: FolioDividendMasterType[] = [];
-  //       dividend_master.map((dividendMaster, i) => {
-  //         if (i === 0) {
-  //           const no_of_shares = Number(
-  //             folio_collection[dividendMaster.recorded_year] ?? 0
-  //           );
-  //           const total_dividend = Math.floor(
-  //             no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
-  //           );
-  //           const cumulative_dividend = total_dividend;
-  //           test.push({
-  //             recorded_date: dividendMaster.recorded_date,
-  //             recorded_year: dividendMaster.recorded_year,
-  //             financial_year: dividendMaster.financial_year,
-  //             dividend_per_share: dividendMaster.dividend_per_share,
-  //             no_of_shares: no_of_shares.toString(),
-  //             total_dividend: total_dividend.toString(),
-  //             cumulative_dividend: cumulative_dividend.toString(),
-  //           });
-  //         } else {
-  //           const old_cumulative_dividend = Number(test[i - 1].cumulative_dividend ?? 0);
-  //           const no_of_shares = Number(
-  //             folio_collection[dividendMaster.recorded_year] ?? 0
-  //           );
-  //           const total_dividend = Math.floor(
-  //             no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
-  //           );
-  //           const cumulative_dividend = total_dividend + old_cumulative_dividend;
-  //           test.push({
-  //             recorded_date: dividendMaster.recorded_date,
-  //             recorded_year: dividendMaster.recorded_year,
-  //             financial_year: dividendMaster.financial_year,
-  //             dividend_per_share: dividendMaster.dividend_per_share,
-  //             no_of_shares: no_of_shares.toString(),
-  //             total_dividend: total_dividend.toString(),
-  //             cumulative_dividend: cumulative_dividend.toString(),
-  //           });
-  //         }
-  //       });
-  //       return [
-  //         ...test,
-  //       ];
-  //     }
-  //   }
-  // }
+  const folio = await findById(params);
+  if(folio && folio.shareCertificateID) {
+    const shareCertificateMaster =
+      await prisma.shareCertificateMaster.findUnique({
+        where: {
+          id: folio.shareCertificateID,
+        },
+      });
+    if (shareCertificateMaster){
+      const certificates: { year: string; total_shares: string }[] =
+        await prisma.$queryRaw`
+          SELECT 
+            YEAR(dateOfAction) AS year, 
+            CAST(SUM(NULLIF(noOfShares, '') * 1) AS CHAR) AS total_shares 
+          FROM Certificate 
+          WHERE folioID = ${folio.id} 
+          GROUP BY YEAR(dateOfAction) 
+          ORDER BY YEAR(dateOfAction) ASC
+      `;
+      if (certificates.length > 0) {
+        const folio_collection = certificates.reduce((acc, obj) => {
+          const { year, total_shares } = obj;
+          acc[year] = total_shares;
+          return acc;
+        }, {});
+        const certificate_year = certificates
+          .map((certificate) => certificate.year)
+        const dividend_master: FolioDividendMasterType[] =
+          await prisma.$queryRaw`
+          SELECT 
+            recorded_date, 
+            YEAR(recorded_date) AS recorded_year, 
+            financial_year, 
+            dividend_per_share
+          FROM DividendMaster
+          WHERE YEAR(recorded_date) IN (${Prisma.join(certificate_year)}) 
+            AND companyID = ${shareCertificateMaster.companyID}
+          ORDER BY recorded_date ASC;
+        `;
+        const test: FolioDividendMasterType[] = [];
+        dividend_master.map((dividendMaster, i) => {
+            if (i === 0) {
+              const no_of_shares = Number(
+                folio_collection[dividendMaster.recorded_year] ?? 0
+              );
+              const total_dividend = Math.floor(
+                no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
+              );
+              const cumulative_dividend = total_dividend;
+              test.push({
+                recorded_date: dividendMaster.recorded_date,
+                recorded_year: dividendMaster.recorded_year,
+                financial_year: dividendMaster.financial_year,
+                dividend_per_share: dividendMaster.dividend_per_share,
+                no_of_shares: no_of_shares.toString(),
+                total_dividend: total_dividend.toString(),
+                cumulative_dividend: cumulative_dividend.toString(),
+              });
+            } else {
+              const old_cumulative_dividend = Number(
+                test[i - 1].cumulative_dividend ?? 0
+              );
+              const no_of_shares = Number(
+                folio_collection[dividendMaster.recorded_year] ?? 0
+              );
+              const total_dividend = Math.floor(
+                no_of_shares * Number(dividendMaster.dividend_per_share ?? 0)
+              );
+              const cumulative_dividend =
+                total_dividend + old_cumulative_dividend;
+              test.push({
+                recorded_date: dividendMaster.recorded_date,
+                recorded_year: dividendMaster.recorded_year,
+                financial_year: dividendMaster.financial_year,
+                dividend_per_share: dividendMaster.dividend_per_share,
+                no_of_shares: no_of_shares.toString(),
+                total_dividend: total_dividend.toString(),
+                cumulative_dividend: cumulative_dividend.toString(),
+              });
+            }
+        });
+        return [...test];
+      }
+    }
+  }
   return [];
 }
 
