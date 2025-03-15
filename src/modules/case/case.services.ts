@@ -33,6 +33,7 @@ import dayjs from "dayjs";
 import { LegalHeirDetailType } from "../../@types/legal_heir_detail.type";
 import { CertificateType } from "../../@types/certificate.type";
 import { NominationType } from "../../@types/nomination.type";
+import { numberInWords } from "../../utils/numberInWords";
 
 /**
  * Create a new shareHolderMaster with the provided shareHolderMaster information.
@@ -772,6 +773,14 @@ export async function generateDoc(
       : "",
       index: i + 1,
     }));
+    payload['combinedTotalNoOfShares'] = folio.certificate.reduce(
+      (total, item) => total + (Number(item.noOfShares) || 0),
+      0
+    )
+    payload["combinedTotalNoOfSharesWords"] = numberInWords(
+      payload["combinedTotalNoOfShares"]
+    )
+    payload["combinedTotalFaceValue"] = folio.certificate.length>0 ? (folio.certificate[0].faceValue ?? 0) : 0;
     payload["instrumentType"] = folio.shareCertificateMaster!.instrumentType;
     payload["companyRTA"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.registrarMaster?.registrar_name || "";
     payload["companyRTAAddress"] = shareHolderMaster.shareCertificateMaster?.companyMaster?.registrarMasterBranch?.address || "";
@@ -1240,7 +1249,7 @@ export async function generateDoc(
   };
 
   mainData.forEach((item, index) => {
-    const folioFolderName = item.Folio;
+    const folioFolderName = item.Folio.replace(/\//g, "_");
 
     const folioFolderPath = path.resolve(
       __dirname,

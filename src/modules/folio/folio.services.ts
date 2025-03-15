@@ -332,6 +332,9 @@ export async function getCorporateMaster(params: GetIdParam, querystring: GetRig
         const corporateMasterData = await prisma.corporateMaster.findMany({
           where: {
             companyID: shareCertificateMaster.companyID,
+            date:{
+              gte: certificates[0].dateOfAction
+            }
           },
           select: {
             ...CorporateMasterColumn,
@@ -613,6 +616,9 @@ export async function getConsolidatedHolding(
       const corporateMasterData = await prisma.corporateMaster.findMany({
         where: {
           companyID: shareCertificateMaster.companyID,
+          date: {
+            gte: certificates[0].dateOfAction,
+          },
           // date: folio.dateOfAllotment
           //   ? {
           //       gte: folio.dateOfAllotment,
