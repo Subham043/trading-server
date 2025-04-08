@@ -370,6 +370,14 @@ export const createLegalHeirDetailBodySchema = z.object({
     })
     .trim()
     .optional(),
+  deceasedRelationship: z
+    .string({
+      errorMap: () => ({
+        message: "deceased relationship must be a string",
+      }),
+    })
+    .trim()
+    .optional(),
 });
 
 export const projectIdSchema = z

@@ -743,7 +743,7 @@ export async function generateDoc(
     payload["isDeceased"] = shareHolderMaster.isDeceased==="Yes" ? true : false;
     payload["deadShareholder"] = shareHolderMaster.deadShareholder;
     payload["shareholderNameDeath"] = shareHolderMaster.shareholderNameDeath;
-    payload["deceasedRelationship"] = shareHolderMaster.deceasedRelationship;
+    // payload["deceasedRelationship"] = shareHolderMaster.deceasedRelationship;
     payload["placeOfDeath"] = shareHolderMaster.placeOfDeath;
     payload["dod"] = shareHolderMaster.dod
       ? dayjs(shareHolderMaster.dod).format("DD-MM-YYYY")
@@ -1262,6 +1262,7 @@ export async function generateDoc(
       ISR2,
       ISR3,
       ISR4,
+      ISR5,
       form_no_sh_13,
       Form_SH_14,
       Form_A_Duplicate,
@@ -1360,7 +1361,7 @@ export async function generateDoc(
           dataRender["companyOldName"] = data["companyOldName"];
           dataRender["companyOldName2"] = data["companyOldName2"];
           dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
-          dataRender["deceasedRelationship"] = data["deceasedRelationship"];
+          // dataRender["deceasedRelationship"] = data["deceasedRelationship"];
           dataRender["Folio"] = data["Folio"];
           dataRender["certificate"] = data["certificate"];
           dataRender["legalHeirDetails"] = data.legalHeirDetails.filter(
@@ -1413,7 +1414,7 @@ export async function generateDoc(
           dataRender["companyRTAPincode"] = data["companyRTAPincode"];
           dataRender["isDeceased"] = data["isDeceased"];
           dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
-          dataRender["deceasedRelationship"] = data["deceasedRelationship"];
+          // dataRender["deceasedRelationship"] = data["deceasedRelationship"];
           dataRender["dod"] = data["dod"];
           dataRender["placeOfDeath"] = data["placeOfDeath"];
           dataRender["isTestate"] = data["isTestate"];
@@ -1606,7 +1607,7 @@ export async function generateDoc(
               dataRender["companyOldName"] = data["companyOldName"];
               dataRender["companyOldName2"] = data["companyOldName2"];
               dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
-              dataRender["deceasedRelationship"] = data["deceasedRelationship"];
+              // dataRender["deceasedRelationship"] = data["deceasedRelationship"];
               dataRender["placeOfDeath"] = data["placeOfDeath"];
 
               affidavitDoc.render(dataRender);
@@ -1797,6 +1798,104 @@ export async function generateDoc(
 
           console.log("Annexure D Document created successfully!");
         });
+      } else if (casee.name === "ISR2") {
+        if (item.Case.includes("Transmission")) {
+          const folioFolderISR2DPath = path.resolve(
+            __dirname,
+            `../../../static/word_output/${folderName}/${folioFolderName}/ISR2`
+          );
+          if (!fs.existsSync(folioFolderISR2DPath)) {
+            fs.mkdirSync(folioFolderISR2DPath);
+          }
+          data.clamaints.forEach((i, idx) => {
+            const ISR2WordTemplate = path.resolve(
+              __dirname,
+              "../../../static/word_template/" +
+                casee.name +
+                "_TRANSMISSION.docx"
+            );
+            const ISR2Content = fs.readFileSync(ISR2WordTemplate, "binary");
+  
+            // Create a zip instance of the file
+            const ISR2Zip = new PizZip(ISR2Content);
+  
+            // Create a Docxtemplater instance
+            const ISR2Doc = new Docxtemplater(ISR2Zip, {
+              paragraphLoop: true,
+              linebreaks: true,
+            });
+            const dataRender: any = { ...i };
+            dataRender["companyName"] = data["companyName"];
+            dataRender["companyOldName"] = data["companyOldName"];
+            dataRender["companyOldName2"] = data["companyOldName2"];
+            dataRender["companyRTA"] = data["companyRTA"];
+            dataRender["companyRTAAddress"] = data["companyRTAAddress"];
+            dataRender["companyRTAPincode"] = data["companyRTAPincode"];
+            dataRender["isDeceased"] = data["isDeceased"];
+            dataRender["shareholderNameDeath"] = data["shareholderNameDeath"];
+            // dataRender["deceasedRelationship"] = data["deceasedRelationship"];
+            dataRender["dod"] = data["dod"];
+            dataRender["placeOfDeath"] = data["placeOfDeath"];
+            dataRender["isTestate"] = data["isTestate"];
+            dataRender["isMinor"] = data["isMinor"];
+            dataRender["dobMinor"] = data["dobMinor"];
+            dataRender["guardianName"] = data["guardianName"];
+            dataRender["guardianRelationship"] = data["guardianRelationship"];
+            dataRender["guardianPan"] = data["guardianPan"];
+            dataRender["taxStatus"] = data["taxStatus"];
+            dataRender["statusClaimant"] = data["statusClaimant"];
+            dataRender["percentageClaimant"] = data["percentageClaimant"];
+            dataRender["occupationClaimant"] = data["occupationClaimant"];
+            dataRender["politicalExposureClaimant"] =
+              data["politicalExposureClaimant"];
+            dataRender["annualIncomeClaimant"] = data["annualIncomeClaimant"];
+            dataRender["Folio"] = data["Folio"];
+            dataRender["certificate"] = data["certificate"];
+            ISR2Doc.render(dataRender);
+  
+            // Get the generated document as a buffer
+            const buf = ISR2Doc.getZip().generate({ type: "nodebuffer" });
+  
+            // Write the buffer to a file (output.docx)
+            const ISR2WordOutput = path.resolve(
+              __dirname,
+              folioFolderISR2DPath + "/" + casee.name + "_" + (idx + 1) + ".docx"
+            );
+            fs.writeFileSync(ISR2WordOutput, buf);
+  
+            console.log("ISR2 Document created successfully!");
+          });
+        }else{
+          // Load the docx file as a binary
+          const wordTemplate = path.resolve(
+            __dirname,
+            "../../../static/word_template/" + casee.name + ".docx"
+          );
+          const content = fs.readFileSync(wordTemplate, "binary");
+
+          // Create a zip instance of the file
+          const zip = new PizZip(content);
+
+          // Create a Docxtemplater instance
+          const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+          });
+
+          doc.render(data);
+
+          // Get the generated document as a buffer
+          const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+          // Write the buffer to a file (output.docx)
+          const wordOutput = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee.name + "_" + (index + 1) + ".docx"
+          );
+          fs.writeFileSync(wordOutput, buf);
+
+          console.log("Document created successfully!");
+        }
       } else {
         // Load the docx file as a binary
         const wordTemplate = path.resolve(

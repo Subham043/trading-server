@@ -480,6 +480,7 @@ model LegalHeirDetail {
   emailBank  String? @db.VarChar(256)
   phoneBank  String? @db.VarChar(256)
   pincodeBank  String? @db.VarChar(256)
+  deceasedRelationship  String? @db.VarChar(256)
   project   Project? @relation(fields: [projectID], references: [id], onDelete: Cascade, onUpdate: SetNull)
   projectID Int?
   createdAt DateTime @default(now())
