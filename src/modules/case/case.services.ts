@@ -23,6 +23,17 @@ import { prisma } from "../../db";
 import { FolioType } from "../../@types/folio.type";
 import { ShareHolderDetailType } from "../../@types/share_holder_detail.type";
 
+// import {
+//   Document,
+//   Packer,
+//   Paragraph,
+//   TextRun,
+//   Table,
+//   TableRow,
+//   TableCell,
+//   AlignmentType,
+//   BorderStyle,
+// } from "docx";
 import fs from "fs";
 import path from "path";
 import PizZip from "pizzip";
@@ -706,6 +717,7 @@ export async function generateDoc(
   const mainData: any[] = [];
   foliosSet.forEach((folio) => {
     const payload: any = {};
+    payload["spell"] = ['a', 'b', 'c', 'd'];
     payload["Case"] = shareHolderMaster.caseType;
     payload["isTransmissionCase"] = shareHolderMaster.caseType.includes("Transmission") ? true : false
     payload["isNotTransmissionCase"] = shareHolderMaster.caseType.includes("Transmission") === false ? true : false
@@ -1086,6 +1098,96 @@ export async function generateDoc(
       payload["state_clamaints"] = clamaints[0].state;
     } else {
       payload["hasClamaint"] = false;
+    }
+    if (clamaints.length >= 2) {
+      payload["hasClamaint_1"] = true;
+      payload["namePan_clamaints_1"] = clamaints[1].namePan;
+      payload["DPID_clamaints_1"] = clamaints[1].DPID;
+      payload["aadhar_clamaints_1"] = clamaints[1].aadhar;
+      payload["addressBank_clamaints_1"] = clamaints[1].addressBank;
+      payload["addressAadhar_clamaints_1"] = clamaints[1].addressAadhar;
+      payload["age_clamaints_1"] = clamaints[1].age;
+      payload["bankAccountNo_clamaints_1"] = clamaints[1].bankAccountNo;
+      payload["bankAccountType_clamaints_1"] = clamaints[1].bankAccountType;
+      payload["bankAddress_clamaints_1"] = clamaints[1].bankAddress;
+      payload["bankEmail_clamaints_1"] = clamaints[1].bankEmail;
+      payload["bankIFS_clamaints_1"] = clamaints[1].bankIFS;
+      payload["bankMICR_clamaints_1"] = clamaints[1].bankMICR;
+      payload["bankName_clamaints_1"] = clamaints[1].bankName;
+      payload["bankPhone_clamaints_1"] = clamaints[1].bankPhone;
+      payload["city_clamaints_1"] = clamaints[1].city;
+      payload["countryOfBirth_clamaints_1"] = clamaints[1].countryOfBirth;
+      payload["dematAccountNo_clamaints_1"] = clamaints[1].dematAccountNo;
+      payload["dob_clamaints_1"] = clamaints[1].dob
+        ? dayjs(clamaints[1].dob).format("DD-MM-YYYY")
+        : "";
+      payload["email_clamaints_1"] = clamaints[1].email;
+      payload["emailBank_clamaints_1"] = clamaints[1].emailBank;
+      payload["nameAadhar_clamaints_1"] = clamaints[1].nameAadhar;
+      payload["nameBank_clamaints_1"] = clamaints[1].nameBank;
+      payload["nameCml_clamaints_1"] = clamaints[1].nameCml;
+      payload["namePan_clamaints_1"] = clamaints[1].namePan;
+      payload["nationality_clamaints_1"] = clamaints[1].nationality;
+      payload["pan_clamaints_1"] = clamaints[1].pan;
+      payload["phone_clamaints_1"] = clamaints[1].phone;
+      payload["phoneBank_clamaints_1"] = clamaints[1].phoneBank;
+      payload["pincodeBank_clamaints_1"] = clamaints[1].pincodeBank;
+      payload["placeOfBirth_clamaints_1"] = clamaints[1].placeOfBirth;
+      payload["husbandName_clamaints_1"] = clamaints[1].husbandName;
+      payload["occupation_clamaints_1"] = clamaints[1].occupation;
+      payload["branchName_clamaints_1"] = clamaints[1].branchName;
+      payload["accountOpeningDate_clamaints_1"] = clamaints[1]
+        .accountOpeningDate
+        ? dayjs(clamaints[1].accountOpeningDate).format("DD-MM-YYYY")
+        : "";
+      payload["state_clamaints_1"] = clamaints[1].state;
+    } else {
+      payload["hasClamaint_1"] = false;
+    }
+    if (clamaints.length >= 3) {
+      payload["hasClamaint_2"] = true;
+      payload["namePan_clamaints_2"] = clamaints[2].namePan;
+      payload["DPID_clamaints_2"] = clamaints[2].DPID;
+      payload["aadhar_clamaints_2"] = clamaints[2].aadhar;
+      payload["addressBank_clamaints_2"] = clamaints[2].addressBank;
+      payload["addressAadhar_clamaints_2"] = clamaints[2].addressAadhar;
+      payload["age_clamaints_2"] = clamaints[2].age;
+      payload["bankAccountNo_clamaints_2"] = clamaints[2].bankAccountNo;
+      payload["bankAccountType_clamaints_2"] = clamaints[2].bankAccountType;
+      payload["bankAddress_clamaints_2"] = clamaints[2].bankAddress;
+      payload["bankEmail_clamaints_2"] = clamaints[2].bankEmail;
+      payload["bankIFS_clamaints_2"] = clamaints[2].bankIFS;
+      payload["bankMICR_clamaints_2"] = clamaints[2].bankMICR;
+      payload["bankName_clamaints_2"] = clamaints[2].bankName;
+      payload["bankPhone_clamaints_2"] = clamaints[2].bankPhone;
+      payload["city_clamaints_2"] = clamaints[2].city;
+      payload["countryOfBirth_clamaints_2"] = clamaints[2].countryOfBirth;
+      payload["dematAccountNo_clamaints_2"] = clamaints[2].dematAccountNo;
+      payload["dob_clamaints_2"] = clamaints[2].dob
+        ? dayjs(clamaints[2].dob).format("DD-MM-YYYY")
+        : "";
+      payload["email_clamaints_2"] = clamaints[2].email;
+      payload["emailBank_clamaints_2"] = clamaints[2].emailBank;
+      payload["nameAadhar_clamaints_2"] = clamaints[2].nameAadhar;
+      payload["nameBank_clamaints_2"] = clamaints[2].nameBank;
+      payload["nameCml_clamaints_2"] = clamaints[2].nameCml;
+      payload["namePan_clamaints_2"] = clamaints[2].namePan;
+      payload["nationality_clamaints_2"] = clamaints[2].nationality;
+      payload["pan_clamaints_2"] = clamaints[2].pan;
+      payload["phone_clamaints_2"] = clamaints[2].phone;
+      payload["phoneBank_clamaints_2"] = clamaints[2].phoneBank;
+      payload["pincodeBank_clamaints_2"] = clamaints[2].pincodeBank;
+      payload["placeOfBirth_clamaints_2"] = clamaints[2].placeOfBirth;
+      payload["husbandName_clamaints_2"] = clamaints[2].husbandName;
+      payload["occupation_clamaints_2"] = clamaints[2].occupation;
+      payload["branchName_clamaints_2"] = clamaints[2].branchName;
+      payload["accountOpeningDate_clamaints_2"] = clamaints[2]
+        .accountOpeningDate
+        ? dayjs(clamaints[2].accountOpeningDate).format("DD-MM-YYYY")
+        : "";
+      payload["state_clamaints_2"] = clamaints[2].state;
+    } else {
+      payload["hasClamaint_2"] = false;
     }
     payload["non_clamaints"] = legalHeirDetails
       .filter((itmm) => clamaints.map((i) => i.id).includes(itmm.id) === false)
@@ -1946,3 +2048,102 @@ export async function generateDoc(
 
   return path.resolve(__dirname, "../../../static/word_output/" + folderName + ".zip");;
 }
+
+// export async function generateDoc(
+//   params: GetIdParam
+// ): Promise<string> {
+//   const data = {
+//     companyName: "XYZ Limited",
+//     companyOldName: "XYZ & Co.",
+//     Folio: "12345XYZ",
+//     shareholderName_1: "Alice",
+//     shareholderName_2: "Bob",
+//     shareholderName_3: "Charlie",
+//     combinedTotalNoOfShares: "500",
+//     combinedTotalFaceValue: "5000",
+//   };
+
+//   const makeField = (label, value) => [
+//     new Paragraph({
+//       children: [
+//         new TextRun({ text: `${label}: `, bold: true }),
+//         new TextRun(value || ""),
+//       ],
+//     }),
+//   ];
+
+//   const makeCell = (text) =>
+//     new TableCell({
+//       children: [
+//         new Paragraph({
+//           alignment: AlignmentType.CENTER,
+//           children: [new TextRun({ text, bold: true })],
+//         }),
+//       ],
+//       borders: {
+//         top: { style: BorderStyle.SINGLE, size: 1, color: "000000" },
+//         bottom: { style: BorderStyle.SINGLE, size: 1, color: "000000" },
+//         left: { style: BorderStyle.SINGLE, size: 1, color: "000000" },
+//         right: { style: BorderStyle.SINGLE, size: 1, color: "000000" },
+//       },
+//     });
+
+//   const doc = new Document({
+//     sections: [
+//       {
+//         children: [
+//           new Paragraph({
+//             children: [
+//               new TextRun({ text: "Form ISR – 1", bold: true, size: 28 }),
+//             ],
+//           }),
+
+//           new Paragraph(""),
+//           new Paragraph(
+//             "REQUEST FOR REGISTERING PAN, KYC DETAILS OR CHANGES / UPDATION THEREOF"
+//           ),
+//           new Paragraph(
+//             "[For Securities of listed companies held in physical form]"
+//           ),
+
+//           ...makeField("Name of the Issuer Company", data.companyName),
+//           ...makeField("Old Company Name", data.companyOldName),
+//           ...makeField("Folio No.", data.Folio),
+
+//           new Paragraph({
+//             text: "Name(s) of the Security holder(s):",
+//             spacing: { before: 200 },
+//           }),
+//           new Paragraph(`1. ${data.shareholderName_1}`),
+//           new Paragraph(`2. ${data.shareholderName_2}`),
+//           new Paragraph(`3. ${data.shareholderName_3}`),
+
+//           ...makeField("Number of Shares", data.combinedTotalNoOfShares),
+//           ...makeField(
+//             "Total Face Value",
+//             `Rs. ${data.combinedTotalFaceValue}`
+//           ),
+
+//           new Paragraph({ text: "pan:", spacing: { before: 300 } }),
+
+//           new Table({
+//             rows: [
+//               new TableRow({
+//                 children: ["a", "b", "c", "d"].map((ch) => makeCell(ch)),
+//               }),
+//             ],
+//           }),
+//         ],
+//       },
+//     ],
+//   });
+
+//   Packer.toBuffer(doc).then((buffer) => {
+//     fs.writeFileSync(
+//       "ISR1_Generated.docx",
+//       buffer
+//     );
+//     console.log("✅ ISR1_Generated.docx has been created.");
+//   });
+//   return ""
+// }
