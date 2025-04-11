@@ -597,6 +597,9 @@ export async function generateDoc(
               endorsementShareholderName2ID: true,
               endorsementShareholderName3ID: true,
             },
+            orderBy: {
+              dateOfAction: "asc",
+            },
           },
           shareCertificateMaster: true,
         },
@@ -1676,7 +1679,8 @@ export async function generateDoc(
       } 
       else if (casee.name === "Affidavit") {
         if (data.allowAffidavit) {
-          if (item.Case.includes("Transmission")) {
+          if (item.Case.includes("Transmission")){
+            //affidavit legal heir start
             // Load the docx file as a binary
             const folioFolderAffidavitDPath = path.resolve(
               __dirname,
@@ -1688,7 +1692,10 @@ export async function generateDoc(
             data.affidavitLegalHeirs.forEach((i, idx) => {
               const affidavitWordTemplate = path.resolve(
                 __dirname,
-                "../../../static/word_template/Affidavit.docx"
+                // item.Case.includes("Transmission")
+                //   ? "../../../static/word_template/Affidavit2.docx"
+                //   : 
+                  "../../../static/word_template/Affidavit.docx"
               );
               const affidavitContent = fs.readFileSync(
                 affidavitWordTemplate,
@@ -1733,64 +1740,71 @@ export async function generateDoc(
 
               console.log("Annexure D Document created successfully!");
             });
+            //affidavit legal heir end
           }
+            
 
-            const folioFolderAffidavitDPath = path.resolve(
+          //affidavit shareholder start
+          const folioFolderAffidavitShareholderPath = path.resolve(
+            __dirname,
+            `../../../static/word_output/${folderName}/${folioFolderName}/AffidavitShareholder`
+          );
+          if (!fs.existsSync(folioFolderAffidavitShareholderPath)) {
+            fs.mkdirSync(folioFolderAffidavitShareholderPath);
+          }
+          data.affidavits.forEach((i, idx) => {
+            const affidavitWordTemplate = path.resolve(
               __dirname,
-              `../../../static/word_output/${folderName}/${folioFolderName}/AffidavitShareholder`
-            );
-            if (!fs.existsSync(folioFolderAffidavitDPath)) {
-              fs.mkdirSync(folioFolderAffidavitDPath);
-            }
-            data.affidavits.forEach((i, idx) => {
-              const affidavitWordTemplate = path.resolve(
-                __dirname,
+              // item.Case.includes("Transmission")
+              //   ? "../../../static/word_template/Affidavit.docx"
+              //   : 
                 "../../../static/word_template/Affidavit2.docx"
-              );
-              const affidavitContent = fs.readFileSync(
-                affidavitWordTemplate,
-                "binary"
-              );
+            );
+            const affidavitContent = fs.readFileSync(
+              affidavitWordTemplate,
+              "binary"
+            );
 
-              // Create a zip instance of the file
-              const affidavitZip = new PizZip(affidavitContent);
+            // Create a zip instance of the file
+            const affidavitZip = new PizZip(affidavitContent);
 
-              // Create a Docxtemplater instance
-              const affidavitDoc = new Docxtemplater(affidavitZip, {
-                paragraphLoop: true,
-                linebreaks: true,
-              });
-
-              const dataRender: any = { ...i };
-
-              const indx = data["shareHolderDetails"].findIndex(
-                (i: any) => i.id === i.id
-              );
-
-              dataRender["shareholderNameCertificate"] = indx !== -1 ? 
-                data["shareHolderDetails"][indx]["shareholderNameCertificate"] : "";
-
-              affidavitDoc.render(dataRender);
-
-              // Get the generated document as a buffer
-              const buf = affidavitDoc
-                .getZip()
-                .generate({ type: "nodebuffer" });
-
-              // Write the buffer to a file (output.docx)
-              const affidavitWordOutput = path.resolve(
-                __dirname,
-                folioFolderAffidavitDPath +
-                  "/" +
-                  casee.name +
-                  "_" +
-                  (idx + 1) +
-                  ".docx"
-              );
-              fs.writeFileSync(affidavitWordOutput, buf);
-
-              console.log("Annexure D Document created successfully!");
+            // Create a Docxtemplater instance
+            const affidavitDoc = new Docxtemplater(affidavitZip, {
+              paragraphLoop: true,
+              linebreaks: true,
             });
+
+            const dataRender: any = { ...i };
+
+            const indx = data["shareHolderDetails"].findIndex(
+              (i: any) => i.id === i.id
+            );
+
+            dataRender["shareholderNameCertificate"] =
+              indx !== -1
+                ? data["shareHolderDetails"][indx]["shareholderNameCertificate"]
+                : "";
+
+            affidavitDoc.render(dataRender);
+
+            // Get the generated document as a buffer
+            const buf = affidavitDoc.getZip().generate({ type: "nodebuffer" });
+
+            // Write the buffer to a file (output.docx)
+            const affidavitWordOutput = path.resolve(
+              __dirname,
+              folioFolderAffidavitShareholderPath +
+                "/" +
+                casee.name +
+                "_" +
+                (idx + 1) +
+                ".docx"
+            );
+            fs.writeFileSync(affidavitWordOutput, buf);
+
+            console.log("Annexure D Document created successfully!");
+          });
+          //affidavit shareholder end
         }
       }
       else if (casee.name === "form_no_sh_13") {
@@ -1848,7 +1862,7 @@ export async function generateDoc(
           );
           fs.writeFileSync(sh13WordOutput, buf);
 
-          console.log("Annexure D Document created successfully!");
+          console.log("Form sh 13 Document created successfully!");
         });
       } 
       else if (casee.name === "Form_SH_14") {
@@ -1898,7 +1912,7 @@ export async function generateDoc(
           );
           fs.writeFileSync(sh14WordOutput, buf);
 
-          console.log("Annexure D Document created successfully!");
+          console.log("Form sh 14 Document created successfully!");
         });
       } else if (casee.name === "ISR2") {
         if (item.Case.includes("Transmission")) {
