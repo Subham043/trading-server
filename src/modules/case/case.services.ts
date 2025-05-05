@@ -42,11 +42,11 @@ import { generateISR3Doc } from "./docs/isr3.doc";
 // import { generateAnnexureDDoc } from "./docs/annexure_d.doc";
 // import { generateAffidavitDoc } from "./docs/affidavit.doc";
 // import { generateAffidavit2Doc } from "./docs/affidavit2.doc";
-// import { generateAnnexureEDoc } from "./docs/annexure_e.doc";
-// import { generateAnnexureFDoc } from "./docs/annexure_f.doc";
+import { generateAnnexureEDoc } from "./docs/annexure_e.doc";
+import { generateAnnexureFDoc } from "./docs/annexure_f.doc";
 // import { generateFormADoc } from "./docs/form_a.doc";
 // import { generateFormBDoc } from "./docs/form_b.doc";
-// import { generateISR4Doc } from "./docs/isr4.doc";
+import { generateISR4Doc } from "./docs/isr4.doc";
 // import { generateFormSH14Doc } from "./docs/form_sh_14.doc";
 // import { generateFormSH13Doc } from "./docs/form_sh_13.doc";
 // import { generateISR5Doc } from "./docs/isr5.doc";
@@ -2293,11 +2293,11 @@ export async function generateDoc(
   //   }
   // }
 
-  // const legalHeirDetails = await prisma.legalHeirDetail.findMany({
-  //   where: {
-  //     projectID: shareHolderMaster.shareCertificateMaster?.projectID
-  //   },
-  // })
+  const legalHeirDetails = await prisma.legalHeirDetail.findMany({
+    where: {
+      projectID: shareHolderMaster.shareCertificateMaster?.projectID
+    },
+  })
 
   const mainData: any[] = [];
   foliosSet.forEach((folio) => {
@@ -2321,7 +2321,18 @@ export async function generateDoc(
       companyRegisteredOffice:
         shareHolderMaster.shareCertificateMaster?.companyMaster
           ?.registeredOffice || "",
+      companyRTA:
+        shareHolderMaster.shareCertificateMaster?.companyMaster
+          ?.registrarMasterBranch?.registrarMaster?.registrar_name || "",
       Folio: folio.Folio,
+      isInTestate: shareHolderMaster.isTestate === "No" ? true : false,
+      isTestate: shareHolderMaster.isTestate === "Yes" ? true : false,
+      shareholderNameDeath: shareHolderMaster.shareholderNameDeath
+        ? shareHolderMaster.shareholderNameDeath
+        : "",
+      dod: shareHolderMaster.dod
+        ? dayjs(shareHolderMaster.dod).format("DD-MM-YYYY")
+        : "",
       combinedTotalNoOfShares: folio.certificate.reduce(
         (total, item) => total + (Number(item.noOfShares) || 0),
         0
@@ -2347,6 +2358,12 @@ export async function generateDoc(
         //   : "",
         index: i + 1,
       })),
+      certificateNumbers: folio.certificate
+        .map((item, i) => item.certificateNumber)
+        .join(","),
+      distinctiveNos: folio.certificate
+        .map((item, i) => item.distinctiveNosFrom + "-" + item.distinctiveNosTo)
+        .join(","),
       shareholderCertificateName1:
         folio.certificate.length > 0
           ? folio.certificate[folio.certificate.length - 1]
@@ -2393,6 +2410,7 @@ export async function generateDoc(
         : "",
       email: folio.shareholderName1 ? folio.shareholderName1.email : "",
       phone: folio.shareholderName1 ? folio.shareholderName1.phone : "",
+      pan: folio.shareholderName1 ? folio.shareholderName1.pan : "",
       isr2_clamaints: [
         ...clamaints.map((item) => ({
           bankAccountNo: item.bankAccountNo ? item.bankAccountNo : "",
@@ -2410,6 +2428,26 @@ export async function generateDoc(
             : "",
           bankIFS: item ? item.bankIFS : "",
           addressBank: item ? item.addressBank : "",
+        })),
+      ],
+      clamaints: [
+        ...clamaints.map((item) => ({
+          namePan: item.namePan ? item.namePan : "",
+          addressAadhar: item ? item.addressAadhar : "",
+          pincodeBank: item ? item.pincodeBank : "",
+          phone: item ? item.phone : "",
+          age: item ? item.age : "",
+          deceasedRelationship: item ? item.deceasedRelationship : "",
+        })),
+      ],
+      non_clamaints: [
+        ...legalHeirDetails.filter((itmm) => clamaints.map((i) => i.id).includes(itmm.id) === false).map((item) => ({
+          namePan: item.namePan ? item.namePan : "",
+          addressAadhar: item ? item.addressAadhar : "",
+          pincodeBank: item ? item.pincodeBank : "",
+          phone: item ? item.phone : "",
+          age: item ? item.age : "",
+          deceasedRelationship: item ? item.deceasedRelationship : "",
         })),
       ],
       declaration: [
@@ -2470,6 +2508,21 @@ export async function generateDoc(
       ]
         .filter((item) => item.length > 0)
         .join(","),
+      clamaints_pan_name: clamaints.map((item) => item.namePan).join(","),
+      legalHeirDetails: legalHeirDetails.map((item) => ({
+        namePan: item.namePan ? item.namePan : "",
+        addressAadhar: item.addressAadhar ? item.addressAadhar : "",
+        pincodeBank: item.pincodeBank ? item.pincodeBank : "",
+        phone: item.phone ? item.phone : "",
+        age: item.age ? item.age : "",
+        deceasedRelationship: item.deceasedRelationship
+          ? item.deceasedRelationship
+          : "",
+        dob: item.dob ? dayjs(item.dob).format("DD-MM-YYYY") : "",
+        accountOpeningDate: item.accountOpeningDate
+          ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
+          : "",
+      })),
     };
 
     // const payload: any = {};
@@ -3126,6 +3179,27 @@ export async function generateDoc(
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateISR3Doc(data, wordOutputPath);
+      } 
+      else if (casee === "ISR4") {
+        const wordOutputPath = path.resolve(
+          __dirname,
+          folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+        );
+        await generateISR4Doc(data, wordOutputPath);
+      } 
+      else if (casee === "Annexure_E") {
+        const wordOutputPath = path.resolve(
+          __dirname,
+          folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+        );
+        await generateAnnexureEDoc(data, wordOutputPath);
+      } 
+      else if (casee === "Annexure_F") {
+        const wordOutputPath = path.resolve(
+          __dirname,
+          folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+        );
+        await generateAnnexureFDoc(data, wordOutputPath);
       } 
       else if (casee === "ISR1") {
         const wordOutputPath = path.resolve(
