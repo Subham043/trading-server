@@ -38,7 +38,7 @@ import { generateISR1Doc } from "./docs/isr1.doc";
 import { generateISR2Doc } from "./docs/isr2.doc";
 import { generateISR3Doc } from "./docs/isr3.doc";
 // import { generateSuretyDoc } from "./docs/surety.doc";
-// import { generateDeletionDoc } from "./docs/deletion.doc";
+import { generateDeletionDoc } from "./docs/deletion.doc";
 // import { generateAnnexureDDoc } from "./docs/annexure_d.doc";
 // import { generateAffidavitDoc } from "./docs/affidavit.doc";
 // import { generateAffidavit2Doc } from "./docs/affidavit2.doc";
@@ -2324,11 +2324,20 @@ export async function generateDoc(
       companyRTA:
         shareHolderMaster.shareCertificateMaster?.companyMaster
           ?.registrarMasterBranch?.registrarMaster?.registrar_name || "",
+      companyRTAAddress:
+        shareHolderMaster.shareCertificateMaster?.companyMaster
+          ?.registrarMasterBranch?.address || "",
+      companyRTAPincode:
+        shareHolderMaster.shareCertificateMaster?.companyMaster
+          ?.registrarMasterBranch?.pincode || "",
       Folio: folio.Folio,
       isInTestate: shareHolderMaster.isTestate === "No" ? true : false,
       isTestate: shareHolderMaster.isTestate === "Yes" ? true : false,
       shareholderNameDeath: shareHolderMaster.shareholderNameDeath
         ? shareHolderMaster.shareholderNameDeath
+        : "",
+      placeOfDeath: shareHolderMaster.placeOfDeath
+        ? shareHolderMaster.placeOfDeath
         : "",
       dod: shareHolderMaster.dod
         ? dayjs(shareHolderMaster.dod).format("DD-MM-YYYY")
@@ -2344,6 +2353,7 @@ export async function generateDoc(
       ),
       combinedTotalFaceValue:
         folio.certificate.length > 0 ? folio.certificate[0].faceValue ?? 0 : 0,
+      certificateCount: folio.certificate.length,
       certificate: folio.certificate.map((item, i) => ({
         // ...item,
         // totalFaceValue: item.faceValue,
@@ -2441,14 +2451,18 @@ export async function generateDoc(
         })),
       ],
       non_clamaints: [
-        ...legalHeirDetails.filter((itmm) => clamaints.map((i) => i.id).includes(itmm.id) === false).map((item) => ({
-          namePan: item.namePan ? item.namePan : "",
-          addressAadhar: item ? item.addressAadhar : "",
-          pincodeBank: item ? item.pincodeBank : "",
-          phone: item ? item.phone : "",
-          age: item ? item.age : "",
-          deceasedRelationship: item ? item.deceasedRelationship : "",
-        })),
+        ...legalHeirDetails
+          .filter(
+            (itmm) => clamaints.map((i) => i.id).includes(itmm.id) === false
+          )
+          .map((item) => ({
+            namePan: item.namePan ? item.namePan : "",
+            addressAadhar: item ? item.addressAadhar : "",
+            pincodeBank: item ? item.pincodeBank : "",
+            phone: item ? item.phone : "",
+            age: item ? item.age : "",
+            deceasedRelationship: item ? item.deceasedRelationship : "",
+          })),
       ],
       declaration: [
         {
@@ -2523,6 +2537,103 @@ export async function generateDoc(
           ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
           : "",
       })),
+      survivors: [
+        {
+          ...folio.shareholderName1,
+          shareholderNameCertificate:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName1Txt || ""
+              : "",
+          index: 1,
+        },
+        {
+          ...folio.shareholderName2,
+          shareholderNameCertificate:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName2Txt || ""
+              : "",
+          index: 2,
+        },
+        {
+          ...folio.shareholderName3,
+          shareholderNameCertificate:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName3Txt || ""
+              : "",
+          index: 3,
+        },
+      ]
+        .filter((itmm) => itmm.id !== shareHolderMaster.deadShareholder?.id)
+        .map((itmm) => itmm.shareholderNameCertificate)
+        .join(","),
+      survivor1:
+        [
+          {
+            ...folio.shareholderName1,
+            shareholderNameCertificate:
+              folio.certificate.length > 0
+                ? folio.certificate[folio.certificate.length - 1]
+                    .shareholderName1Txt || ""
+                : "",
+            index: 1,
+          },
+          {
+            ...folio.shareholderName2,
+            shareholderNameCertificate:
+              folio.certificate.length > 0
+                ? folio.certificate[folio.certificate.length - 1]
+                    .shareholderName2Txt || ""
+                : "",
+            index: 2,
+          },
+          {
+            ...folio.shareholderName3,
+            shareholderNameCertificate:
+              folio.certificate.length > 0
+                ? folio.certificate[folio.certificate.length - 1]
+                    .shareholderName3Txt || ""
+                : "",
+            index: 3,
+          },
+        ].filter((itmm) => itmm.id !== shareHolderMaster.deadShareholder?.id)
+          .length > 0
+          ? {
+              ...[
+                {
+                  ...folio.shareholderName1,
+                  shareholderNameCertificate:
+                    folio.certificate.length > 0
+                      ? folio.certificate[folio.certificate.length - 1]
+                          .shareholderName1Txt || ""
+                      : "",
+                  index: 1,
+                },
+                {
+                  ...folio.shareholderName2,
+                  shareholderNameCertificate:
+                    folio.certificate.length > 0
+                      ? folio.certificate[folio.certificate.length - 1]
+                          .shareholderName2Txt || ""
+                      : "",
+                  index: 2,
+                },
+                {
+                  ...folio.shareholderName3,
+                  shareholderNameCertificate:
+                    folio.certificate.length > 0
+                      ? folio.certificate[folio.certificate.length - 1]
+                          .shareholderName3Txt || ""
+                      : "",
+                  index: 3,
+                },
+              ].filter(
+                (itmm) => itmm.id !== shareHolderMaster.deadShareholder?.id
+              )[0],
+            }
+          : null,
     };
 
     // const payload: any = {};
@@ -3201,7 +3312,13 @@ export async function generateDoc(
         );
         await generateAnnexureFDoc(data, wordOutputPath);
       } 
-      else if (casee === "ISR1") {
+      else if (casee === "Deletion") {
+        const wordOutputPath = path.resolve(
+          __dirname,
+          folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+        );
+        await generateDeletionDoc(data, wordOutputPath);
+      } else if (casee === "ISR1") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
