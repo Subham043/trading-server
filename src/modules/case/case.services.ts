@@ -39,7 +39,7 @@ import { generateISR2Doc } from "./docs/isr2.doc";
 import { generateISR3Doc } from "./docs/isr3.doc";
 // import { generateSuretyDoc } from "./docs/surety.doc";
 import { generateDeletionDoc } from "./docs/deletion.doc";
-// import { generateAnnexureDDoc } from "./docs/annexure_d.doc";
+import { generateAnnexureDDoc } from "./docs/annexure_d.doc";
 // import { generateAffidavitDoc } from "./docs/affidavit.doc";
 // import { generateAffidavit2Doc } from "./docs/affidavit2.doc";
 import { generateAnnexureEDoc } from "./docs/annexure_e.doc";
@@ -3290,29 +3290,47 @@ export async function generateDoc(
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateISR3Doc(data, wordOutputPath);
-      } 
-      else if (casee === "ISR4") {
+      } else if (casee === "ISR4") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateISR4Doc(data, wordOutputPath);
-      } 
-      else if (casee === "Annexure_E") {
+      } else if (casee === "Annexure_D") {
+        for (let idx = 0; idx < item.legalHeirDetails.length; idx++) {
+          const i = item.legalHeirDetails[idx];
+          const wordOutputPath = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee + "_" + (idx + 1) + ".docx"
+          );
+          await generateAnnexureDDoc(
+            {
+              namePan: i.namePan,
+              deceasedRelationship: i.deceasedRelationship,
+              addressAadhar: i.addressAadhar,
+              pincodeBank: i.pincodeBank,
+              shareholderNameDeath: item.shareholderNameDeath,
+              companyName: item.companyName,
+              companyOldName: item.companyOldName,
+              certificate: item.certificate,
+              legalHeirDetails: item.legalHeirDetails,
+            },
+            wordOutputPath
+          );
+        }
+      } else if (casee === "Annexure_E") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateAnnexureEDoc(data, wordOutputPath);
-      } 
-      else if (casee === "Annexure_F") {
+      } else if (casee === "Annexure_F") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateAnnexureFDoc(data, wordOutputPath);
-      } 
-      else if (casee === "Deletion") {
+      } else if (casee === "Deletion") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"

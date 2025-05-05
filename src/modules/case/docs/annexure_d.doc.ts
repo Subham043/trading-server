@@ -15,12 +15,13 @@ import {
 import fs from "fs";
 
 type ANNEXUREDDocType = {
+  namePan: string;
+  deceasedRelationship: string;
   shareholderNameDeath: string;
-  dod: string;
-  isInTestate: boolean;
+  addressAadhar: string;
+  pincodeBank: string;
   companyName: string;
-  companyRTA: string;
-  clamaints_pan_name: string;
+  companyOldName: string;
   certificate: {
     totalNoOfShares: string;
     certificateNumber: string;
@@ -96,9 +97,9 @@ export const generateAnnexureDDoc: (
               ],
               alignment: AlignmentType.CENTER,
             }),
-  
+
             new Paragraph(""),
-  
+
             new Paragraph({
               children: [
                 new TextRun({
@@ -133,24 +134,24 @@ export const generateAnnexureDDoc: (
               ],
               alignment: AlignmentType.CENTER,
             }),
-  
+
             new Paragraph(""),
             new Paragraph({
               children: [
                 new TextRun({
-                  text: "I, {namePan}, {deceasedRelationship} of {shareholderNameDeath} residing in {addressAadhar}, {pincodeBank} do hereby solemnly affirm and state on oath as follows.",
+                  text: `I, ${payload.namePan}, ${payload.deceasedRelationship} of ${payload.shareholderNameDeath} residing in ${payload.addressAadhar}, ${payload.pincodeBank} do hereby solemnly affirm and state on oath as follows.`,
                   size: 25,
                   font: "Calibri",
                 }),
               ],
               alignment: AlignmentType.LEFT,
             }),
-  
+
             new Paragraph(""),
             new Paragraph({
               children: [
                 new TextRun({
-                  text: "That {shareholderNameDeath} held the following securities in his name as single holder:",
+                  text: `That ${payload.shareholderNameDeath} held the following securities in his name as single holder:`,
                   size: 25,
                   font: "Calibri",
                 }),
@@ -158,7 +159,7 @@ export const generateAnnexureDDoc: (
               alignment: AlignmentType.LEFT,
             }),
             new Paragraph(""),
-  
+
             new Table({
               width: {
                 size: 11000, // total width of the table in DXA (~6.25 inches)
@@ -229,72 +230,79 @@ export const generateAnnexureDDoc: (
                   },
                   cantSplit: true,
                 }),
-                new TableRow({
-                  children: [
-                    new TableCell({
+                ...payload.certificate.map(
+                  (item) =>
+                    new TableRow({
                       children: [
-                        new Paragraph({
+                        new TableCell({
                           children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: `${payload.companyName} ${
+                                    payload.companyOldName.length > 0
+                                      ? "[" + payload.companyOldName + "]"
+                                      : ""
+                                  }`,
+                                  size: 25,
+                                }),
+                              ],
                             }),
                           ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 5000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
                         }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 5000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
+                        new TableCell({
                           children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.Folio,
+                                  size: 25,
+                                }),
+                              ],
                             }),
                           ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 3000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
                         }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 3000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
+                        new TableCell({
                           children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.totalNoOfShares,
+                                  size: 25,
+                                }),
+                              ],
                             }),
                           ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 3000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
                         }),
                       ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 3000, // 1/2 of the table
-                        type: WidthType.DXA,
+                      height: {
+                        value: 500,
+                        rule: HeightRule.ATLEAST,
                       },
-                    }),
-                  ],
-                  height: {
-                    value: 500,
-                    rule: HeightRule.ATLEAST,
-                  },
-                  cantSplit: true,
-                }),
+                      cantSplit: true,
+                    })
+                ),
               ],
               alignment: AlignmentType.CENTER,
             }),
-  
+
             new Paragraph(""),
-  
+
             new Paragraph({
               children: [
                 new TextRun({
@@ -305,9 +313,9 @@ export const generateAnnexureDDoc: (
               ],
               alignment: AlignmentType.LEFT,
             }),
-  
+
             new Paragraph(""),
-  
+
             new Table({
               width: {
                 size: 11000, // total width of the table in DXA (~6.25 inches)
@@ -396,89 +404,108 @@ export const generateAnnexureDDoc: (
                   },
                   cantSplit: true,
                 }),
-                new TableRow({
-                  children: [
-                    new TableCell({
+                ...payload.legalHeirDetails.map(
+                  (item) =>
+                    new TableRow({
                       children: [
-                        new Paragraph({
+                        new TableCell({
                           children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.namePan,
+                                  size: 25,
+                                }),
+                              ],
                             }),
                           ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 3000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
                         }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 3000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
+                        new TableCell({
                           children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.addressAadhar,
+                                  size: 25,
+                                }),
+                              ],
+                            }),
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.pincodeBank,
+                                  size: 25,
+                                }),
+                              ],
+                            }),
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.phone,
+                                  size: 25,
+                                }),
+                              ],
                             }),
                           ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 3000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
                         }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 3000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
+                        new TableCell({
                           children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.age,
+                                  size: 25,
+                                }),
+                              ],
                             }),
                           ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 2000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
                         }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 2000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
+                        new TableCell({
                           children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.deceasedRelationship,
+                                  size: 25,
+                                }),
+                              ],
                             }),
                           ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 3000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
                         }),
                       ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 3000, // 1/2 of the table
-                        type: WidthType.DXA,
+                      height: {
+                        value: 500,
+                        rule: HeightRule.ATLEAST,
                       },
-                    }),
-                  ],
-                  height: {
-                    value: 500,
-                    rule: HeightRule.ATLEAST,
-                  },
-                  cantSplit: true,
-                }),
+                      cantSplit: true,
+                    })
+                ),
               ],
               alignment: AlignmentType.CENTER,
             }),
-  
+
             new Paragraph(""),
-  
+
             new Paragraph({
               children: [
                 new TextRun({
@@ -489,11 +516,11 @@ export const generateAnnexureDDoc: (
               ],
               alignment: AlignmentType.LEFT,
             }),
-  
+
             new Paragraph(""),
             new Paragraph(""),
             new Paragraph(""),
-  
+
             new Paragraph({
               children: [
                 new TextRun({
@@ -508,7 +535,7 @@ export const generateAnnexureDDoc: (
               ],
               alignment: AlignmentType.CENTER,
             }),
-  
+
             new Paragraph({
               children: [
                 new TextRun({
@@ -519,9 +546,9 @@ export const generateAnnexureDDoc: (
               ],
               alignment: AlignmentType.LEFT,
             }),
-  
+
             new Paragraph(""),
-  
+
             new Table({
               width: {
                 size: 11000, // total width of the table in DXA (~6.25 inches)
@@ -645,9 +672,9 @@ export const generateAnnexureDDoc: (
               ],
               alignment: AlignmentType.CENTER,
             }),
-  
+
             new Paragraph(""),
-  
+
             new Paragraph({
               children: [
                 new TextRun({
@@ -658,7 +685,7 @@ export const generateAnnexureDDoc: (
               ],
               alignment: AlignmentType.LEFT,
             }),
-  
+
             new Paragraph({
               children: [
                 new TextRun({
