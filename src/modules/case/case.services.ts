@@ -47,7 +47,7 @@ import { generateAnnexureFDoc } from "./docs/annexure_f.doc";
 // import { generateFormADoc } from "./docs/form_a.doc";
 // import { generateFormBDoc } from "./docs/form_b.doc";
 import { generateISR4Doc } from "./docs/isr4.doc";
-// import { generateFormSH14Doc } from "./docs/form_sh_14.doc";
+import { generateFormSH14Doc } from "./docs/form_sh_14.doc";
 // import { generateFormSH13Doc } from "./docs/form_sh_13.doc";
 // import { generateISR5Doc } from "./docs/isr5.doc";
 import dayjs from "dayjs";
@@ -2130,7 +2130,7 @@ export async function generateDoc(
   let clamaints: LegalHeirDetailType[] = [];
   // let affidavitShareholders: ShareHolderDetailType[] = [];
   // let affidavitLegalHeirs: LegalHeirDetailType[] = [];
-  // let nominations: NominationType[] = [];
+  let nominations: NominationType[] = [];
   // let order: ShareHolderDetailType[] = [];
 
   if (
@@ -2272,26 +2272,26 @@ export async function generateDoc(
   //     }
   //   }
   // }
-  // if (
-  //   shareHolderMaster.selectNomination &&
-  //   shareHolderMaster.selectNomination.split("_").length > 0
-  // ) {
-  //   const inNominations = shareHolderMaster.selectNomination
-  //     ?.split("_")
-  //     .map((claimant) =>
-  //       isNaN(Number(claimant)) ? undefined : Number(claimant)
-  //     )
-  //     .filter((claimant) => claimant !== undefined) as number[];
-  //   if (inNominations.length > 0) {
-  //     nominations = await prisma.nomination.findMany({
-  //       where: {
-  //         id: {
-  //           in: inNominations,
-  //         },
-  //       },
-  //     });
-  //   }
-  // }
+  if (
+    shareHolderMaster.selectNomination &&
+    shareHolderMaster.selectNomination.split("_").length > 0
+  ) {
+    const inNominations = shareHolderMaster.selectNomination
+      ?.split("_")
+      .map((claimant) =>
+        isNaN(Number(claimant)) ? undefined : Number(claimant)
+      )
+      .filter((claimant) => claimant !== undefined) as number[];
+    if (inNominations.length > 0) {
+      nominations = await prisma.nomination.findMany({
+        where: {
+          id: {
+            in: inNominations,
+          },
+        },
+      });
+    }
+  }
 
   const legalHeirDetails = await prisma.legalHeirDetail.findMany({
     where: {
@@ -2634,6 +2634,20 @@ export async function generateDoc(
               )[0],
             }
           : null,
+      nominations: nominations.map((item) => ({
+        ...item,
+        dobMinor: item.dobMinor
+          ? dayjs(item.dobMinor).format("DD-MM-YYYY")
+          : "",
+        dateMajority: item.dateMajority
+          ? dayjs(item.dateMajority).format("DD-MM-YYYY")
+          : "",
+        dobDeceased: item.dobDeceased
+          ? dayjs(item.dobDeceased).format("DD-MM-YYYY")
+          : "",
+        isMinor: item.isMinor==="Yes",
+        isDeceased: item.isDeceased==="Yes",
+      })),
     };
 
     // const payload: any = {};
@@ -3296,7 +3310,8 @@ export async function generateDoc(
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateISR4Doc(data, wordOutputPath);
-      } else if (casee === "Annexure_D") {
+      } 
+      else if (casee === "Annexure_D") {
         for (let idx = 0; idx < item.legalHeirDetails.length; idx++) {
           const i = item.legalHeirDetails[idx];
           const wordOutputPath = path.resolve(
@@ -3314,6 +3329,93 @@ export async function generateDoc(
               companyOldName: item.companyOldName,
               certificate: item.certificate,
               legalHeirDetails: item.legalHeirDetails,
+            },
+            wordOutputPath
+          );
+        }
+      } 
+      else if (casee === "Form_SH_14") {
+        for (let idx = 0; idx < item.nominations.length; idx++) {
+          const i = item.nominations[idx];
+          const wordOutputPath = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee + "_" + (idx + 1) + ".docx"
+          );
+          console.log({
+            ...i,
+            fullName: i.fullName ? i.fullName : '',
+            address: i.address ? i.address : '',
+            dobMinor: i.dobMinor ? i.dobMinor : '',
+            fatherName: i.fatherName ? i.fatherName : '',
+            occupation: i.occupation ? i.occupation : '',
+            nationality: i.nationality ? i.nationality : '',
+            email: i.email ? i.email : '',
+            pan: i.pan ? i.pan : '',
+            relationship: i.relationship ? i.relationship : '',
+            dateMajority: i.dateMajority ? i.dateMajority : '',
+            gurdianName: i.gurdianName ? i.gurdianName : '',
+            gurdianAddress: i.gurdianAddress ? i.gurdianAddress : '',
+            deceasedName: i.deceasedName ? i.deceasedName : '',
+            dobDeceased: i.dobDeceased ? i.dobDeceased : '',
+            deceasedFatherName: i.deceasedFatherName ? i.deceasedFatherName : '',
+            deceasedOccupation: i.deceasedOccupation ? i.deceasedOccupation : '',
+            deceasedNationality: i.deceasedNationality ? i.deceasedNationality : '',
+            deceasedAddress: i.deceasedAddress ? i.deceasedAddress : '',
+            deceasedEmail: i.deceasedEmail ? i.deceasedEmail : '',
+            deceasedPan: i.deceasedPan ? i.deceasedPan : '',
+            deceasedRelationship: i.deceasedRelationship ? i.deceasedRelationship : '',
+            deceasedRelationshipMinor: i.deceasedRelationshipMinor ? i.deceasedRelationshipMinor : '',
+            certificate: item.certificate,
+            declaration: item.declaration,
+            companyName: item.companyName,
+            companyOldName: item.companyOldName,
+            companyCity: item.companyCity,
+            companyState: item.companyState,
+            companyPincode: item.companyPincode,
+          });
+          await generateFormSH14Doc(
+            {
+              ...i,
+              fullName: i.fullName ? i.fullName : "",
+              address: i.address ? i.address : "",
+              dobMinor: i.dobMinor ? i.dobMinor : "",
+              fatherName: i.fatherName ? i.fatherName : "",
+              occupation: i.occupation ? i.occupation : "",
+              nationality: i.nationality ? i.nationality : "",
+              email: i.email ? i.email : "",
+              pan: i.pan ? i.pan : "",
+              relationship: i.relationship ? i.relationship : "",
+              dateMajority: i.dateMajority ? i.dateMajority : "",
+              gurdianName: i.gurdianName ? i.gurdianName : "",
+              gurdianAddress: i.gurdianAddress ? i.gurdianAddress : "",
+              deceasedName: i.deceasedName ? i.deceasedName : "",
+              dobDeceased: i.dobDeceased ? i.dobDeceased : "",
+              deceasedFatherName: i.deceasedFatherName
+                ? i.deceasedFatherName
+                : "",
+              deceasedOccupation: i.deceasedOccupation
+                ? i.deceasedOccupation
+                : "",
+              deceasedNationality: i.deceasedNationality
+                ? i.deceasedNationality
+                : "",
+              deceasedAddress: i.deceasedAddress ? i.deceasedAddress : "",
+              deceasedEmail: i.deceasedEmail ? i.deceasedEmail : "",
+              deceasedPan: i.deceasedPan ? i.deceasedPan : "",
+              deceasedRelationship: i.deceasedRelationship
+                ? i.deceasedRelationship
+                : "",
+              deceasedRelationshipMinor: i.deceasedRelationshipMinor
+                ? i.deceasedRelationshipMinor
+                : "",
+              certificate: item.certificate,
+              declaration: item.declaration,
+              companyName: item.companyName,
+              companyOldName: item.companyOldName,
+              companyCity: item.companyCity,
+              companyState: item.companyState,
+              companyPincode: item.companyPincode,
+              companyRegisteredOffice: item.companyRegisteredOffice,
             },
             wordOutputPath
           );
