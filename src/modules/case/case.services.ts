@@ -48,8 +48,8 @@ import { generateAnnexureFDoc } from "./docs/annexure_f.doc";
 // import { generateFormBDoc } from "./docs/form_b.doc";
 import { generateISR4Doc } from "./docs/isr4.doc";
 import { generateFormSH14Doc } from "./docs/form_sh_14.doc";
-// import { generateFormSH13Doc } from "./docs/form_sh_13.doc";
-// import { generateISR5Doc } from "./docs/isr5.doc";
+import { generateFormSH13Doc } from "./docs/form_sh_13.doc";
+import { generateISR5Doc } from "./docs/isr5.doc";
 import dayjs from "dayjs";
 import { CertificateType } from "../../@types/certificate.type";
 import { NameChangeMasterColumn } from "../name_change_master/name_change_master.model";
@@ -2331,6 +2331,12 @@ export async function generateDoc(
         shareHolderMaster.shareCertificateMaster?.companyMaster
           ?.registrarMasterBranch?.pincode || "",
       Folio: folio.Folio,
+      isMinor: shareHolderMaster.isMinor === "No" ? true : false,
+      guardianName: shareHolderMaster.guardianName || "",
+      dobMinor: shareHolderMaster.dobMinor
+        ? dayjs(shareHolderMaster.dobMinor).format("DD-MM-YYYY")
+        : "",
+      percentageClaimant: shareHolderMaster.percentageClaimant || "",
       isInTestate: shareHolderMaster.isTestate === "No" ? true : false,
       isTestate: shareHolderMaster.isTestate === "Yes" ? true : false,
       shareholderNameDeath: shareHolderMaster.shareholderNameDeath
@@ -2362,6 +2368,8 @@ export async function generateDoc(
         certificateNumber: item.certificateNumber,
         equityType: item.equityType,
         Folio: folio.Folio,
+        distinctiveNosFrom: item.distinctiveNosFrom || "",
+        distinctiveNosTo: item.distinctiveNosTo || "",
         distinctiveNos: item.distinctiveNosFrom + "-" + item.distinctiveNosTo,
         // certificateYear: item.dateOfAllotment
         //   ? dayjs(item.dateOfAllotment).format("YYYY")
@@ -2444,9 +2452,21 @@ export async function generateDoc(
         ...clamaints.map((item) => ({
           namePan: item.namePan ? item.namePan : "",
           addressAadhar: item ? item.addressAadhar : "",
+          city: item ? item.city : "",
+          state: item ? item.state : "",
+          bankName: item ? item.bankName : "",
+          bankAccountNo: item ? item.bankAccountNo : "",
+          bankIFS: item ? item.bankIFS : "",
+          bankMICR: item ? item.bankMICR : "",
+          branchName: item ? item.branchName : "",
+          countryOfBirth: item ? item.countryOfBirth : "",
+          placeOfBirth: item ? item.placeOfBirth : "",
+          nationality: item ? item.nationality : "",
           pincodeBank: item ? item.pincodeBank : "",
           phone: item ? item.phone : "",
+          email: item ? item.email : "",
           age: item ? item.age : "",
+          pan: item ? item.pan : "",
           deceasedRelationship: item ? item.deceasedRelationship : "",
         })),
       ],
@@ -2645,8 +2665,8 @@ export async function generateDoc(
         dobDeceased: item.dobDeceased
           ? dayjs(item.dobDeceased).format("DD-MM-YYYY")
           : "",
-        isMinor: item.isMinor==="Yes",
-        isDeceased: item.isDeceased==="Yes",
+        isMinor: item.isMinor === "Yes",
+        isDeceased: item.isDeceased === "Yes",
       })),
     };
 
@@ -3334,6 +3354,64 @@ export async function generateDoc(
           );
         }
       } 
+      else if (casee === "form_no_sh_13") {
+        for (let idx = 0; idx < item.nominations.length; idx++) {
+          const i = item.nominations[idx];
+          const wordOutputPath = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee + "_" + (idx + 1) + ".docx"
+          );
+          await generateFormSH13Doc(
+            {
+              ...i,
+              fullName: i.fullName ? i.fullName : "",
+              address: i.address ? i.address : "",
+              dobMinor: i.dobMinor ? i.dobMinor : "",
+              fatherName: i.fatherName ? i.fatherName : "",
+              occupation: i.occupation ? i.occupation : "",
+              nationality: i.nationality ? i.nationality : "",
+              email: i.email ? i.email : "",
+              pan: i.pan ? i.pan : "",
+              mobile: i.mobile ? i.mobile : "",
+              relationship: i.relationship ? i.relationship : "",
+              dateMajority: i.dateMajority ? i.dateMajority : "",
+              gurdianName: i.gurdianName ? i.gurdianName : "",
+              gurdianAddress: i.gurdianAddress ? i.gurdianAddress : "",
+              deceasedName: i.deceasedName ? i.deceasedName : "",
+              dobDeceased: i.dobDeceased ? i.dobDeceased : "",
+              deceasedFatherName: i.deceasedFatherName
+                ? i.deceasedFatherName
+                : "",
+              deceasedOccupation: i.deceasedOccupation
+                ? i.deceasedOccupation
+                : "",
+              deceasedNationality: i.deceasedNationality
+                ? i.deceasedNationality
+                : "",
+              deceasedAddress: i.deceasedAddress ? i.deceasedAddress : "",
+              deceasedEmail: i.deceasedEmail ? i.deceasedEmail : "",
+              deceasedPan: i.deceasedPan ? i.deceasedPan : "",
+              deceasedRelationship: i.deceasedRelationship
+                ? i.deceasedRelationship
+                : "",
+              deceasedRelationshipMinor: i.deceasedRelationshipMinor
+                ? i.deceasedRelationshipMinor
+                : "",
+              certificate: item.certificate,
+              declaration: item.declaration,
+              companyName: item.companyName,
+              companyOldName: item.companyOldName,
+              companyCity: item.companyCity,
+              companyState: item.companyState,
+              companyPincode: item.companyPincode,
+              companyRegisteredOffice: item.companyRegisteredOffice,
+              shareholderCertificateNames: item.shareholderCertificateNames,
+              Folio: item.Folio,
+            },
+            wordOutputPath
+          );
+        }
+      } 
       else if (casee === "Form_SH_14") {
         for (let idx = 0; idx < item.nominations.length; idx++) {
           const i = item.nominations[idx];
@@ -3341,38 +3419,6 @@ export async function generateDoc(
             __dirname,
             folioFolderPath + "/" + casee + "_" + (idx + 1) + ".docx"
           );
-          console.log({
-            ...i,
-            fullName: i.fullName ? i.fullName : '',
-            address: i.address ? i.address : '',
-            dobMinor: i.dobMinor ? i.dobMinor : '',
-            fatherName: i.fatherName ? i.fatherName : '',
-            occupation: i.occupation ? i.occupation : '',
-            nationality: i.nationality ? i.nationality : '',
-            email: i.email ? i.email : '',
-            pan: i.pan ? i.pan : '',
-            relationship: i.relationship ? i.relationship : '',
-            dateMajority: i.dateMajority ? i.dateMajority : '',
-            gurdianName: i.gurdianName ? i.gurdianName : '',
-            gurdianAddress: i.gurdianAddress ? i.gurdianAddress : '',
-            deceasedName: i.deceasedName ? i.deceasedName : '',
-            dobDeceased: i.dobDeceased ? i.dobDeceased : '',
-            deceasedFatherName: i.deceasedFatherName ? i.deceasedFatherName : '',
-            deceasedOccupation: i.deceasedOccupation ? i.deceasedOccupation : '',
-            deceasedNationality: i.deceasedNationality ? i.deceasedNationality : '',
-            deceasedAddress: i.deceasedAddress ? i.deceasedAddress : '',
-            deceasedEmail: i.deceasedEmail ? i.deceasedEmail : '',
-            deceasedPan: i.deceasedPan ? i.deceasedPan : '',
-            deceasedRelationship: i.deceasedRelationship ? i.deceasedRelationship : '',
-            deceasedRelationshipMinor: i.deceasedRelationshipMinor ? i.deceasedRelationshipMinor : '',
-            certificate: item.certificate,
-            declaration: item.declaration,
-            companyName: item.companyName,
-            companyOldName: item.companyOldName,
-            companyCity: item.companyCity,
-            companyState: item.companyState,
-            companyPincode: item.companyPincode,
-          });
           await generateFormSH14Doc(
             {
               ...i,
@@ -3420,7 +3466,36 @@ export async function generateDoc(
             wordOutputPath
           );
         }
-      } else if (casee === "Annexure_E") {
+      } 
+      else if (casee === "ISR5") {
+        for (let idx = 0; idx < item.clamaints.length; idx++) {
+          const i = item.clamaints[idx];
+          const wordOutputPath = path.resolve(
+            __dirname,
+            folioFolderPath + "/" + casee + "_" + (idx + 1) + ".docx"
+          );
+          await generateISR5Doc(
+            {
+              ...i,
+              certificate: item.certificate,
+              companyName: item.companyName,
+              companyOldName: item.companyOldName,
+              companyRTA: item.companyRTA,
+              companyRTAAddress: item.companyRTAAddress,
+              companyRTAPincode: item.companyRTAPincode,
+              isMinor: item.isMinor,
+              guardianName: item.guardianName,
+              dobMinor: item.dobMinor,
+              shareholderNameDeath: item.shareholderNameDeath,
+              dod: item.dod,
+              Folio: item.Folio,
+              percentageClaimant: item.percentageClaimant,
+            },
+            wordOutputPath
+          );
+        }
+      } 
+      else if (casee === "Annexure_E") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
