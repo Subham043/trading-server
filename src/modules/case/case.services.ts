@@ -2331,7 +2331,7 @@ export async function generateDoc(
         shareHolderMaster.shareCertificateMaster?.companyMaster
           ?.registrarMasterBranch?.pincode || "",
       Folio: folio.Folio,
-      isMinor: shareHolderMaster.isMinor === "No" ? true : false,
+      isMinor: shareHolderMaster.isMinor === "Yes" ? true : false,
       guardianName: shareHolderMaster.guardianName || "",
       dobMinor: shareHolderMaster.dobMinor
         ? dayjs(shareHolderMaster.dobMinor).format("DD-MM-YYYY")

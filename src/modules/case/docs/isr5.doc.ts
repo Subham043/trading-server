@@ -345,7 +345,7 @@ export const generateISR5Doc: (
                               color: "#ffffff",
                             },
                           },
-                          columnWidths: [5500, 5500],
+                          columnWidths: [4000, 3000, 4000],
                           rows: [
                             new TableRow({
                               children: [
@@ -359,10 +359,20 @@ export const generateISR5Doc: (
                                         }),
                                       ],
                                     }),
+                                    new Paragraph({
+                                      children: [
+                                        new TextRun({
+                                          text: payload.isMinor
+                                            ? `Mr./Ms.${payload.guardianName}`
+                                            : "",
+                                          size: 25,
+                                        }),
+                                      ],
+                                    }),
                                   ],
                                   verticalAlign: VerticalAlign.CENTER,
                                   width: {
-                                    size: 5500, // 1/2 of the table
+                                    size: 4000, // 1/2 of the table
                                     type: WidthType.DXA,
                                   },
                                 }),
@@ -382,55 +392,24 @@ export const generateISR5Doc: (
                                     new Paragraph({
                                       children: [
                                         new TextRun({
-                                          text: "Date of Birth of the minor* ",
-                                          size: 25,
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                  verticalAlign: VerticalAlign.CENTER,
-                                  width: {
-                                    size: 5500, // 1/2 of the table
-                                    type: WidthType.DXA,
-                                  },
-                                }),
-                              ],
-                              height: {
-                                value: 500,
-                                rule: HeightRule.ATLEAST,
-                              },
-                              cantSplit: true,
-                            }),
-                            new TableRow({
-                              children: [
-                                new TableCell({
-                                  children: [
-                                    new Paragraph({
-                                      children: [
-                                        new TextRun({
-                                          text: payload.isMinor
-                                            ? `Mr./Ms.${payload.guardianName}`
-                                            : "",
-                                          size: 25,
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                  verticalAlign: VerticalAlign.CENTER,
-                                  width: {
-                                    size: 5500, // 1/2 of the table
-                                    type: WidthType.DXA,
-                                  },
-                                }),
-                                new TableCell({
-                                  children: [
-                                    new Paragraph({
-                                      children: [
-                                        new CheckBox({
-                                          checked: false,
-                                        }),
-                                        new TextRun({
                                           text: "",
+                                          size: 25,
+                                        }),
+                                      ],
+                                    }),
+                                  ],
+                                  verticalAlign: VerticalAlign.CENTER,
+                                  width: {
+                                    size: 3000, // 1/2 of the table
+                                    type: WidthType.DXA,
+                                  },
+                                }),
+                                new TableCell({
+                                  children: [
+                                    new Paragraph({
+                                      children: [
+                                        new TextRun({
+                                          text: "Date of Birth of the minor* ",
                                           size: 25,
                                         }),
                                       ],
@@ -448,7 +427,7 @@ export const generateISR5Doc: (
                                   ],
                                   verticalAlign: VerticalAlign.CENTER,
                                   width: {
-                                    size: 5500, // 1/2 of the table
+                                    size: 4000, // 1/2 of the table
                                     type: WidthType.DXA,
                                   },
                                 }),
@@ -509,7 +488,7 @@ export const generateISR5Doc: (
                                     }),
                                   ],
                                   verticalAlign: VerticalAlign.CENTER,
-                                  columnSpan: 2,
+                                  columnSpan: 3,
                                   width: {
                                     size: 5500, // 1/2 of the table
                                     type: WidthType.DXA,
