@@ -44,8 +44,8 @@ import { generateAnnexureDDoc } from "./docs/annexure_d.doc";
 // import { generateAffidavit2Doc } from "./docs/affidavit2.doc";
 import { generateAnnexureEDoc } from "./docs/annexure_e.doc";
 import { generateAnnexureFDoc } from "./docs/annexure_f.doc";
-// import { generateFormADoc } from "./docs/form_a.doc";
-// import { generateFormBDoc } from "./docs/form_b.doc";
+import { generateFormADoc } from "./docs/form_a.doc";
+import { generateFormBDoc } from "./docs/form_b.doc";
 import { generateISR4Doc } from "./docs/isr4.doc";
 import { generateFormSH14Doc } from "./docs/form_sh_14.doc";
 import { generateFormSH13Doc } from "./docs/form_sh_13.doc";
@@ -2358,12 +2358,12 @@ export async function generateDoc(
           .toString()
       ),
       combinedTotalFaceValue:
-        folio.certificate.length > 0 ? folio.certificate[0].faceValue ?? 0 : 0,
+        folio.certificate.length > 0 ? Number(folio.certificate[0].faceValue) ?? 0 : 0,
       certificateCount: folio.certificate.length,
       certificate: folio.certificate.map((item, i) => ({
         // ...item,
-        // totalFaceValue: item.faceValue,
         // totalNoOfSharesWords: item.noOfSharesWords,
+        totalFaceValue: item.faceValue ? item.faceValue.toString() : "",
         totalNoOfShares: item.noOfShares || "",
         certificateNumber: item.certificateNumber,
         equityType: item.equityType,
@@ -2371,6 +2371,9 @@ export async function generateDoc(
         distinctiveNosFrom: item.distinctiveNosFrom || "",
         distinctiveNosTo: item.distinctiveNosTo || "",
         distinctiveNos: item.distinctiveNosFrom + "-" + item.distinctiveNosTo,
+        certificateYear: item.dateOfAllotment
+          ? dayjs(item.dateOfAllotment).format("YYYY")
+          : "",
         // certificateYear: item.dateOfAllotment
         //   ? dayjs(item.dateOfAllotment).format("YYYY")
         //   : "",
@@ -2417,7 +2420,7 @@ export async function generateDoc(
       emailBank: folio.shareholderName1 ? folio.shareholderName1.emailBank : "",
       phoneBank: folio.shareholderName1 ? folio.shareholderName1.phoneBank : "",
       pincodeBank: folio.shareholderName1
-        ? folio.shareholderName1.pincodeBank
+        ? (folio.shareholderName1.pincodeBank || "")
         : "",
       accountOpeningDate: folio.shareholderName1
         ? dayjs(folio.shareholderName1.accountOpeningDate).format("DD-MM-YYYY")
@@ -2425,6 +2428,9 @@ export async function generateDoc(
       bankIFS: folio.shareholderName1 ? folio.shareholderName1.bankIFS : "",
       addressBank: folio.shareholderName1
         ? folio.shareholderName1.addressBank
+        : "",
+      addressAadhar: folio.shareholderName1
+        ? (folio.shareholderName1.addressAadhar || "")
         : "",
       email: folio.shareholderName1 ? folio.shareholderName1.email : "",
       phone: folio.shareholderName1 ? folio.shareholderName1.phone : "",
@@ -2483,6 +2489,87 @@ export async function generateDoc(
             age: item ? item.age : "",
             deceasedRelationship: item ? item.deceasedRelationship : "",
           })),
+      ],
+      form_duplicate_1: [
+        {
+          name:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName1Txt || ""
+              : "",
+          address:
+            (folio.shareholderName1
+              ? folio.shareholderName1.addressAadhar || ""
+              : "") +
+            " " +
+            (folio.shareholderName1
+              ? folio.shareholderName1.pincodeBank || ""
+              : ""),
+          pin: folio.shareholderName1
+            ? folio.shareholderName1.pincodeBank || ""
+            : "",
+          pan: folio.shareholderName1 ? folio.shareholderName1.pan || "" : "",
+          namePan: folio.shareholderName1
+            ? folio.shareholderName1.namePan || ""
+            : "",
+          deceasedRelationship: "Son / daughter / spouse /",
+        },
+        {
+          name:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName2Txt || ""
+              : "",
+          address:
+            (folio.shareholderName2
+              ? folio.shareholderName2.addressAadhar || ""
+              : "") +
+            " " +
+            (folio.shareholderName2
+              ? folio.shareholderName2.pincodeBank || ""
+              : ""),
+          pin: folio.shareholderName2
+            ? folio.shareholderName2.pincodeBank || ""
+            : "",
+          pan: folio.shareholderName2 ? folio.shareholderName2.pan || "" : "",
+          namePan: folio.shareholderName2
+            ? folio.shareholderName2.namePan || ""
+            : "",
+          deceasedRelationship: "Son / daughter / spouse /",
+        },
+        {
+          name:
+            folio.certificate.length > 0
+              ? folio.certificate[folio.certificate.length - 1]
+                  .shareholderName3Txt || ""
+              : "",
+          address:
+            (folio.shareholderName3
+              ? folio.shareholderName3.addressAadhar || ""
+              : "") +
+            " " +
+            (folio.shareholderName3
+              ? folio.shareholderName3.pincodeBank || ""
+              : ""),
+          pin: folio.shareholderName3
+            ? folio.shareholderName3.pincodeBank || ""
+            : "",
+          pan: folio.shareholderName3 ? folio.shareholderName3.pan || "" : "",
+          namePan: folio.shareholderName3
+            ? folio.shareholderName3.namePan || ""
+            : "",
+          deceasedRelationship: "Son / daughter / spouse /",
+        },
+      ].filter((item) => item.name && item.name.length > 0),
+      form_duplicate_2: [
+        ...clamaints.map((item) => ({
+          name: item.namePan || "",
+          address: (item.addressAadhar || "") + " " + (item.pincodeBank || ""),
+          pin: item.pincodeBank || "",
+          pan: item.pan || "",
+          namePan: item.namePan || "",
+          deceasedRelationship: item.deceasedRelationship || "",
+        })),
       ],
       declaration: [
         {
@@ -3324,14 +3411,58 @@ export async function generateDoc(
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateISR3Doc(data, wordOutputPath);
-      } else if (casee === "ISR4") {
+      } 
+      else if (casee === "ISR4") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateISR4Doc(data, wordOutputPath);
       } 
-      else if (casee === "Annexure_D") {
+      else if (casee === "Form_A_Duplicate") {
+        const wordOutputPath = path.resolve(
+          __dirname,
+          folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+        );
+        await generateFormADoc(
+          {
+            details:
+              item.Case === "TransmissionIssueDuplicate"
+                ? item.form_duplicate_2
+                : item.form_duplicate_1,
+            companyName: item.companyName,
+            companyOldName: item.companyOldName,
+            certificate: item.certificate,
+            shareholderNameDeath: item.shareholderNameDeath,
+            Folio: item.Folio,
+          },
+          wordOutputPath
+        );
+      } 
+      else if (casee === "Form_B_Duplicate") {
+        const wordOutputPath = path.resolve(
+          __dirname,
+          folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+        );
+        await generateFormBDoc(
+          {
+            details:
+              item.Case === "TransmissionIssueDuplicate"
+                ? item.form_duplicate_2
+                : item.form_duplicate_1,
+            companyName: item.companyName,
+            companyOldName: item.companyOldName,
+            certificate: item.certificate,
+            shareholderNameDeath: item.shareholderNameDeath,
+            addressAadhar: item.addressAadhar,
+            pincodeBank: item.pincodeBank,
+            email: item.email,
+            phone: item.phone,
+            Folio: item.Folio,
+          },
+          wordOutputPath
+        );
+      } else if (casee === "Annexure_D") {
         for (let idx = 0; idx < item.legalHeirDetails.length; idx++) {
           const i = item.legalHeirDetails[idx];
           const wordOutputPath = path.resolve(
@@ -3353,8 +3484,7 @@ export async function generateDoc(
             wordOutputPath
           );
         }
-      } 
-      else if (casee === "form_no_sh_13") {
+      } else if (casee === "form_no_sh_13") {
         for (let idx = 0; idx < item.nominations.length; idx++) {
           const i = item.nominations[idx];
           const wordOutputPath = path.resolve(
@@ -3411,8 +3541,7 @@ export async function generateDoc(
             wordOutputPath
           );
         }
-      } 
-      else if (casee === "Form_SH_14") {
+      } else if (casee === "Form_SH_14") {
         for (let idx = 0; idx < item.nominations.length; idx++) {
           const i = item.nominations[idx];
           const wordOutputPath = path.resolve(
@@ -3466,8 +3595,7 @@ export async function generateDoc(
             wordOutputPath
           );
         }
-      } 
-      else if (casee === "ISR5") {
+      } else if (casee === "ISR5") {
         for (let idx = 0; idx < item.clamaints.length; idx++) {
           const i = item.clamaints[idx];
           const wordOutputPath = path.resolve(
@@ -3494,8 +3622,7 @@ export async function generateDoc(
             wordOutputPath
           );
         }
-      } 
-      else if (casee === "Annexure_E") {
+      } else if (casee === "Annexure_E") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
