@@ -2337,11 +2337,12 @@ export async function generateDoc(
         (total, item) => total + (Number(item.noOfShares) || 0),
         0
       ),
-      combinedTotalNoOfSharesWords: numberInWords(
-        folio.certificate
-          .reduce((total, item) => total + (Number(item.noOfShares) || 0), 0)
-          .toString()
-      ),
+      combinedTotalNoOfSharesWords:
+        numberInWords(
+          folio.certificate
+            .reduce((total, item) => total + (Number(item.noOfShares) || 0), 0)
+            .toString()
+        ) || "",
       combinedTotalFaceValue:
         folio.certificate.length > 0
           ? Number(folio.certificate[0].faceValue) ?? 0
@@ -2382,80 +2383,94 @@ export async function generateDoc(
           ? folio.certificate[folio.certificate.length - 1]
               .shareholderName3Txt || ""
           : "",
-      DPID: folio.shareholderName1 ? folio.shareholderName1.DPID : "",
+      DPID: folio.shareholderName1 ? folio.shareholderName1.DPID || "" : "",
       dematAccountNo: folio.shareholderName1
-        ? folio.shareholderName1.dematAccountNo
+        ? folio.shareholderName1.dematAccountNo || ""
         : "",
       bankAccountNo: folio.shareholderName1
-        ? folio.shareholderName1.bankAccountNo
+        ? folio.shareholderName1.bankAccountNo || ""
         : "",
-      bankName: folio.shareholderName1 ? folio.shareholderName1.bankName : "",
+      bankName: folio.shareholderName1
+        ? folio.shareholderName1.bankName || ""
+        : "",
       branchName: folio.shareholderName1
-        ? folio.shareholderName1.branchName
+        ? folio.shareholderName1.branchName || ""
         : "",
       bankAddress: folio.shareholderName1
-        ? folio.shareholderName1.bankAddress
+        ? folio.shareholderName1.bankAddress || ""
         : "",
-      bankPhone: folio.shareholderName1 ? folio.shareholderName1.bankPhone : "",
-      bankEmail: folio.shareholderName1 ? folio.shareholderName1.bankEmail : "",
-      nameBank: folio.shareholderName1 ? folio.shareholderName1.nameBank : "",
-      emailBank: folio.shareholderName1 ? folio.shareholderName1.emailBank : "",
-      phoneBank: folio.shareholderName1 ? folio.shareholderName1.phoneBank : "",
+      bankPhone: folio.shareholderName1
+        ? folio.shareholderName1.bankPhone || ""
+        : "",
+      bankEmail: folio.shareholderName1
+        ? folio.shareholderName1.bankEmail || ""
+        : "",
+      nameBank: folio.shareholderName1
+        ? folio.shareholderName1.nameBank || ""
+        : "",
+      emailBank: folio.shareholderName1
+        ? folio.shareholderName1.emailBank || ""
+        : "",
+      phoneBank: folio.shareholderName1
+        ? folio.shareholderName1.phoneBank || ""
+        : "",
       pincodeBank: folio.shareholderName1
         ? folio.shareholderName1.pincodeBank || ""
         : "",
       accountOpeningDate: folio.shareholderName1
         ? dayjs(folio.shareholderName1.accountOpeningDate).format("DD-MM-YYYY")
         : "",
-      bankIFS: folio.shareholderName1 ? folio.shareholderName1.bankIFS : "",
+      bankIFS: folio.shareholderName1
+        ? folio.shareholderName1.bankIFS || ""
+        : "",
       addressBank: folio.shareholderName1
-        ? folio.shareholderName1.addressBank
+        ? folio.shareholderName1.addressBank || ""
         : "",
       addressAadhar: folio.shareholderName1
         ? folio.shareholderName1.addressAadhar || ""
         : "",
-      email: folio.shareholderName1 ? folio.shareholderName1.email : "",
-      phone: folio.shareholderName1 ? folio.shareholderName1.phone : "",
-      pan: folio.shareholderName1 ? folio.shareholderName1.pan : "",
+      email: folio.shareholderName1 ? folio.shareholderName1.email || "" : "",
+      phone: folio.shareholderName1 ? folio.shareholderName1.phone || "" : "",
+      pan: folio.shareholderName1 ? folio.shareholderName1.pan || "" : "",
       isr2_clamaints: [
         ...clamaints.map((item) => ({
           bankAccountNo: item.bankAccountNo ? item.bankAccountNo : "",
-          bankName: item ? item.bankName : "",
-          branchName: item ? item.branchName : "",
-          bankAddress: item ? item.bankAddress : "",
-          bankPhone: item ? item.bankPhone : "",
-          bankEmail: item ? item.bankEmail : "",
-          nameBank: item ? item.nameBank : "",
-          emailBank: item ? item.emailBank : "",
-          phoneBank: item ? item.phoneBank : "",
-          pincodeBank: item ? item.pincodeBank : "",
+          bankName: item ? item.bankName || "" : "",
+          branchName: item ? item.branchName || "" : "",
+          bankAddress: item ? item.bankAddress || "" : "",
+          bankPhone: item ? item.bankPhone || "" : "",
+          bankEmail: item ? item.bankEmail || "" : "",
+          nameBank: item ? item.nameBank || "" : "",
+          emailBank: item ? item.emailBank || "" : "",
+          phoneBank: item ? item.phoneBank || "" : "",
+          pincodeBank: item ? item.pincodeBank || "" : "",
           accountOpeningDate: item
             ? dayjs(item.accountOpeningDate).format("DD-MM-YYYY")
             : "",
-          bankIFS: item ? item.bankIFS : "",
-          addressBank: item ? item.addressBank : "",
+          bankIFS: item ? item.bankIFS || "" : "",
+          addressBank: item ? item.addressBank || "" : "",
         })),
       ],
       clamaints: [
         ...clamaints.map((item) => ({
-          namePan: item.namePan ? item.namePan : "",
-          addressAadhar: item ? item.addressAadhar : "",
-          city: item ? item.city : "",
-          state: item ? item.state : "",
-          bankName: item ? item.bankName : "",
-          bankAccountNo: item ? item.bankAccountNo : "",
-          bankIFS: item ? item.bankIFS : "",
-          bankMICR: item ? item.bankMICR : "",
-          branchName: item ? item.branchName : "",
-          countryOfBirth: item ? item.countryOfBirth : "",
-          placeOfBirth: item ? item.placeOfBirth : "",
-          nationality: item ? item.nationality : "",
-          pincodeBank: item ? item.pincodeBank : "",
-          phone: item ? item.phone : "",
-          email: item ? item.email : "",
-          age: item ? item.age : "",
-          pan: item ? item.pan : "",
-          deceasedRelationship: item ? item.deceasedRelationship : "",
+          namePan: item.namePan ? item.namePan || "" : "",
+          addressAadhar: item ? item.addressAadhar || "" : "",
+          city: item ? item.city || "" : "",
+          state: item ? item.state || "" : "",
+          bankName: item ? item.bankName || "" : "",
+          bankAccountNo: item ? item.bankAccountNo || "" : "",
+          bankIFS: item ? item.bankIFS || "" : "",
+          bankMICR: item ? item.bankMICR || "" : "",
+          branchName: item ? item.branchName || "" : "",
+          countryOfBirth: item ? item.countryOfBirth || "" : "",
+          placeOfBirth: item ? item.placeOfBirth || "" : "",
+          nationality: item ? item.nationality || "" : "",
+          pincodeBank: item ? item.pincodeBank || "" : "",
+          phone: item ? item.phone || "" : "",
+          email: item ? item.email || "" : "",
+          age: item ? item.age || "" : "",
+          pan: item ? item.pan || "" : "",
+          deceasedRelationship: item ? item.deceasedRelationship || "" : "",
         })),
       ],
       non_clamaints: [
@@ -2464,26 +2479,26 @@ export async function generateDoc(
             (itmm) => clamaints.map((i) => i.id).includes(itmm.id) === false
           )
           .map((item) => ({
-            namePan: item.namePan ? item.namePan : "",
-            addressAadhar: item ? item.addressAadhar : "",
-            pincodeBank: item ? item.pincodeBank : "",
-            phone: item ? item.phone : "",
-            age: item ? item.age : "",
-            deceasedRelationship: item ? item.deceasedRelationship : "",
+            namePan: item.namePan ? item.namePan || "" : "",
+            addressAadhar: item ? item.addressAadhar || "" : "",
+            pincodeBank: item ? item.pincodeBank || "" : "",
+            phone: item ? item.phone || "" : "",
+            age: item ? item.age || "" : "",
+            deceasedRelationship: item ? item.deceasedRelationship || "" : "",
           })),
       ],
       affidavitLegalHeirs: affidavitLegalHeirs.map((item) => ({
-        namePan: item.namePan ? item.namePan : "",
-        nameAadhar: item.nameAadhar ? item.nameAadhar : "",
-        aadhar: item.aadhar ? item.aadhar : "",
-        pan: item.pan ? item.pan : "",
-        shareholderNameCertificate: item.namePan ? item.namePan : "",
+        namePan: item.namePan ? item.namePan || "" : "",
+        nameAadhar: item.nameAadhar ? item.nameAadhar || "" : "",
+        aadhar: item.aadhar ? item.aadhar || "" : "",
+        pan: item.pan ? item.pan || "" : "",
+        shareholderNameCertificate: item.namePan ? item.namePan || "" : "",
         deceasedRelationship: item.deceasedRelationship
-          ? item.deceasedRelationship
+          ? item.deceasedRelationship || ""
           : "",
-        age: item.age ? item.age : "",
-        addressBank: item.addressBank ? item.addressBank : "",
-        husbandName: item.husbandName ? item.husbandName : "",
+        age: item.age ? item.age || "" : "",
+        addressBank: item.addressBank ? item.addressBank || "" : "",
+        husbandName: item.husbandName ? item.husbandName || "" : "",
       })),
       affidavitShareholders: affidavitShareholders.map((item, index) => ({
         namePan: item.namePan ? item.namePan : "",
@@ -2584,34 +2599,48 @@ export async function generateDoc(
       ],
       declaration: [
         {
-          name: folio.shareholderName1 ? folio.shareholderName1.namePan : "",
+          name: folio.shareholderName1
+            ? folio.shareholderName1.namePan || ""
+            : "",
           address:
             (folio.shareholderName1
-              ? folio.shareholderName1.addressAadhar
+              ? folio.shareholderName1.addressAadhar || ""
               : "") +
             " " +
-            (folio.shareholderName1 ? folio.shareholderName1.pincodeBank : ""),
-          pin: folio.shareholderName1 ? folio.shareholderName1.pincodeBank : "",
+            (folio.shareholderName1
+              ? folio.shareholderName1.pincodeBank || ""
+              : ""),
+          pin: folio.shareholderName1
+            ? folio.shareholderName1.pincodeBank || ""
+            : "",
         },
         {
-          name: folio.shareholderName2 ? folio.shareholderName2.namePan : "",
+          name: folio.shareholderName2
+            ? folio.shareholderName2.namePan || ""
+            : "",
           address:
             (folio.shareholderName2
-              ? folio.shareholderName2.addressAadhar
+              ? folio.shareholderName2.addressAadhar || ""
               : "") +
             " " +
-            (folio.shareholderName2 ? folio.shareholderName2.pincodeBank : ""),
-          pin: folio.shareholderName2 ? folio.shareholderName2.pincodeBank : "",
+            (folio.shareholderName2
+              ? folio.shareholderName2.pincodeBank || ""
+              : ""),
+          pin: folio.shareholderName2
+            ? folio.shareholderName2.pincodeBank || ""
+            : "",
         },
         {
-          name: folio.shareholderName3 ? folio.shareholderName3.namePan : "",
+          name: folio.shareholderName3
+            ? folio.shareholderName3.namePan || ""
+            : "",
           address:
             (folio.shareholderName3
-              ? folio.shareholderName3.addressAadhar
+              ? folio.shareholderName3.addressAadhar || ""
               : "") +
             " " +
-            (folio.shareholderName3 ? folio.shareholderName3.pincodeBank : ""),
-          pin: folio.shareholderName3 ? folio.shareholderName3.pincodeBank : "",
+            (folio.shareholderName3 ? folio.shareholderName3.pincodeBank || "" : ""),
+          pin: folio.shareholderName3 ? folio.shareholderName3.pincodeBank || "" : "",
         },
       ],
       pans: [
