@@ -538,7 +538,7 @@ export const generateFormADoc: (
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `"3. I/We ${payload.details
+                  text: `3. I/We ${payload.details
                     .map((item) => item.namePan)
                     .join(
                       " ;"

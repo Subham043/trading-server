@@ -705,7 +705,7 @@ export const generateAnnexureFDoc: (
             new Paragraph({
               children: [
                 new TextRun({
-                  text: "(iv) That I / We are the legal heir(s) of the deceased holder, apart from the Claimant(s)who has/ have applied for transmission of the aforesaid securities and our details are as follows: ",
+                  text: "(iv) That I / We are the legal heir(s) of the deceased holder, apart from the Claimant(s) who has/ have applied for transmission of the aforesaid securities and our details are as follows: ",
                   size: 25,
                   font: "Calibri",
                 }),
@@ -998,7 +998,7 @@ export const generateAnnexureFDoc: (
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `"(vi) Accordingly, I / we declare that I / we have NO OBJECTION WHATSOEVER in ${payload.companyName} transmitting the aforesaid securities in favour of the Claimant(s) Mr./Ms. ${payload.clamaints_pan_name}.`,
+                  text: `(vi) Accordingly, I / we declare that I / we have NO OBJECTION WHATSOEVER in ${payload.companyName} transmitting the aforesaid securities in favour of the Claimant(s) Mr./Ms. ${payload.clamaints_pan_name}.`,
                   size: 25,
                   font: "Calibri",
                 }),

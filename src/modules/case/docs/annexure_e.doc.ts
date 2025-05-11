@@ -235,7 +235,7 @@ export const generateAnnexureEDoc: (
                         new Paragraph({
                           children: [
                             new TextRun({
-                              text: "Name	of	the Company",
+                              text: "Name of the Company",
                               size: 25,
                               bold: true,
                             }),
@@ -1201,7 +1201,7 @@ export const generateAnnexureEDoc: (
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `Therefore,	I/We,	the	Legal	Heir(s)/Claimant(s)	and	deponent(s)	herein	has/have, approached ${payload.companyName}, ${payload.companyRTA} with a request to transmit the aforesaid securities in the name of the undersigned Mr. /Ms. ${payload.clamaints_pan_name} on my/our behalf, without insisting on production of a Succession Certificate/ Probate of Will / Letter of Administration or any Court order, for which we execute an indemnity as is herein contained and on relying on the information herein given by us, believing the same to be true.`,
+                  text: `Therefore,	I/We, the Legal Heir(s)/Claimant(s) and deponent(s) herein has/have, approached ${payload.companyName}, ${payload.companyRTA} with a request to transmit the aforesaid securities in the name of the undersigned Mr. /Ms. ${payload.clamaints_pan_name} on my/our behalf, without insisting on production of a Succession Certificate/ Probate of Will / Letter of Administration or any Court order, for which we execute an indemnity as is herein contained and on relying on the information herein given by us, believing the same to be true.`,
                   size: 25,
                   font: "Calibri",
                 }),
