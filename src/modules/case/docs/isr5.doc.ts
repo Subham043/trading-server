@@ -359,6 +359,7 @@ export const generateISR5Doc: (
                                         }),
                                       ],
                                     }),
+                                    new Paragraph(""),
                                     new Paragraph({
                                       children: [
                                         new TextRun({
@@ -370,7 +371,7 @@ export const generateISR5Doc: (
                                       ],
                                     }),
                                   ],
-                                  verticalAlign: VerticalAlign.CENTER,
+                                  verticalAlign: VerticalAlign.TOP,
                                   width: {
                                     size: 4000, // 1/2 of the table
                                     type: WidthType.DXA,
@@ -389,6 +390,7 @@ export const generateISR5Doc: (
                                         }),
                                       ],
                                     }),
+                                    new Paragraph(""),
                                     new Paragraph({
                                       children: [
                                         new TextRun({
@@ -398,7 +400,7 @@ export const generateISR5Doc: (
                                       ],
                                     }),
                                   ],
-                                  verticalAlign: VerticalAlign.CENTER,
+                                  verticalAlign: VerticalAlign.TOP,
                                   width: {
                                     size: 3000, // 1/2 of the table
                                     type: WidthType.DXA,
@@ -414,6 +416,7 @@ export const generateISR5Doc: (
                                         }),
                                       ],
                                     }),
+                                    new Paragraph(""),
                                     new Paragraph({
                                       children: [
                                         new TextRun({
@@ -425,7 +428,7 @@ export const generateISR5Doc: (
                                       ],
                                     }),
                                   ],
-                                  verticalAlign: VerticalAlign.CENTER,
+                                  verticalAlign: VerticalAlign.TOP,
                                   width: {
                                     size: 4000, // 1/2 of the table
                                     type: WidthType.DXA,
@@ -522,14 +525,38 @@ export const generateISR5Doc: (
                   children: [
                     new TableCell({
                       children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: payload.pan,
-                              size: 25,
+                        new Paragraph(""),
+                        new Table({
+                          columnWidths: [
+                            ...Array((payload.pan ?? "").split("").length).fill(
+                              500
+                            ),
+                          ],
+                          rows: [
+                            new TableRow({
+                              children: [
+                                ...(payload.pan ?? "").split("").map(
+                                  (it) =>
+                                    new TableCell({
+                                      children: [
+                                        new Paragraph({
+                                          children: [
+                                            new TextRun({
+                                              text: it,
+                                              size: 25,
+                                            }),
+                                          ],
+                                          alignment: AlignmentType.CENTER,
+                                        }),
+                                      ],
+                                      verticalAlign: VerticalAlign.CENTER,
+                                    })
+                                ),
+                              ],
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({
@@ -1458,12 +1485,40 @@ export const generateISR5Doc: (
                               size: 25,
                               bold: true,
                             }),
-                            new TextRun({
-                              text: ` ${payload.bankAccountNo}`,
-                              size: 25,
+                          ],
+                        }),
+                        new Paragraph(""),
+                        new Table({
+                          columnWidths: [
+                            ...Array(
+                              (payload.bankAccountNo ?? "").split("").length
+                            ).fill(500),
+                          ],
+                          rows: [
+                            new TableRow({
+                              children: [
+                                ...(payload.bankAccountNo ?? "").split("").map(
+                                  (it) =>
+                                    new TableCell({
+                                      children: [
+                                        new Paragraph({
+                                          children: [
+                                            new TextRun({
+                                              text: it,
+                                              size: 25,
+                                            }),
+                                          ],
+                                          alignment: AlignmentType.CENTER,
+                                        }),
+                                      ],
+                                      verticalAlign: VerticalAlign.CENTER,
+                                    })
+                                ),
+                              ],
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
                       width: {
@@ -1489,12 +1544,40 @@ export const generateISR5Doc: (
                               size: 25,
                               bold: true,
                             }),
-                            new TextRun({
-                              text: ` ${payload.bankIFS}`,
-                              size: 25,
+                          ],
+                        }),
+                        new Paragraph(""),
+                        new Table({
+                          columnWidths: [
+                            ...Array(
+                              (payload.bankIFS ?? "").split("").length
+                            ).fill(500),
+                          ],
+                          rows: [
+                            new TableRow({
+                              children: [
+                                ...(payload.bankIFS ?? "").split("").map(
+                                  (it) =>
+                                    new TableCell({
+                                      children: [
+                                        new Paragraph({
+                                          children: [
+                                            new TextRun({
+                                              text: it,
+                                              size: 25,
+                                            }),
+                                          ],
+                                          alignment: AlignmentType.CENTER,
+                                        }),
+                                      ],
+                                      verticalAlign: VerticalAlign.CENTER,
+                                    })
+                                ),
+                              ],
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
                       width: {
@@ -1607,12 +1690,40 @@ export const generateISR5Doc: (
                               size: 25,
                               bold: true,
                             }),
-                            new TextRun({
-                              text: ` ${payload.bankMICR}`,
-                              size: 25,
+                          ],
+                        }),
+                        new Paragraph(""),
+                        new Table({
+                          columnWidths: [
+                            ...Array(
+                              (payload.bankMICR ?? "").split("").length
+                            ).fill(500),
+                          ],
+                          rows: [
+                            new TableRow({
+                              children: [
+                                ...(payload.bankMICR ?? "").split("").map(
+                                  (it) =>
+                                    new TableCell({
+                                      children: [
+                                        new Paragraph({
+                                          children: [
+                                            new TextRun({
+                                              text: it,
+                                              size: 25,
+                                            }),
+                                          ],
+                                          alignment: AlignmentType.CENTER,
+                                        }),
+                                      ],
+                                      verticalAlign: VerticalAlign.CENTER,
+                                    })
+                                ),
+                              ],
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
                       width: {

@@ -12,6 +12,7 @@ import {
   WidthType,
   HeightRule,
   CheckBox,
+  BorderStyle,
 } from "docx";
 import fs from "fs";
 
@@ -122,15 +123,106 @@ export const generateISR4Doc: (
               alignment: AlignmentType.LEFT,
             }),
             new Paragraph(" "),
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Demat Account No. (If available): ",
-                  size: 25,
-                  font: "Calibri",
+            new Table({
+              width: {
+                size: 11000, // total width of the table in DXA (~6.25 inches)
+                type: WidthType.DXA,
+              },
+              borders: {
+                top: {
+                  style: BorderStyle.SINGLE,
+                  color: "#ffffff",
+                },
+                bottom: {
+                  style: BorderStyle.SINGLE,
+                  color: "#ffffff",
+                },
+                left: {
+                  style: BorderStyle.SINGLE,
+                  color: "#ffffff",
+                },
+                right: {
+                  style: BorderStyle.SINGLE,
+                  color: "#ffffff",
+                },
+                insideHorizontal: {
+                  style: BorderStyle.SINGLE,
+                  color: "#ffffff",
+                },
+                insideVertical: {
+                  style: BorderStyle.SINGLE,
+                  color: "#ffffff",
+                },
+              },
+              columnWidths: [4500, 6500],
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Demat Account No. (If available): ",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 4500, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Table({
+                          columnWidths: [
+                            ...Array(
+                              (payload.dematAccountNo ?? "").split("").length
+                            ).fill(500),
+                          ],
+                          rows: [
+                            new TableRow({
+                              children: [
+                                ...(payload.dematAccountNo ?? "").split("").map(
+                                  (it) =>
+                                    new TableCell({
+                                      children: [
+                                        new Paragraph({
+                                          children: [
+                                            new TextRun({
+                                              text: it,
+                                              size: 25,
+                                            }),
+                                          ],
+                                          alignment: AlignmentType.CENTER,
+                                        }),
+                                      ],
+                                      verticalAlign: VerticalAlign.CENTER,
+                                    })
+                                ),
+                              ],
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 6500, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                  ],
+                  height: {
+                    value: 500,
+                    rule: HeightRule.ATLEAST,
+                  },
+                  cantSplit: true,
                 }),
               ],
-              alignment: AlignmentType.LEFT,
+              alignment: AlignmentType.CENTER,
             }),
             new Paragraph(" "),
             new Paragraph({
@@ -1270,7 +1362,7 @@ export const generateISR4Doc: (
         },
       ],
     });
-  
+
     Packer.toBuffer(doc)
       .then((buffer) => {
         fs.writeFileSync(outputPath, buffer);

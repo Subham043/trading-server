@@ -104,7 +104,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
               ],
               alignment: AlignmentType.CENTER,
             }),
-  
+
             new Paragraph(""),
             new Paragraph({
               children: [
@@ -435,6 +435,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                     }),
                     new TableCell({
                       children: [
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({
@@ -447,6 +448,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({
@@ -459,6 +461,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({
@@ -471,6 +474,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
                       width: {
@@ -507,6 +511,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                     }),
                     new TableCell({
                       children: [
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({
@@ -515,6 +520,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({
@@ -525,6 +531,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
                       width: {
@@ -560,8 +567,9 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                       },
                     }),
                     new TableCell({
-                      children: payload.certificate.map(
-                        (item) =>
+                      children: payload.certificate.flatMap((item) => {
+                        return [
+                          new Paragraph(""),
                           new Paragraph({
                             children: [
                               new TextRun({
@@ -569,8 +577,10 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                                 size: 25,
                               }),
                             ],
-                          })
-                      ),
+                          }),
+                          new Paragraph(""),
+                        ];
+                      }),
                       verticalAlign: VerticalAlign.CENTER,
                       width: {
                         size: 7000, // 1/2 of the table
@@ -807,28 +817,72 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                     }),
                     new TableCell({
                       children: [
-                        ...payload.pans.map(
-                          (item) =>
-                            new Paragraph({
-                              children: [
-                                new TextRun({
-                                  text: item,
-                                  size: 25,
+                        ...payload.pans.flatMap((item) => {
+                          return [
+                            new Table({
+                              columnWidths: [
+                                ...Array(item.split("").length).fill(500),
+                              ],
+                              rows: [
+                                new TableRow({
+                                  children: [
+                                    ...item.split("").map(
+                                      (it) =>
+                                        new TableCell({
+                                          children: [
+                                            new Paragraph({
+                                              children: [
+                                                new TextRun({
+                                                  text: it,
+                                                  size: 25,
+                                                }),
+                                              ],
+                                              alignment: AlignmentType.CENTER,
+                                            }),
+                                          ],
+                                          verticalAlign: VerticalAlign.CENTER,
+                                        })
+                                    ),
+                                  ],
                                 }),
                               ],
-                            })
-                        ),
-                        ...payload.aadhars.map(
-                          (item) =>
-                            new Paragraph({
-                              children: [
-                                new TextRun({
-                                  text: item,
-                                  size: 25,
+                            }),
+                            new Paragraph(""),
+                          ];
+                        }),
+                        ...payload.aadhars.flatMap((item) => {
+                          return [
+                            new Table({
+                              columnWidths: [
+                                ...Array(item.split("").length).fill(500),
+                              ],
+                              rows: [
+                                new TableRow({
+                                  children: [
+                                    ...item.split("").map(
+                                      (it) =>
+                                        new TableCell({
+                                          children: [
+                                            new Paragraph({
+                                              children: [
+                                                new TextRun({
+                                                  text: it,
+                                                  size: 25,
+                                                }),
+                                              ],
+                                              alignment: AlignmentType.CENTER,
+                                            }),
+                                          ],
+                                          verticalAlign: VerticalAlign.CENTER,
+                                        })
+                                    ),
+                                  ],
                                 }),
                               ],
-                            })
-                        ),
+                            }),
+                            new Paragraph(""),
+                          ];
+                        }),
                         new Paragraph({
                           children: [
                             new TextRun({
@@ -906,22 +960,69 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                     }),
                     new TableCell({
                       children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: payload.DPID ?? "",
-                              size: 25,
+                        new Paragraph(""),
+                        new Table({
+                          columnWidths: [
+                            ...Array(
+                              (payload.DPID ?? "").split("").length
+                            ).fill(500),
+                          ],
+                          rows: [
+                            new TableRow({
+                              children: [
+                                ...(payload.DPID ?? "").split("").map(
+                                  (it) =>
+                                    new TableCell({
+                                      children: [
+                                        new Paragraph({
+                                          children: [
+                                            new TextRun({
+                                              text: it,
+                                              size: 25,
+                                            }),
+                                          ],
+                                          alignment: AlignmentType.CENTER,
+                                        }),
+                                      ],
+                                      verticalAlign: VerticalAlign.CENTER,
+                                    })
+                                ),
+                              ],
                             }),
                           ],
                         }),
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: payload.dematAccountNo ?? "",
-                              size: 25,
+                        new Paragraph(""),
+                        new Table({
+                          columnWidths: [
+                            ...Array(
+                              (payload.dematAccountNo ?? "").split("").length
+                            ).fill(500),
+                          ],
+                          rows: [
+                            new TableRow({
+                              children: [
+                                ...(payload.dematAccountNo ?? "").split("").map(
+                                  (it) =>
+                                    new TableCell({
+                                      children: [
+                                        new Paragraph({
+                                          children: [
+                                            new TextRun({
+                                              text: it,
+                                              size: 25,
+                                            }),
+                                          ],
+                                          alignment: AlignmentType.CENTER,
+                                        }),
+                                      ],
+                                      verticalAlign: VerticalAlign.CENTER,
+                                    })
+                                ),
+                              ],
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({
@@ -1362,14 +1463,38 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                     }),
                     new TableCell({
                       children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: payload.phone ?? "",
-                              size: 25,
+                        new Paragraph(""),
+                        new Table({
+                          columnWidths: [
+                            ...Array(
+                              (payload.phone ?? "").split("").length
+                            ).fill(500),
+                          ],
+                          rows: [
+                            new TableRow({
+                              children: [
+                                ...(payload.phone ?? "").split("").map(
+                                  (it) =>
+                                    new TableCell({
+                                      children: [
+                                        new Paragraph({
+                                          children: [
+                                            new TextRun({
+                                              text: it,
+                                              size: 25,
+                                            }),
+                                          ],
+                                          alignment: AlignmentType.CENTER,
+                                        }),
+                                      ],
+                                      verticalAlign: VerticalAlign.CENTER,
+                                    })
+                                ),
+                              ],
                             }),
                           ],
                         }),
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({

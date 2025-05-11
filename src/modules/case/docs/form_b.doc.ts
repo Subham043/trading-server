@@ -195,7 +195,7 @@ export const generateFormBDoc: (
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `"I/We, ${payload.details
+                  text: `I/We, ${payload.details
                     .map(
                       (item) =>
                         `${item.name} ${item.deceasedRelationship} of ${payload.shareholderNameDeath} residing at ${item.address}, ${item.pin} having Permanent Account No (s) ${item.pan}`
@@ -700,18 +700,6 @@ export const generateFormBDoc: (
                                         new TextRun({
                                           text: payload.addressAadhar,
                                           size: 25,
-                                          underline: {
-                                            color: "#222222"
-                                          }
-                                        }),
-                                      ],
-                                    }),
-                                    new Paragraph(""),
-                                    new Paragraph({
-                                      children: [
-                                        new TextRun({
-                                          text: "___________________________________",
-                                          size: 25,
                                         }),
                                       ],
                                     }),
@@ -740,9 +728,44 @@ export const generateFormBDoc: (
                                     new Paragraph({
                                       children: [
                                         new TextRun({
-                                          text: "Tel No:",
+                                          text: `Tel No: `,
                                           size: 25,
                                           bold: true,
+                                        }),
+                                      ],
+                                    }),
+                                    new Paragraph(""),
+                                    new Table({
+                                      columnWidths: [
+                                        ...Array(
+                                          (payload.phone ?? "").split("").length
+                                        ).fill(500),
+                                      ],
+                                      rows: [
+                                        new TableRow({
+                                          children: [
+                                            ...(payload.phone ?? "")
+                                              .split("")
+                                              .map(
+                                                (it) =>
+                                                  new TableCell({
+                                                    children: [
+                                                      new Paragraph({
+                                                        children: [
+                                                          new TextRun({
+                                                            text: it,
+                                                            size: 25,
+                                                          }),
+                                                        ],
+                                                        alignment:
+                                                          AlignmentType.CENTER,
+                                                      }),
+                                                    ],
+                                                    verticalAlign:
+                                                      VerticalAlign.CENTER,
+                                                  })
+                                              ),
+                                          ],
                                         }),
                                       ],
                                     }),
@@ -750,25 +773,7 @@ export const generateFormBDoc: (
                                   ],
                                   verticalAlign: VerticalAlign.CENTER,
                                   width: {
-                                    size: 1000, // 1/2 of the table
-                                    type: WidthType.DXA,
-                                  },
-                                  columnSpan: 2,
-                                }),
-                                new TableCell({
-                                  children: [
-                                    new Paragraph({
-                                      children: [
-                                        new TextRun({
-                                          text: payload.phone,
-                                          size: 25,
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                  verticalAlign: VerticalAlign.CENTER,
-                                  width: {
-                                    size: 4500, // 1/2 of the table
+                                    size: 5500, // 1/2 of the table
                                     type: WidthType.DXA,
                                   },
                                   columnSpan: 2,
@@ -788,7 +793,7 @@ export const generateFormBDoc: (
                                     new Paragraph({
                                       children: [
                                         new TextRun({
-                                          text: "Email Id:",
+                                          text: `Email Id: ${payload.email}`,
                                           size: 25,
                                           bold: true,
                                         }),
@@ -798,28 +803,10 @@ export const generateFormBDoc: (
                                   ],
                                   verticalAlign: VerticalAlign.CENTER,
                                   width: {
-                                    size: 1000, // 1/2 of the table
+                                    size: 5500, // 1/2 of the table
                                     type: WidthType.DXA,
                                   },
-                                  columnSpan: 2,
-                                }),
-                                new TableCell({
-                                  children: [
-                                    new Paragraph({
-                                      children: [
-                                        new TextRun({
-                                          text: payload.email,
-                                          size: 25,
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                  verticalAlign: VerticalAlign.CENTER,
-                                  width: {
-                                    size: 4500, // 1/2 of the table
-                                    type: WidthType.DXA,
-                                  },
-                                  columnSpan: 2,
+                                  columnSpan: 2
                                 }),
                               ],
                               height: {
@@ -846,26 +833,7 @@ export const generateFormBDoc: (
                                   ],
                                   verticalAlign: VerticalAlign.CENTER,
                                   width: {
-                                    size: 1000, // 1/2 of the table
-                                    type: WidthType.DXA,
-                                  },
-                                  columnSpan: 2,
-                                }),
-                                new TableCell({
-                                  children: [
-                                    new Paragraph({
-                                      children: [
-                                        new TextRun({
-                                          text: "",
-                                          size: 25,
-                                          bold: true,
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                  verticalAlign: VerticalAlign.CENTER,
-                                  width: {
-                                    size: 4500, // 1/2 of the table
+                                    size: 5500, // 1/2 of the table
                                     type: WidthType.DXA,
                                   },
                                   columnSpan: 2,
@@ -968,10 +936,11 @@ export const generateFormBDoc: (
                         }),
                         new Paragraph(""),
                         new Paragraph(""),
+                        new Paragraph(""),
                         new Paragraph({
                           children: [
                             new TextRun({
-                              text: "Signature Checked By: ___________________________",
+                              text: "Signature Checked By: __________________",
                               size: 25,
                               bold: true,
                             }),
