@@ -40,8 +40,8 @@ import { generateISR3Doc } from "./docs/isr3.doc";
 // import { generateSuretyDoc } from "./docs/surety.doc";
 import { generateDeletionDoc } from "./docs/deletion.doc";
 import { generateAnnexureDDoc } from "./docs/annexure_d.doc";
-// import { generateAffidavitDoc } from "./docs/affidavit.doc";
-// import { generateAffidavit2Doc } from "./docs/affidavit2.doc";
+import { generateAffidavitDoc } from "./docs/affidavit.doc";
+import { generateAffidavit2Doc } from "./docs/affidavit2.doc";
 import { generateAnnexureEDoc } from "./docs/annexure_e.doc";
 import { generateAnnexureFDoc } from "./docs/annexure_f.doc";
 import { generateFormADoc } from "./docs/form_a.doc";
@@ -2077,22 +2077,6 @@ export async function generateDoc(
 ): Promise<string> {
   const { id } = params;
 
-  // const caseDocGenerator = new CaseDocGenerator({id});
-
-  // const doc = await caseDocGenerator.generateDoc();
-
-  // return doc;
-
-  // const folderName = "doc_" + id + "_" + Date.now();
-
-  // const folderPath = path.resolve(
-  //   __dirname,
-  //   "../../../static/word_output/" + folderName
-  // );
-  // if (!fs.existsSync(folderPath)) {
-  //   fs.mkdirSync(folderPath);
-  // }
-
   const shareHolderMaster = await prisma.case.findUnique({
     where: {
       id: Number(id),
@@ -2128,8 +2112,8 @@ export async function generateDoc(
 
   let foliosSet: (FolioType & { certificate: CertificateType[] })[] = [];
   let clamaints: LegalHeirDetailType[] = [];
-  // let affidavitShareholders: ShareHolderDetailType[] = [];
-  // let affidavitLegalHeirs: LegalHeirDetailType[] = [];
+  let affidavitShareholders: ShareHolderDetailType[] = [];
+  let affidavitLegalHeirs: LegalHeirDetailType[] = [];
   let nominations: NominationType[] = [];
   // let order: ShareHolderDetailType[] = [];
 
@@ -2226,52 +2210,52 @@ export async function generateDoc(
   //     });
   //   }
   // }
-  // if (shareHolderMaster.allowAffidavit === "Yes") {
-  //   if (
-  //     shareHolderMaster.selectAffidavitShareholder &&
-  //     shareHolderMaster.selectAffidavitShareholder.split("_").length > 0
-  //   ) {
-  //     const inAffidavitShareholders = shareHolderMaster.selectAffidavitShareholder
-  //       ?.split("_")
-  //       .map((claimant) =>
-  //         isNaN(Number(claimant)) ? undefined : Number(claimant)
-  //       )
-  //       .filter((claimant) => claimant !== undefined) as number[];
-  //     if (inAffidavitShareholders.length > 0) {
-  //       affidavitShareholders = await prisma.shareHolderDetail.findMany({
-  //         where: {
-  //           id: {
-  //             in: inAffidavitShareholders,
-  //           },
-  //         },
-  //       });
-  //     }
-  //   }
-  // }
-  // if (shareHolderMaster.allowAffidavit === "Yes") {
-  //   if (
-  //     shareHolderMaster.selectAffidavitLegalHeir &&
-  //     shareHolderMaster.selectAffidavitLegalHeir.split("_").length > 0
-  //   ) {
-  //     const inAffidavitLegalHeirs = shareHolderMaster.selectAffidavitLegalHeir
-  //       ?.split("_")
-  //       .map((claimant) =>
-  //         isNaN(Number(claimant)) ? undefined : Number(claimant)
-  //       )
-  //       .filter((claimant) => claimant !== undefined) as number[];
-  //     if (inAffidavitLegalHeirs.length > 0) {
-  //       if (shareHolderMaster.caseType.includes("Transmission")) {
-  //         affidavitLegalHeirs = await prisma.legalHeirDetail.findMany({
-  //           where: {
-  //             id: {
-  //               in: inAffidavitLegalHeirs,
-  //             },
-  //           },
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
+  if (shareHolderMaster.allowAffidavit === "Yes") {
+    if (
+      shareHolderMaster.selectAffidavitShareholder &&
+      shareHolderMaster.selectAffidavitShareholder.split("_").length > 0
+    ) {
+      const inAffidavitShareholders = shareHolderMaster.selectAffidavitShareholder
+        ?.split("_")
+        .map((claimant) =>
+          isNaN(Number(claimant)) ? undefined : Number(claimant)
+        )
+        .filter((claimant) => claimant !== undefined) as number[];
+      if (inAffidavitShareholders.length > 0) {
+        affidavitShareholders = await prisma.shareHolderDetail.findMany({
+          where: {
+            id: {
+              in: inAffidavitShareholders,
+            },
+          },
+        });
+      }
+    }
+  }
+  if (shareHolderMaster.allowAffidavit === "Yes") {
+    if (
+      shareHolderMaster.selectAffidavitLegalHeir &&
+      shareHolderMaster.selectAffidavitLegalHeir.split("_").length > 0
+    ) {
+      const inAffidavitLegalHeirs = shareHolderMaster.selectAffidavitLegalHeir
+        ?.split("_")
+        .map((claimant) =>
+          isNaN(Number(claimant)) ? undefined : Number(claimant)
+        )
+        .filter((claimant) => claimant !== undefined) as number[];
+      if (inAffidavitLegalHeirs.length > 0) {
+        if (shareHolderMaster.caseType.includes("Transmission")) {
+          affidavitLegalHeirs = await prisma.legalHeirDetail.findMany({
+            where: {
+              id: {
+                in: inAffidavitLegalHeirs,
+              },
+            },
+          });
+        }
+      }
+    }
+  }
   if (
     shareHolderMaster.selectNomination &&
     shareHolderMaster.selectNomination.split("_").length > 0
@@ -2331,6 +2315,7 @@ export async function generateDoc(
         shareHolderMaster.shareCertificateMaster?.companyMaster
           ?.registrarMasterBranch?.pincode || "",
       Folio: folio.Folio,
+      allowAffidavit: shareHolderMaster.allowAffidavit === "Yes" ? true : false,
       isMinor: shareHolderMaster.isMinor === "Yes" ? true : false,
       guardianName: shareHolderMaster.guardianName || "",
       dobMinor: shareHolderMaster.dobMinor
@@ -2358,7 +2343,9 @@ export async function generateDoc(
           .toString()
       ),
       combinedTotalFaceValue:
-        folio.certificate.length > 0 ? Number(folio.certificate[0].faceValue) ?? 0 : 0,
+        folio.certificate.length > 0
+          ? Number(folio.certificate[0].faceValue) ?? 0
+          : 0,
       certificateCount: folio.certificate.length,
       certificate: folio.certificate.map((item, i) => ({
         // ...item,
@@ -2420,7 +2407,7 @@ export async function generateDoc(
       emailBank: folio.shareholderName1 ? folio.shareholderName1.emailBank : "",
       phoneBank: folio.shareholderName1 ? folio.shareholderName1.phoneBank : "",
       pincodeBank: folio.shareholderName1
-        ? (folio.shareholderName1.pincodeBank || "")
+        ? folio.shareholderName1.pincodeBank || ""
         : "",
       accountOpeningDate: folio.shareholderName1
         ? dayjs(folio.shareholderName1.accountOpeningDate).format("DD-MM-YYYY")
@@ -2430,7 +2417,7 @@ export async function generateDoc(
         ? folio.shareholderName1.addressBank
         : "",
       addressAadhar: folio.shareholderName1
-        ? (folio.shareholderName1.addressAadhar || "")
+        ? folio.shareholderName1.addressAadhar || ""
         : "",
       email: folio.shareholderName1 ? folio.shareholderName1.email : "",
       phone: folio.shareholderName1 ? folio.shareholderName1.phone : "",
@@ -2490,6 +2477,35 @@ export async function generateDoc(
             deceasedRelationship: item ? item.deceasedRelationship : "",
           })),
       ],
+      affidavitLegalHeirs: affidavitLegalHeirs.map((item) => ({
+        namePan: item.namePan ? item.namePan : "",
+        nameAadhar: item.nameAadhar ? item.nameAadhar : "",
+        aadhar: item.aadhar ? item.aadhar : "",
+        pan: item.pan ? item.pan : "",
+        shareholderNameCertificate: item.namePan ? item.namePan : "",
+        deceasedRelationship: item.deceasedRelationship
+          ? item.deceasedRelationship
+          : "",
+        age: item.age ? item.age : "",
+        addressBank: item.addressBank ? item.addressBank : "",
+        husbandName: item.husbandName ? item.husbandName : "",
+      })),
+      affidavitShareholders: affidavitShareholders.map((item, index) => ({
+        namePan: item.namePan ? item.namePan : "",
+        nameAadhar: item.nameAadhar ? item.nameAadhar : "",
+        aadhar: item.aadhar ? item.aadhar : "",
+        pan: item.pan ? item.pan : "",
+        shareholderNameCertificate:
+          folio.certificate.length > 0
+            ? folio.certificate[folio.certificate.length - 1][
+                `shareholderName${index + 1}Txt`
+              ] || ""
+            : "",
+        deceasedRelationship: "D/W/S/o",
+        age: item.age ? item.age : "",
+        addressBank: item.addressBank ? item.addressBank : "",
+        husbandName: item.husbandName ? item.husbandName : "",
+      })),
       form_duplicate_1: [
         {
           name:
@@ -3332,6 +3348,7 @@ export async function generateDoc(
       "form_no_sh_13",
       "Form_SH_14",
       "Deletion",
+      "Affidavit",
     ],
     DeletionIssueDuplicate: [
       "ISR1",
@@ -3411,15 +3428,68 @@ export async function generateDoc(
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateISR3Doc(data, wordOutputPath);
-      } 
-      else if (casee === "ISR4") {
+      } else if (casee === "ISR4") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
         );
         await generateISR4Doc(data, wordOutputPath);
-      } 
-      else if (casee === "Form_A_Duplicate") {
+      } else if (casee === "Affidavit") {
+        if (item.allowAffidavit) {
+          if (item.Case.includes("Transmission")) {
+            for (let idx = 0; idx < item.affidavitLegalHeirs.length; idx++) {
+              const i = item.affidavitLegalHeirs[idx];
+              const wordOutputPath = path.resolve(
+                __dirname,
+                folioFolderPath +
+                  "/" +
+                  "AffidavitLegalHeirs" +
+                  "_" +
+                  (idx + 1) +
+                  ".docx"
+              );
+              await generateAffidavit2Doc(
+                {
+                  ...i,
+                  shareholderNameDeath: item.shareholderNameDeath,
+                  companyName: item.companyName,
+                  placeOfDeath: item.placeOfDeath,
+                },
+                wordOutputPath
+              );
+            }
+          }
+          for (
+            let idx = 0;
+            idx <
+            (item.Case.includes("Transmission")
+              ? item.affidavitLegalHeirs.length
+              : item.affidavitShareholders.length);
+            idx++
+          ) {
+            const i = (
+              item.Case.includes("Transmission")
+                ? item.affidavitLegalHeirs
+                : item.affidavitShareholders
+            )[idx];
+            const wordOutputPath = path.resolve(
+              __dirname,
+              folioFolderPath +
+                "/" +
+                "AffidavitShareholders" +
+                "_" +
+                (idx + 1) +
+                ".docx"
+            );
+            await generateAffidavitDoc(
+              {
+                ...i,
+              },
+              wordOutputPath
+            );
+          }
+        }
+      } else if (casee === "Form_A_Duplicate") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
@@ -3438,8 +3508,7 @@ export async function generateDoc(
           },
           wordOutputPath
         );
-      } 
-      else if (casee === "Form_B_Duplicate") {
+      } else if (casee === "Form_B_Duplicate") {
         const wordOutputPath = path.resolve(
           __dirname,
           folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
