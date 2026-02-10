@@ -186,7 +186,7 @@ export const generateISR4Doc: (
                                 " " +
                                 (payload.dematAccountNo ?? "")
                               ).split("").length,
-                            ).fill(400),
+                            ).fill(350),
                           ],
                           rows: [
                             new TableRow({
