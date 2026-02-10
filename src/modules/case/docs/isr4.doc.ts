@@ -181,29 +181,39 @@ export const generateISR4Doc: (
                         new Table({
                           columnWidths: [
                             ...Array(
-                              ((payload.dematAccountNo ?? "") + " " + (payload.DPID ?? "")).split("").length
+                              (
+                                (payload.DPID ?? "") +
+                                " " +
+                                (payload.dematAccountNo ?? "")
+                              ).split("").length,
                             ).fill(500),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...((payload.dematAccountNo ?? "") + " " + (payload.DPID ?? "")).split("").map(
-                                  (it) =>
-                                    new TableCell({
-                                      children: [
-                                        new Paragraph({
-                                          children: [
-                                            new TextRun({
-                                              text: it,
-                                              size: 25,
-                                            }),
-                                          ],
-                                          alignment: AlignmentType.CENTER,
-                                        }),
-                                      ],
-                                      verticalAlign: VerticalAlign.CENTER,
-                                    })
-                                ),
+                                ...(
+                                  (payload.DPID ?? "") +
+                                  " " +
+                                  (payload.dematAccountNo ?? "")
+                                )
+                                  .split("")
+                                  .map(
+                                    (it) =>
+                                      new TableCell({
+                                        children: [
+                                          new Paragraph({
+                                            children: [
+                                              new TextRun({
+                                                text: it,
+                                                size: 25,
+                                              }),
+                                            ],
+                                            alignment: AlignmentType.CENTER,
+                                          }),
+                                        ],
+                                        verticalAlign: VerticalAlign.CENTER,
+                                      }),
+                                  ),
                               ],
                             }),
                           ],
@@ -1335,7 +1345,7 @@ export const generateISR4Doc: (
                                 size: 3000, // 1/2 of the table
                                 type: WidthType.DXA,
                               },
-                            })
+                            }),
                         ),
                       ],
                       height: {
@@ -1343,7 +1353,7 @@ export const generateISR4Doc: (
                         rule: HeightRule.ATLEAST,
                       },
                       cantSplit: true,
-                    })
+                    }),
                 ),
               ],
               alignment: AlignmentType.CENTER,
