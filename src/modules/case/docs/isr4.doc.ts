@@ -27,6 +27,7 @@ type ISR4DocType = {
   certificateNumbers: string;
   distinctiveNos: string;
   dematAccountNo: string | null;
+  DPID: string | null;
   pan: string | null;
   declaration: {
     name: string | null;
@@ -180,13 +181,13 @@ export const generateISR4Doc: (
                         new Table({
                           columnWidths: [
                             ...Array(
-                              (payload.dematAccountNo ?? "").split("").length
+                              ((payload.dematAccountNo ?? "") + " " + (payload.DPID ?? "")).split("").length
                             ).fill(500),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...(payload.dematAccountNo ?? "").split("").map(
+                                ...((payload.dematAccountNo ?? "") + " " + (payload.DPID ?? "")).split("").map(
                                   (it) =>
                                     new TableCell({
                                       children: [
