@@ -178,13 +178,13 @@ export const generateISR4Doc: (
                     }),
                     new TableCell({
                       children: [
-                        new Table({
+                        (payload.DPID && payload.dematAccountNo) ? new Table({
                           columnWidths: [
                             ...Array(
                               (
-                                (payload.DPID ?? "") +
+                                (payload.DPID ?? " ") +
                                 " " +
-                                (payload.dematAccountNo ?? "")
+                                (payload.dematAccountNo ?? " ")
                               ).split("").length,
                             ).fill(350),
                           ],
@@ -192,9 +192,9 @@ export const generateISR4Doc: (
                             new TableRow({
                               children: [
                                 ...(
-                                  (payload.DPID ?? "") +
+                                  (payload.DPID ?? " ") +
                                   " " +
-                                  (payload.dematAccountNo ?? "")
+                                  (payload.dematAccountNo ?? " ")
                                 )
                                   .split("")
                                   .map(
@@ -217,7 +217,7 @@ export const generateISR4Doc: (
                               ],
                             }),
                           ],
-                        }),
+                        }) : new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
                       width: {
@@ -656,11 +656,10 @@ export const generateISR4Doc: (
                         new Paragraph({
                           children: [
                             new TextRun({
-                              text: `${payload.companyName} ${
-                                payload.companyOldName.length > 0
-                                  ? "[" + payload.companyOldName + "]"
-                                  : ""
-                              }`,
+                              text: `${payload.companyName} ${payload.companyOldName.length > 0
+                                ? "[" + payload.companyOldName + "]"
+                                : ""
+                                }`,
                               size: 25,
                             }),
                           ],

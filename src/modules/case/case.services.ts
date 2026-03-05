@@ -78,7 +78,7 @@ export async function create(
     ...rest,
     document: saveDocumentFile,
     shareCertificateID,
-    deadShareholderID: deadShareholderID  && +deadShareholderID || null,
+    deadShareholderID: deadShareholderID && +deadShareholderID || null,
   });
 
   return await findInfoById({ id: caseData!.id });
@@ -519,7 +519,7 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
 //     fs.mkdirSync(folderPath);
 //   }
 
-  
+
 //   const shareHolderMaster = await prisma.case.findUnique({
 //     where: {
 //       id: Number(id),
@@ -548,7 +548,7 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
 //       }
 //     }
 //   });
-  
+
 //   if (!shareHolderMaster) {
 //     throw new NotFoundError();
 //   }
@@ -1482,17 +1482,17 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
 //             (_it, itx) => itx !== idx
 //           );
 //           annxDDoc.render(dataRender);
-  
+
 //           // Get the generated document as a buffer
 //           const buf = annxDDoc.getZip().generate({ type: "nodebuffer" });
-  
+
 //           // Write the buffer to a file (output.docx)
 //           const annxDWordOutput = path.resolve(
 //             __dirname,
 //             folioFolderAnxDPath + "/" + casee.name + "_" + (idx + 1) + ".docx"
 //           );
 //           fs.writeFileSync(annxDWordOutput, buf);
-  
+
 //           console.log("Annexure D Document created successfully!");
 //         })
 //       } 
@@ -1751,7 +1751,7 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
 //             });
 //             //affidavit legal heir end
 //           }
-            
+
 
 //           //affidavit shareholder start
 //           const folioFolderAffidavitShareholderPath = path.resolve(
@@ -1940,10 +1940,10 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
 //                 "_TRANSMISSION.docx"
 //             );
 //             const ISR2Content = fs.readFileSync(ISR2WordTemplate, "binary");
-  
+
 //             // Create a zip instance of the file
 //             const ISR2Zip = new PizZip(ISR2Content);
-  
+
 //             // Create a Docxtemplater instance
 //             const ISR2Doc = new Docxtemplater(ISR2Zip, {
 //               paragraphLoop: true,
@@ -1977,17 +1977,17 @@ export async function destroyMultiple(body: GetIdsBody): Promise<void> {
 //             dataRender["Folio"] = data["Folio"];
 //             dataRender["certificate"] = data["certificate"];
 //             ISR2Doc.render(dataRender);
-  
+
 //             // Get the generated document as a buffer
 //             const buf = ISR2Doc.getZip().generate({ type: "nodebuffer" });
-  
+
 //             // Write the buffer to a file (output.docx)
 //             const ISR2WordOutput = path.resolve(
 //               __dirname,
 //               folioFolderISR2DPath + "/" + casee.name + "_" + (idx + 1) + ".docx"
 //             );
 //             fs.writeFileSync(ISR2WordOutput, buf);
-  
+
 //             console.log("ISR2 Document created successfully!");
 //           });
 //         }else{
@@ -2371,17 +2371,17 @@ export async function generateDoc(
       shareholderCertificateName1:
         folio.certificate.length > 0
           ? folio.certificate[folio.certificate.length - 1]
-              .shareholderName1Txt || ""
+            .shareholderName1Txt || ""
           : "",
       shareholderCertificateName2:
         folio.certificate.length > 0
           ? folio.certificate[folio.certificate.length - 1]
-              .shareholderName2Txt || ""
+            .shareholderName2Txt || ""
           : "",
       shareholderCertificateName3:
         folio.certificate.length > 0
           ? folio.certificate[folio.certificate.length - 1]
-              .shareholderName3Txt || ""
+            .shareholderName3Txt || ""
           : "",
       DPID: folio.shareholderName1 ? folio.shareholderName1.DPID || "" : "",
       dematAccountNo: folio.shareholderName1
@@ -2508,8 +2508,8 @@ export async function generateDoc(
         shareholderNameCertificate:
           folio.certificate.length > 0
             ? folio.certificate[folio.certificate.length - 1][
-                `shareholderName${index + 1}Txt`
-              ] || ""
+            `shareholderName${index + 1}Txt`
+            ] || ""
             : "",
         deceasedRelationship: "D/W/S/o",
         age: item.age ? item.age : "",
@@ -2521,7 +2521,7 @@ export async function generateDoc(
           name:
             folio.certificate.length > 0
               ? folio.certificate[folio.certificate.length - 1]
-                  .shareholderName1Txt || ""
+                .shareholderName1Txt || ""
               : "",
           address:
             (folio.shareholderName1
@@ -2544,7 +2544,7 @@ export async function generateDoc(
           name:
             folio.certificate.length > 0
               ? folio.certificate[folio.certificate.length - 1]
-                  .shareholderName2Txt || ""
+                .shareholderName2Txt || ""
               : "",
           address:
             (folio.shareholderName2
@@ -2567,7 +2567,7 @@ export async function generateDoc(
           name:
             folio.certificate.length > 0
               ? folio.certificate[folio.certificate.length - 1]
-                  .shareholderName3Txt || ""
+                .shareholderName3Txt || ""
               : "",
           address:
             (folio.shareholderName3
@@ -2656,15 +2656,15 @@ export async function generateDoc(
       shareholderCertificateNames: [
         folio.certificate.length > 0
           ? folio.certificate[folio.certificate.length - 1]
-              .shareholderName1Txt || ""
+            .shareholderName1Txt || ""
           : "",
         folio.certificate.length > 0
           ? folio.certificate[folio.certificate.length - 1]
-              .shareholderName2Txt || ""
+            .shareholderName2Txt || ""
           : "",
         folio.certificate.length > 0
           ? folio.certificate[folio.certificate.length - 1]
-              .shareholderName3Txt || ""
+            .shareholderName3Txt || ""
           : "",
       ]
         .filter((item) => item.length > 0)
@@ -2690,7 +2690,7 @@ export async function generateDoc(
           shareholderNameCertificate:
             folio.certificate.length > 0
               ? folio.certificate[folio.certificate.length - 1]
-                  .shareholderName1Txt || ""
+                .shareholderName1Txt || ""
               : "",
           index: 1,
         },
@@ -2699,7 +2699,7 @@ export async function generateDoc(
           shareholderNameCertificate:
             folio.certificate.length > 0
               ? folio.certificate[folio.certificate.length - 1]
-                  .shareholderName2Txt || ""
+                .shareholderName2Txt || ""
               : "",
           index: 2,
         },
@@ -2708,7 +2708,7 @@ export async function generateDoc(
           shareholderNameCertificate:
             folio.certificate.length > 0
               ? folio.certificate[folio.certificate.length - 1]
-                  .shareholderName3Txt || ""
+                .shareholderName3Txt || ""
               : "",
           index: 3,
         },
@@ -2723,7 +2723,7 @@ export async function generateDoc(
             shareholderNameCertificate:
               folio.certificate.length > 0
                 ? folio.certificate[folio.certificate.length - 1]
-                    .shareholderName1Txt || ""
+                  .shareholderName1Txt || ""
                 : "",
             index: 1,
           },
@@ -2732,7 +2732,7 @@ export async function generateDoc(
             shareholderNameCertificate:
               folio.certificate.length > 0
                 ? folio.certificate[folio.certificate.length - 1]
-                    .shareholderName2Txt || ""
+                  .shareholderName2Txt || ""
                 : "",
             index: 2,
           },
@@ -2741,45 +2741,45 @@ export async function generateDoc(
             shareholderNameCertificate:
               folio.certificate.length > 0
                 ? folio.certificate[folio.certificate.length - 1]
-                    .shareholderName3Txt || ""
+                  .shareholderName3Txt || ""
                 : "",
             index: 3,
           },
         ].filter((itmm) => itmm.id !== shareHolderMaster.deadShareholder?.id)
           .length > 0
           ? {
-              ...[
-                {
-                  ...folio.shareholderName1,
-                  shareholderNameCertificate:
-                    folio.certificate.length > 0
-                      ? folio.certificate[folio.certificate.length - 1]
-                          .shareholderName1Txt || ""
-                      : "",
-                  index: 1,
-                },
-                {
-                  ...folio.shareholderName2,
-                  shareholderNameCertificate:
-                    folio.certificate.length > 0
-                      ? folio.certificate[folio.certificate.length - 1]
-                          .shareholderName2Txt || ""
-                      : "",
-                  index: 2,
-                },
-                {
-                  ...folio.shareholderName3,
-                  shareholderNameCertificate:
-                    folio.certificate.length > 0
-                      ? folio.certificate[folio.certificate.length - 1]
-                          .shareholderName3Txt || ""
-                      : "",
-                  index: 3,
-                },
-              ].filter(
-                (itmm) => itmm.id !== shareHolderMaster.deadShareholder?.id
-              )[0],
-            }
+            ...[
+              {
+                ...folio.shareholderName1,
+                shareholderNameCertificate:
+                  folio.certificate.length > 0
+                    ? folio.certificate[folio.certificate.length - 1]
+                      .shareholderName1Txt || ""
+                    : "",
+                index: 1,
+              },
+              {
+                ...folio.shareholderName2,
+                shareholderNameCertificate:
+                  folio.certificate.length > 0
+                    ? folio.certificate[folio.certificate.length - 1]
+                      .shareholderName2Txt || ""
+                    : "",
+                index: 2,
+              },
+              {
+                ...folio.shareholderName3,
+                shareholderNameCertificate:
+                  folio.certificate.length > 0
+                    ? folio.certificate[folio.certificate.length - 1]
+                      .shareholderName3Txt || ""
+                    : "",
+                index: 3,
+              },
+            ].filter(
+              (itmm) => itmm.id !== shareHolderMaster.deadShareholder?.id
+            )[0],
+          }
           : null,
       nominations: nominations.map((item) => ({
         ...item,
@@ -2954,7 +2954,7 @@ export async function generateDoc(
           );
           await generateISR2Doc(data, wordOutputPath);
         }
-      } 
+      }
       else if (casee === "ISR3") {
         const wordOutputPath = path.resolve(
           __dirname,
@@ -2975,11 +2975,11 @@ export async function generateDoc(
               const wordOutputPath = path.resolve(
                 __dirname,
                 folioFolderPath +
-                  "/" +
-                  "AffidavitLegalHeirs" +
-                  "_" +
-                  (idx + 1) +
-                  ".docx"
+                "/" +
+                "AffidavitLegalHeirs" +
+                "_" +
+                (idx + 1) +
+                ".docx"
               );
               await generateAffidavit2Doc(
                 {
@@ -3008,11 +3008,11 @@ export async function generateDoc(
             const wordOutputPath = path.resolve(
               __dirname,
               folioFolderPath +
-                "/" +
-                "AffidavitShareholders" +
-                "_" +
-                (idx + 1) +
-                ".docx"
+              "/" +
+              "AffidavitShareholders" +
+              "_" +
+              (idx + 1) +
+              ".docx"
             );
             await generateAffidavitDoc(
               {
@@ -3262,7 +3262,7 @@ export async function generateDoc(
     )
   );
   console.log("zipping folder done");
-  fs.rm(folderPath, { recursive: true }, (err) => {});
+  fs.rm(folderPath, { recursive: true }, (err) => { });
 
   return path.resolve(
     __dirname,

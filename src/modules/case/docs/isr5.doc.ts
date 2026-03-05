@@ -254,13 +254,11 @@ export const generateISR5Doc: (
                   // color: "#00a2e4",
                 }),
                 new TextRun({
-                  text: ` ${payload.companyName} ${
-                    payload.companyOldName.length > 0
-                      ? "[" + payload.companyOldName + "]"
-                      : ""
-                  } ${payload.companyRTA} ${payload.companyRTAAddress} ${
-                    payload.companyRTAPincode
-                  }`,
+                  text: ` ${payload.companyName} ${payload.companyOldName.length > 0
+                    ? "[" + payload.companyOldName + "]"
+                    : ""
+                    } ${payload.companyRTA} ${payload.companyRTAAddress} ${payload.companyRTAPincode
+                    }`,
                   size: 25,
                   font: "Calibri",
                   // color: "#00a2e4",
@@ -526,16 +524,16 @@ export const generateISR5Doc: (
                     new TableCell({
                       children: [
                         new Paragraph(""),
-                        new Table({
+                        payload.pan ? new Table({
                           columnWidths: [
-                            ...Array((payload.pan ?? "").split("").length).fill(
+                            ...Array((payload.pan ?? " ").split("").length).fill(
                               500
                             ),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...(payload.pan ?? "").split("").map(
+                                ...(payload.pan ?? " ").split("").map(
                                   (it) =>
                                     new TableCell({
                                       children: [
@@ -555,7 +553,7 @@ export const generateISR5Doc: (
                               ],
                             }),
                           ],
-                        }),
+                        }) : new Paragraph(""),
                         new Paragraph(""),
                         new Paragraph({
                           children: [
@@ -1017,11 +1015,10 @@ export const generateISR5Doc: (
                             new Paragraph({
                               children: [
                                 new TextRun({
-                                  text: `${payload.companyName} ${
-                                    payload.companyOldName.length > 0
-                                      ? "[" + payload.companyOldName + "]"
-                                      : ""
-                                  }`,
+                                  text: `${payload.companyName} ${payload.companyOldName.length > 0
+                                    ? "[" + payload.companyOldName + "]"
+                                    : ""
+                                    }`,
                                   size: 25,
                                 }),
                               ],
@@ -1488,16 +1485,16 @@ export const generateISR5Doc: (
                           ],
                         }),
                         new Paragraph(""),
-                        new Table({
+                        payload.bankAccountNo ? new Table({
                           columnWidths: [
                             ...Array(
-                              (payload.bankAccountNo ?? "").split("").length
+                              (payload.bankAccountNo ?? " ").split("").length
                             ).fill(500),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...(payload.bankAccountNo ?? "").split("").map(
+                                ...(payload.bankAccountNo ?? " ").split("").map(
                                   (it) =>
                                     new TableCell({
                                       children: [
@@ -1517,7 +1514,7 @@ export const generateISR5Doc: (
                               ],
                             }),
                           ],
-                        }),
+                        }) : new Paragraph(""),
                         new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
@@ -1547,16 +1544,16 @@ export const generateISR5Doc: (
                           ],
                         }),
                         new Paragraph(""),
-                        new Table({
+                        payload.bankIFS ? new Table({
                           columnWidths: [
                             ...Array(
-                              (payload.bankIFS ?? "").split("").length
+                              (payload.bankIFS ?? " ").split("").length
                             ).fill(500),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...(payload.bankIFS ?? "").split("").map(
+                                ...(payload.bankIFS ?? " ").split("").map(
                                   (it) =>
                                     new TableCell({
                                       children: [
@@ -1576,7 +1573,7 @@ export const generateISR5Doc: (
                               ],
                             }),
                           ],
-                        }),
+                        }) : new Paragraph(""),
                         new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
@@ -1693,16 +1690,16 @@ export const generateISR5Doc: (
                           ],
                         }),
                         new Paragraph(""),
-                        new Table({
+                        payload.bankMICR ? new Table({
                           columnWidths: [
                             ...Array(
-                              (payload.bankMICR ?? "").split("").length
+                              (payload.bankMICR ?? " ").split("").length
                             ).fill(500),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...(payload.bankMICR ?? "").split("").map(
+                                ...(payload.bankMICR ?? " ").split("").map(
                                   (it) =>
                                     new TableCell({
                                       children: [
@@ -1722,7 +1719,7 @@ export const generateISR5Doc: (
                               ],
                             }),
                           ],
-                        }),
+                        }) : new Paragraph(""),
                         new Paragraph(""),
                       ],
                       verticalAlign: VerticalAlign.CENTER,
@@ -2869,7 +2866,7 @@ export const generateISR5Doc: (
         },
       ],
     });
-  
+
     Packer.toBuffer(doc)
       .then((buffer) => {
         fs.writeFileSync(outputPath, buffer);
