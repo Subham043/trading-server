@@ -23,7 +23,6 @@ import {
 } from "./schemas/create.schema";
 import { MultipartFile } from "../../@types/multipart_file.type";
 import fs from "fs";
-import path from "path";
 import { updateCaseUniqueSchema } from "./schemas/update.schema";
 
 export async function listCase(
@@ -136,7 +135,7 @@ export async function updateCase(
     id: request.params.id,
     deadShareholderID:
       request.body.deadShareholderID &&
-      !isNaN(Number(request.body.deadShareholderID))
+        !isNaN(Number(request.body.deadShareholderID))
         ? Number(request.body.deadShareholderID)
         : undefined,
   });
@@ -191,10 +190,18 @@ export async function generateCaseDoc(
   }>,
   reply: FastifyReply
 ): Promise<void> {
-  const result = await generateDoc(request.params);
-  const filePath = path.resolve(__dirname, result);
+  const filePath = await generateDoc(request.params);
   const fileStream = fs.createReadStream(filePath);
+
+  // Clean up the zip file only after the stream has fully been sent
+  fileStream.on("close", () => {
+    fs.unlink(filePath, (err) => {
+      if (err) console.error("Failed to delete zip file:", err);
+    });
+  });
+
   return reply
     .header("Content-Disposition", 'attachment; filename="docs.zip"')
-    .send(fileStream)
+    .type("application/zip")
+    .send(fileStream);
 }

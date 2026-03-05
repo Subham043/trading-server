@@ -740,6 +740,9 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                   },
                   cantSplit: true,
                 }),
+
+                //problem starts here
+
                 new TableRow({
                   children: [
                     new TableCell({
@@ -816,17 +819,17 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                       },
                     }),
                     new TableCell({
-                      children: [
-                        ...payload.pans.flatMap((item) => {
+                      children: ([...payload.pans, ...payload.aadhars].filter((item) => !!item).length > 0) ? [
+                        ...payload.pans.filter((item) => !!item).flatMap((item) => {
                           return [
                             new Table({
                               columnWidths: [
-                                ...Array(item.split("").length).fill(500),
+                                ...Array((item == '' ? " " : item).split("").length).fill(500),
                               ],
                               rows: [
                                 new TableRow({
                                   children: [
-                                    ...item.split("").map(
+                                    ...(item == '' ? " " : item).split("").map(
                                       (it) =>
                                         new TableCell({
                                           children: [
@@ -850,16 +853,16 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                             new Paragraph(""),
                           ];
                         }),
-                        ...payload.aadhars.flatMap((item) => {
+                        ...payload.aadhars.filter((item) => !!item).flatMap((item) => {
                           return [
                             new Table({
                               columnWidths: [
-                                ...Array(item.split("").length).fill(500),
+                                ...Array((item == '' ? " " : item).split("").length).fill(500),
                               ],
                               rows: [
                                 new TableRow({
                                   children: [
-                                    ...item.split("").map(
+                                    ...(item == '' ? " " : item).split("").map(
                                       (it) =>
                                         new TableCell({
                                           children: [
@@ -891,6 +894,8 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                             }),
                           ],
                         }),
+                      ] : [
+                        new Paragraph("")
                       ],
                       verticalAlign: VerticalAlign.CENTER,
                       width: {
@@ -905,6 +910,9 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                   },
                   cantSplit: true,
                 }),
+
+                // problem ends here
+
                 new TableRow({
                   children: [
                     new TableCell({
@@ -961,16 +969,16 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                     new TableCell({
                       children: [
                         new Paragraph(""),
-                        new Table({
+                        payload.DPID ? new Table({
                           columnWidths: [
                             ...Array(
-                              (payload.DPID ?? "").split("").length
+                              (payload.DPID ? payload.DPID : " ").split("").length
                             ).fill(500),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...(payload.DPID ?? "").split("").map(
+                                ...(payload.DPID ? payload.DPID : " ").split("").map(
                                   (it) =>
                                     new TableCell({
                                       children: [
@@ -990,18 +998,18 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                               ],
                             }),
                           ],
-                        }),
+                        }) : new Paragraph(""),
                         new Paragraph(""),
-                        new Table({
+                        payload.dematAccountNo ? new Table({
                           columnWidths: [
                             ...Array(
-                              (payload.dematAccountNo ?? "").split("").length
+                              (payload.dematAccountNo ? payload.dematAccountNo : " ").split("").length
                             ).fill(500),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...(payload.dematAccountNo ?? "").split("").map(
+                                ...(payload.dematAccountNo ? payload.dematAccountNo : " ").split("").map(
                                   (it) =>
                                     new TableCell({
                                       children: [
@@ -1021,7 +1029,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                               ],
                             }),
                           ],
-                        }),
+                        }) : new Paragraph(""),
                         new Paragraph(""),
                         new Paragraph({
                           children: [
@@ -1408,6 +1416,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                   },
                   cantSplit: true,
                 }),
+
                 new TableRow({
                   children: [
                     new TableCell({
@@ -1464,16 +1473,16 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                     new TableCell({
                       children: [
                         new Paragraph(""),
-                        new Table({
+                        payload.phone ? new Table({
                           columnWidths: [
                             ...Array(
-                              (payload.phone ?? "").split("").length
+                              (payload.phone ?? " ").split("").length
                             ).fill(500),
                           ],
                           rows: [
                             new TableRow({
                               children: [
-                                ...(payload.phone ?? "").split("").map(
+                                ...(payload.phone ?? " ").split("").map(
                                   (it) =>
                                     new TableCell({
                                       children: [
@@ -1493,7 +1502,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                               ],
                             }),
                           ],
-                        }),
+                        }) : new Paragraph(""),
                         new Paragraph(""),
                         new Paragraph({
                           children: [
@@ -1517,6 +1526,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                   },
                   cantSplit: true,
                 }),
+
                 new TableRow({
                   children: [
                     new TableCell({
@@ -1974,12 +1984,12 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
         },
       ],
     });
-  
+
     Packer.toBuffer(doc).then((buffer) => {
       fs.writeFileSync(outputPath, buffer);
       // fs.writeFileSync("./static/word_output/ISR1_Generated.docx", buffer);
       console.log("✅ ISR1_Generated.docx has been created.");
       resolve("✅ ISR1_Generated.docx has been created.");
-    }).catch((reason)=>reject(reason));
+    }).catch((reason) => reject(reason));
   })
 };

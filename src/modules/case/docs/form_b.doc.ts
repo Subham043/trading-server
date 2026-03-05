@@ -409,11 +409,10 @@ export const generateFormBDoc: (
                             new Paragraph({
                               children: [
                                 new TextRun({
-                                  text: `${payload.companyName} ${
-                                    payload.companyOldName.length > 0
-                                      ? "[" + payload.companyOldName + "]"
-                                      : ""
-                                  }`,
+                                  text: `${payload.companyName} ${payload.companyOldName.length > 0
+                                    ? "[" + payload.companyOldName + "]"
+                                    : ""
+                                    }`,
                                   size: 25,
                                 }),
                               ],
@@ -735,16 +734,16 @@ export const generateFormBDoc: (
                                       ],
                                     }),
                                     new Paragraph(""),
-                                    new Table({
+                                    payload.phone ? new Table({
                                       columnWidths: [
                                         ...Array(
-                                          (payload.phone ?? "").split("").length
+                                          (payload.phone ?? " ").split("").length
                                         ).fill(500),
                                       ],
                                       rows: [
                                         new TableRow({
                                           children: [
-                                            ...(payload.phone ?? "")
+                                            ...(payload.phone ?? " ")
                                               .split("")
                                               .map(
                                                 (it) =>
@@ -768,7 +767,7 @@ export const generateFormBDoc: (
                                           ],
                                         }),
                                       ],
-                                    }),
+                                    }) : new Paragraph(""),
                                     new Paragraph(""),
                                   ],
                                   verticalAlign: VerticalAlign.CENTER,
@@ -1067,7 +1066,7 @@ export const generateFormBDoc: (
         },
       ],
     });
-  
+
     Packer.toBuffer(doc)
       .then((buffer) => {
         fs.writeFileSync(outputPath, buffer);
