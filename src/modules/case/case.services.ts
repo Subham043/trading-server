@@ -44,8 +44,8 @@ import { generateAffidavitDoc } from "./docs/affidavit.doc";
 import { generateAffidavit2Doc } from "./docs/affidavit2.doc";
 import { generateAnnexureEDoc } from "./docs/annexure_e.doc";
 import { generateAnnexureFDoc } from "./docs/annexure_f.doc";
-import { generateFormADoc } from "./docs/form_a.doc";
-import { generateFormBDoc } from "./docs/form_b.doc";
+// import { generateFormADoc } from "./docs/form_a.doc";
+// import { generateFormBDoc } from "./docs/form_b.doc";
 import { generateISR4Doc } from "./docs/isr4.doc";
 import { generateFormSH14Doc } from "./docs/form_sh_14.doc";
 import { generateFormSH13Doc } from "./docs/form_sh_13.doc";
@@ -54,6 +54,7 @@ import dayjs from "dayjs";
 import { CertificateType } from "../../@types/certificate.type";
 import { NameChangeMasterColumn } from "../name_change_master/name_change_master.model";
 import { numberInWords } from "../../utils/numberInWords";
+import { generateAffidavit3Doc } from "./docs/affidavit3.doc";
 // import CaseDocGenerator from "./doc.generator";
 
 /**
@@ -3025,28 +3026,9 @@ export async function generateDoc(
       } else if (casee === "Form_A_Duplicate") {
         const wordOutputPath = path.resolve(
           __dirname,
-          folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+          folioFolderPath + "/" + "AffidavitIndemnity" + "_" + (index + 1) + ".docx"
         );
-        await generateFormADoc(
-          {
-            details:
-              item.Case === "TransmissionIssueDuplicate"
-                ? item.form_duplicate_2
-                : item.form_duplicate_1,
-            companyName: item.companyName,
-            companyOldName: item.companyOldName,
-            certificate: item.certificate,
-            shareholderNameDeath: item.shareholderNameDeath,
-            Folio: item.Folio,
-          },
-          wordOutputPath
-        );
-      } else if (casee === "Form_B_Duplicate") {
-        const wordOutputPath = path.resolve(
-          __dirname,
-          folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
-        );
-        await generateFormBDoc(
+        await generateAffidavit3Doc(
           {
             details:
               item.Case === "TransmissionIssueDuplicate"
@@ -3064,7 +3046,52 @@ export async function generateDoc(
           },
           wordOutputPath
         );
-      } else if (casee === "Annexure_D") {
+      }
+      // else if (casee === "Form_A_Duplicate") {
+      //   const wordOutputPath = path.resolve(
+      //     __dirname,
+      //     folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+      //   );
+      //   await generateFormADoc(
+      //     {
+      //       details:
+      //         item.Case === "TransmissionIssueDuplicate"
+      //           ? item.form_duplicate_2
+      //           : item.form_duplicate_1,
+      //       companyName: item.companyName,
+      //       companyOldName: item.companyOldName,
+      //       certificate: item.certificate,
+      //       shareholderNameDeath: item.shareholderNameDeath,
+      //       Folio: item.Folio,
+      //     },
+      //     wordOutputPath
+      //   );
+      // } 
+      // else if (casee === "Form_B_Duplicate") {
+      //   const wordOutputPath = path.resolve(
+      //     __dirname,
+      //     folioFolderPath + "/" + casee + "_" + (index + 1) + ".docx"
+      //   );
+      //   await generateFormBDoc(
+      //     {
+      //       details:
+      //         item.Case === "TransmissionIssueDuplicate"
+      //           ? item.form_duplicate_2
+      //           : item.form_duplicate_1,
+      //       companyName: item.companyName,
+      //       companyOldName: item.companyOldName,
+      //       certificate: item.certificate,
+      //       shareholderNameDeath: item.shareholderNameDeath,
+      //       addressAadhar: item.addressAadhar,
+      //       pincodeBank: item.pincodeBank,
+      //       email: item.email,
+      //       phone: item.phone,
+      //       Folio: item.Folio,
+      //     },
+      //     wordOutputPath
+      //   );
+      // } 
+      else if (casee === "Annexure_D") {
         for (let idx = 0; idx < item.legalHeirDetails.length; idx++) {
           const i = item.legalHeirDetails[idx];
           const wordOutputPath = path.resolve(

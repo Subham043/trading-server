@@ -25,6 +25,11 @@ type ISR1DocType = {
   certificate: {
     distinctiveNos: string;
     index: number;
+    totalNoOfShares: string;
+    certificateNumber: string;
+    totalFaceValue: string;
+    Folio: string;
+    equityType: "Equity" | "Bonus" | "Rights" | "Splits" | "ShareBought";
   }[];
   // shareholderCertificateName: string[];
   shareholderCertificateName1: string;
@@ -96,8 +101,18 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
             new Paragraph({
               children: [
                 new TextRun({
-                  text: "REQUEST FOR REGISTERING PAN, KYC DETAILS OR CHANGES / UPDATION THEREOF [For Securities (Shares / Debentures / Bonds, etc.) of listed companies held in physical form]",
+                  text: "REQUEST FOR REGISTERING PAN, KYC DETAILS OR CHANGES / UPDATION THEREOF",
                   bold: true,
+                  size: 25,
+                  font: "Calibri",
+                }),
+              ],
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "[For Securities (Shares / Debentures / Bonds, etc.) of listed companies held in physical form]",
                   size: 25,
                   font: "Calibri",
                 }),
@@ -119,7 +134,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                   size: 25,
                 }),
               ],
-              alignment: AlignmentType.LEFT,
+              alignment: AlignmentType.RIGHT,
             }),
             new Paragraph(" "),
             new Paragraph({
@@ -1118,64 +1133,99 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "1. Client Master List (CML) of your Demat Account, provided by the Depository Participant",
+                              text: " Client Master List (CML) of your Demat Account, provided by the Depository Participant",
                               size: 25,
                             }),
                           ],
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "2. Unique Identification Number (UID) (Aadhaar)",
+                              text: " Unique Identification Number (UID) (Aadhaar)",
                               size: 25,
                             }),
                           ],
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "3. Valid Passport / Ration Card / Registered Lease or Sale Agreement of Residence / Driving License / Flat Maintenance bill.",
+                              text: " Valid Passport/ Registered Lease or Sale Agreement of Residence / Driving License",
                               size: 25,
                             }),
                           ],
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "4. Utility bills like Telephone Bill (only land line) , Electricity bill or Gas bill - Not more than 3 months old.",
+                              text: " Flat Maintenance bill accompanied with additional self-attested copy of Identity Proof of the holder/claimant",
                               size: 25,
                             }),
                           ],
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "5. Identity card / document with address, issued by any of the following:  ",
+                              text: " Utility bills like Telephone Bill (only land line)/ Electricity bill / Gas bill - Not more than 3 months old.",
                               size: 25,
                             }),
                           ],
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "Central/State Government and its Departments, Statutory / Regulatory Authorities, Public Sector Undertakings, Scheduled Commercial Banks, Public  Financial Institutions duly attested by the employer with date and  organisation stamp ",
+                              text: " Identity card / document with address, issued by any of the following: Central/State Government and its Departments, Statutory / Regulatory Authorities, Public Sector Undertakings, Scheduled Commercial Banks, Public Financial Institutions duly attested by the employer with date and organisation stamp",
                               size: 25,
                             }),
                           ],
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "6. For FII / sub account, Power of Attorney given by FII / sub-account to the  Custodians (which are duly notarized and / or apostilled or consularised) that gives the registered address should be taken.",
+                              text: " For FII / sub account, Power of Attorney given by FII / sub-account to the Custodians (which are duly notarized and / or apostilled or consularised) that gives the registered address should be taken.",
                               size: 25,
                             }),
                           ],
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "7. Proof of address in the name of the spouse accompanied with self attested copy of Identity Proof of the spouse. ",
+                              text: " Proof of address in the name of the spouse accompanied with selfattested copy of Identity Proof of the spouse.",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
+                            new TextRun({
+                              text: " Client Master List (CML) of the Demat Account of the holder / claimant, provided by the Depository Participant.",
                               size: 25,
                             }),
                           ],
@@ -1311,8 +1361,22 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                         }),
                         new Paragraph({
                           children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
                             new TextRun({
-                              text: "original cancelled cheque with name of security holder printed on it or Bank Passbook or Bank Statement attested by the Bank #",
+                              text: " Original cancelled cheque bearing the name of the security holder; OR",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new CheckBox({
+                              checked: false,
+                            }),
+                            new TextRun({
+                              text: " Bank passbook/statement attested by the Bank;",
                               size: 25,
                             }),
                           ],
@@ -1527,176 +1591,176 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                   cantSplit: true,
                 }),
 
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "7",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 500, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 500, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "Specimen Signature",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 2000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "Provide the banker’s attestation of the signature of the holder(s) as per Form ISR  -  2  in SEBI circular SEBI/HO/MIRSD_RTAMB/P/CIR/2021/655 dated November 03, 2021) and Original cancelled cheque",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 8000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                  ],
-                  height: {
-                    value: 500,
-                    rule: HeightRule.ATLEAST,
-                  },
-                  cantSplit: true,
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "8",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 500, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 500, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "Nomination**",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 2000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "1. Providing Nomination: Please submit the duly filled up Nomination Form (SH-13) or ‘Declaration to Opt out of Nomination’ as per Form  ISR  -  3, in SEBI circular SEBI/HO/MIRSD/MIRSD_RTAMB/P/CIR/2021/655  dated November 03, 2021",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "2. Change in Existing Nomination: Please use Form SH-14 in SEBI circular  SEBI/HO/MIRSD/MIRSD_RTAMB/P/CIR/2021/655  dated November 03,2021",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                        new Paragraph({
-                          children: [
-                            new TextRun({
-                              text: "3. Cancellation of Existing Nomination: Please use Form SH-14 and Form ISR - 3",
-                              size: 25,
-                            }),
-                          ],
-                        }),
-                      ],
-                      verticalAlign: VerticalAlign.CENTER,
-                      width: {
-                        size: 8000, // 1/2 of the table
-                        type: WidthType.DXA,
-                      },
-                    }),
-                  ],
-                  height: {
-                    value: 500,
-                    rule: HeightRule.ATLEAST,
-                  },
-                  cantSplit: true,
-                }),
+                // new TableRow({
+                //   children: [
+                //     new TableCell({
+                //       children: [
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "7",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.CENTER,
+                //       width: {
+                //         size: 500, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //     new TableCell({
+                //       children: [
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.CENTER,
+                //       width: {
+                //         size: 500, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //     new TableCell({
+                //       children: [
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "Specimen Signature",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.CENTER,
+                //       width: {
+                //         size: 2000, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //     new TableCell({
+                //       children: [
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "Provide the banker’s attestation of the signature of the holder(s) as per Form ISR  -  2  in SEBI circular SEBI/HO/MIRSD_RTAMB/P/CIR/2021/655 dated November 03, 2021) and Original cancelled cheque",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.CENTER,
+                //       width: {
+                //         size: 8000, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //   ],
+                //   height: {
+                //     value: 500,
+                //     rule: HeightRule.ATLEAST,
+                //   },
+                //   cantSplit: true,
+                // }),
+                // new TableRow({
+                //   children: [
+                //     new TableCell({
+                //       children: [
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "8",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.CENTER,
+                //       width: {
+                //         size: 500, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //     new TableCell({
+                //       children: [
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.CENTER,
+                //       width: {
+                //         size: 500, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //     new TableCell({
+                //       children: [
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "Nomination**",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.CENTER,
+                //       width: {
+                //         size: 2000, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //     new TableCell({
+                //       children: [
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "1. Providing Nomination: Please submit the duly filled up Nomination Form (SH-13) or ‘Declaration to Opt out of Nomination’ as per Form  ISR  -  3, in SEBI circular SEBI/HO/MIRSD/MIRSD_RTAMB/P/CIR/2021/655  dated November 03, 2021",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "2. Change in Existing Nomination: Please use Form SH-14 in SEBI circular  SEBI/HO/MIRSD/MIRSD_RTAMB/P/CIR/2021/655  dated November 03,2021",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //         new Paragraph({
+                //           children: [
+                //             new TextRun({
+                //               text: "3. Cancellation of Existing Nomination: Please use Form SH-14 and Form ISR - 3",
+                //               size: 25,
+                //             }),
+                //           ],
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.CENTER,
+                //       width: {
+                //         size: 8000, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //   ],
+                //   height: {
+                //     value: 500,
+                //     rule: HeightRule.ATLEAST,
+                //   },
+                //   cantSplit: true,
+                // }),
               ],
               alignment: AlignmentType.CENTER,
             }),
@@ -1714,17 +1778,19 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
             new Paragraph({
               children: [
                 new TextRun({
-                  text: "**Nomination (Form SH-13 or SH-14) / ‘Declaration to Opt-Out of Nomination’ ",
+                  text: "# In case it is not provided, the details available in the CML will be updated in the folio",
                   size: 25,
                   font: "Calibri",
                 }),
               ],
               alignment: AlignmentType.LEFT,
             }),
+            new Paragraph(""),
+            new Paragraph(" "),
             new Paragraph({
               children: [
                 new TextRun({
-                  text: "(Form ISR – 3), has to be furnished by the holder(s) separately for each listed company.",
+                  text: "Authorization: I/ We authorise you (RTA) to update the above PAN and KYC details in following additional folio(s) held in my / our name (use Separate Annexure if extra space is required):",
                   size: 25,
                   font: "Calibri",
                 }),
@@ -1732,10 +1798,255 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
               alignment: AlignmentType.LEFT,
             }),
             new Paragraph(" "),
+            new Table({
+              width: {
+                size: 11000, // total width of the table in DXA (~6.25 inches)
+                type: WidthType.DXA,
+              },
+              columnWidths: [500, 2500, 2000, 2000, 2000, 2000],
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "S. No.",
+                              size: 25,
+                              bold: true,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 500, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Name of the Issuer Company",
+                              size: 25,
+                              bold: true,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 2500, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Folio No.",
+                              size: 25,
+                              bold: true,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 2000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Quantity of securities",
+                              size: 25,
+                              bold: true,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 2000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Face value of securities",
+                              size: 25,
+                              bold: true,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 2000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Distinctive number of securities (Optional)",
+                              size: 25,
+                              bold: true,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 2000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                  ],
+                  height: {
+                    value: 500,
+                    rule: HeightRule.ATLEAST,
+                  },
+                  cantSplit: true,
+                }),
+                ...payload.certificate.map(
+                  (item) =>
+                    new TableRow({
+                      children: [
+                        new TableCell({
+                          children: [
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.index.toString(),
+                                  size: 25,
+                                }),
+                              ],
+                            }),
+                          ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 500, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
+                        }),
+                        new TableCell({
+                          children: [
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: `${payload.companyName} ${payload.companyOldName.length > 0
+                                    ? "[" + payload.companyOldName + "]"
+                                    : ""
+                                    }`,
+                                  size: 25,
+                                }),
+                              ],
+                            }),
+                          ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 2500, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
+                        }),
+                        new TableCell({
+                          children: [
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.Folio,
+                                  size: 25,
+                                }),
+                              ],
+                            }),
+                          ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 2000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
+                        }),
+                        new TableCell({
+                          children: [
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.totalNoOfShares,
+                                  size: 25,
+                                }),
+                              ],
+                            }),
+                          ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 2000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
+                        }),
+                        new TableCell({
+                          children: [
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.totalFaceValue,
+                                  size: 25,
+                                }),
+                              ],
+                            }),
+                          ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 2000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
+                        }),
+                        new TableCell({
+                          children: [
+                            new Paragraph({
+                              children: [
+                                new TextRun({
+                                  text: item.distinctiveNos,
+                                  size: 25,
+                                }),
+                              ],
+                            }),
+                          ],
+                          verticalAlign: VerticalAlign.CENTER,
+                          width: {
+                            size: 2000, // 1/2 of the table
+                            type: WidthType.DXA,
+                          },
+                        }),
+                      ],
+                      height: {
+                        value: 500,
+                        rule: HeightRule.ATLEAST,
+                      },
+                      cantSplit: true,
+                    })
+                ),
+              ],
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph(" "),
             new Paragraph({
               children: [
                 new TextRun({
-                  text: "Authorization: I / We authorise you (RTA) to update the above PAN and KYC details in my / our folio (s) ,  in which I / We are the holder(s) (strike off what is not applicable)",
+                  text: "in which I / We are the holder(s) (strike off what is not applicable).",
                   size: 25,
                   font: "Calibri",
                 }),
@@ -1754,7 +2065,7 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                   bold: true,
                 }),
                 new TextRun({
-                  text: "Declaration: All the above facts stated are true and correct. ",
+                  text: "All the above facts stated are true and correct. ",
                   size: 25,
                   font: "Calibri",
                 }),
@@ -1979,6 +2290,624 @@ export const generateISR1Doc: (payload: ISR1DocType, outputPath: string) => Prom
                 ),
               ],
               alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph(" "),
+            new Paragraph(" "),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Mode of submission of documents to the RTA",
+                  size: 25,
+                  font: "Calibri",
+                  bold: true
+                }),
+              ],
+              alignment: AlignmentType.LEFT,
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Please use any one of the following mode:",
+                  size: 25,
+                  font: "Calibri",
+                }),
+              ],
+              alignment: AlignmentType.LEFT,
+            }),
+            new Paragraph(" "),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "1. Through ‘In Person Verification’ (IPV):",
+                  size: 25,
+                  font: "Calibri",
+                  bold: true,
+                }),
+                new TextRun({
+                  text: "The authorized person of the RTA shall verify the original documents furnished by the investor and retain copy (ies) with IPV stamping with date and initials.",
+                  size: 25,
+                  font: "Calibri",
+                }),
+              ],
+              alignment: AlignmentType.LEFT,
+            }),
+            new Paragraph(" "),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "2. Through Post:",
+                  size: 25,
+                  font: "Calibri",
+                  bold: true,
+                }),
+                new TextRun({
+                  text: "Hard copies of the documents which are self-attested.",
+                  size: 25,
+                  font: "Calibri",
+                }),
+              ],
+              alignment: AlignmentType.LEFT,
+            }),
+            new Paragraph(" "),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "3. Through electronic mode with e-sign:",
+                  size: 25,
+                  font: "Calibri",
+                  bold: true,
+                }),
+                new TextRun({
+                  text: "The holder(s)/ claimant(s) may furnish the documents to RTAs electronically including by way of email or through service portal of the RTA provided the documents furnished shall have e-sign* of the holder(s)/ claimant(s).",
+                  size: 25,
+                  font: "Calibri",
+                }),
+              ],
+              alignment: AlignmentType.LEFT,
+            }),
+            new Paragraph(" "),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "*E-Sign is an integrated service which facilitates issuing a Digital Signature Certificate and performing signing of requested data by e-Sign user. The holder/claimant may approach any of the empanelled e-Sign Service Providers, details of which are available on the website of",
+                  size: 25,
+                  font: "Calibri",
+                }),
+                new TextRun({
+                  text: "Controller of Certifying Authorities (CCA), Ministry of Communications and Information Technology (https://cca.gov.in/)",
+                  size: 25,
+                  font: "Calibri",
+                  color: "#0000FF",
+                  underline: {
+                    color: "#0000FF",
+                  }
+                }),
+              ],
+              alignment: AlignmentType.LEFT,
+            }),
+            new Paragraph(" "),
+            new Paragraph(" "),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Note",
+                  size: 25,
+                  font: "Calibri",
+                  bold: true
+                }),
+              ],
+              alignment: AlignmentType.LEFT,
+            }),
+            new Table({
+              width: {
+                size: 11000, // total width of the table in DXA (~6.25 inches)
+                type: WidthType.DXA,
+              },
+              columnWidths: [3000, 8000],
+              rows: [
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Holders of physical securities in listed company are mandatorily required to furnish PAN, KYC details (Contact details, Bank Account Details, Signature) and Nomination (for all the eligible folios) to enable RTA to process any service request or complaints received from the security holder(s)/ Claimants.",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 11000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                      columnSpan: 2
+                    }),
+                  ],
+                  height: {
+                    value: 500,
+                    rule: HeightRule.ATLEAST,
+                  },
+                  cantSplit: true,
+                }),
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Upon receipt or up-dation of bank details, the RTA shall, suo-moto, generate request to the company’s bankers to pay electronically all the moneys of / payments to the holder that were previous unclaimed / unsuccessful",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 11000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                      columnSpan: 2
+                    }),
+                  ],
+                  height: {
+                    value: 500,
+                    rule: HeightRule.ATLEAST,
+                  },
+                  cantSplit: true,
+                }),
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "RTA shall update the folio with PAN, KYC details and Nominee, within timelines as mentioned in the circular no. SEBI/HO/MIRSD/MIRSD_RTAMB/P/CIR/2021/670 dated November 26, 2021. However, cancellation of nomination, shall take effect from the date on which this intimation is received by the company / RTA.",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 11000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                      columnSpan: 2
+                    }),
+                  ],
+                  height: {
+                    value: 500,
+                    rule: HeightRule.ATLEAST,
+                  },
+                  cantSplit: true,
+                }),
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "RTA shall not insist on Affidavits or Attestation / Notarization or indemnity for registering / up-dating / changing PAN, KYC details and Nomination.",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 11000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                      columnSpan: 2
+                    }),
+                  ],
+                  height: {
+                    value: 500,
+                    rule: HeightRule.ATLEAST,
+                  },
+                  cantSplit: true,
+                }),
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Specimen Signature",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 3000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Option A",
+                              size: 25,
+                              bold: true
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "i. Security holder shall provide the following documents:",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "(a) Original cancelled cheque with name of the security holder printed on it; or",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "(b) Self-attested copy of Bank Passbook/ Bank Statement;",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "and",
+                              size: 25,
+                              bold: true,
+                            }),
+                          ],
+                          alignment: AlignmentType.CENTER,
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "ii. Banker’s attestation of the signature of the same bank account as mentioned in (i) above as per ",
+                              size: 25,
+                            }),
+                            new TextRun({
+                              text: "Form ISR - 2.",
+                              size: 25,
+                              bold: true
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "OR",
+                              size: 25,
+                              bold: true,
+                            }),
+                          ],
+                          alignment: AlignmentType.CENTER,
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Option B",
+                              size: 25,
+                              bold: true
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "The investor may get his or her signature changed or updated by visiting the Office of the RTA in person. In such a case, the investor shall sign before the authorized personnel of the RTA, along with PAN card and any one additional document mentioned at Serial Nos. 1-4 of Annexure – E of SEBI/HO/MIRSD/MIRSD-PoD-1/P/CIR/2023/37 dated March 16, 2023, in original for verification by the RTA, and submit selfattested copies of the same.",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 8000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                  ],
+                  height: {
+                    value: 500,
+                    rule: HeightRule.ATLEAST,
+                  },
+                  cantSplit: true,
+                }),
+                new TableRow({
+                  children: [
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Nomination**",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 3000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                    new TableCell({
+                      children: [
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Providing Nomination: Please submit the duly filled up Nomination Form (SH-13) or ‘Declaration to Opt out of Nomination’ as per Form ISR–3, in SEBI Circular No. SEBI/HO/MIRSD/MIRSD-PoD-1/P/CIR/2023/37 dated March 16, 2023",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Variation in Existing Nomination: Please use Form SH-14",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                        new Paragraph({
+                          children: [
+                            new TextRun({
+                              text: "Cancellation of Existing Nomination and opting out: use Form SH14 & Form ISR – 3",
+                              size: 25,
+                            }),
+                          ],
+                        }),
+                      ],
+                      verticalAlign: VerticalAlign.CENTER,
+                      width: {
+                        size: 8000, // 1/2 of the table
+                        type: WidthType.DXA,
+                      },
+                    }),
+                  ],
+                  height: {
+                    value: 500,
+                    rule: HeightRule.ATLEAST,
+                  },
+                  cantSplit: true,
+                }),
+                // new TableRow({
+                //   children: [
+                //     new TableCell({
+                //       children: [
+                //         new Table({
+                //           width: {
+                //             size: 11000, // total width of the table in DXA (~6.25 inches)
+                //             type: WidthType.DXA,
+                //           },
+                //           columnWidths: [3000, 8000],
+                //           rows: [
+                //             new TableRow({
+                //               children: [
+                //                 new TableCell({
+                //                   children: [
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "Specimen Signature",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                   ],
+                //                   verticalAlign: VerticalAlign.CENTER,
+                //                   width: {
+                //                     size: 3000, // 1/2 of the table
+                //                     type: WidthType.DXA,
+                //                   },
+                //                 }),
+                //                 new TableCell({
+                //                   children: [
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "Option A",
+                //                           size: 25,
+                //                           bold: true
+                //                         }),
+                //                       ],
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "i. Security holder shall provide the following documents:",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "(a) Original cancelled cheque with name of the security holder printed on it; or",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "(b) Self-attested copy of Bank Passbook/ Bank Statement;",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "and",
+                //                           size: 25,
+                //                           bold: true,
+                //                         }),
+                //                       ],
+                //                       alignment: AlignmentType.CENTER,
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "ii. Banker’s attestation of the signature of the same bank account as mentioned in (i) above as per ",
+                //                           size: 25,
+                //                         }),
+                //                         new TextRun({
+                //                           text: "Form ISR - 2.",
+                //                           size: 25,
+                //                           bold: true
+                //                         }),
+                //                       ],
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "OR",
+                //                           size: 25,
+                //                           bold: true,
+                //                         }),
+                //                       ],
+                //                       alignment: AlignmentType.CENTER,
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "Option B",
+                //                           size: 25,
+                //                           bold: true
+                //                         }),
+                //                       ],
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "The investor may get his or her signature changed or updated by visiting the Office of the RTA in person. In such a case, the investor shall sign before the authorized personnel of the RTA, along with PAN card and any one additional document mentioned at Serial Nos. 1-4 of Annexure – E of SEBI/HO/MIRSD/MIRSD-PoD-1/P/CIR/2023/37 dated March 16, 2023, in original for verification by the RTA, and submit selfattested copies of the same.",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                   ],
+                //                   verticalAlign: VerticalAlign.CENTER,
+                //                   width: {
+                //                     size: 8000, // 1/2 of the table
+                //                     type: WidthType.DXA,
+                //                   },
+                //                 }),
+                //               ],
+                //               height: {
+                //                 value: 500,
+                //                 rule: HeightRule.ATLEAST,
+                //               },
+                //               cantSplit: true,
+                //             }),
+                //             new TableRow({
+                //               children: [
+                //                 new TableCell({
+                //                   children: [
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "Nomination**",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                   ],
+                //                   verticalAlign: VerticalAlign.CENTER,
+                //                   width: {
+                //                     size: 3000, // 1/2 of the table
+                //                     type: WidthType.DXA,
+                //                   },
+                //                 }),
+                //                 new TableCell({
+                //                   children: [
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "Providing Nomination: Please submit the duly filled up Nomination Form (SH-13) or ‘Declaration to Opt out of Nomination’ as per Form ISR–3, in SEBI Circular No. SEBI/HO/MIRSD/MIRSD-PoD-1/P/CIR/2023/37 dated March 16, 2023",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "Variation in Existing Nomination: Please use Form SH-14",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                     new Paragraph({
+                //                       children: [
+                //                         new TextRun({
+                //                           text: "Cancellation of Existing Nomination and opting out: use Form SH14 & Form ISR – 3",
+                //                           size: 25,
+                //                         }),
+                //                       ],
+                //                     }),
+                //                   ],
+                //                   verticalAlign: VerticalAlign.CENTER,
+                //                   width: {
+                //                     size: 8000, // 1/2 of the table
+                //                     type: WidthType.DXA,
+                //                   },
+                //                 }),
+                //               ],
+                //               height: {
+                //                 value: 500,
+                //                 rule: HeightRule.ATLEAST,
+                //               },
+                //               cantSplit: true,
+                //             }),
+                //           ],
+                //           alignment: AlignmentType.CENTER,
+                //         }),
+                //       ],
+                //       verticalAlign: VerticalAlign.TOP,
+                //       width: {
+                //         size: 11000, // 1/2 of the table
+                //         type: WidthType.DXA,
+                //       },
+                //     }),
+                //   ],
+                //   height: {
+                //     value: 500,
+                //     rule: HeightRule.ATLEAST,
+                //   },
+                //   cantSplit: true,
+                // }),
+              ],
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph(" "),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "** Nomination (Form SH-13 or SH-14) / ‘Declaration to Opt-Out of nomination’ (Form ISR – 3), has to be furnished by the holder(s) separately for each listed company.",
+                  size: 25,
+                  font: "Calibri",
+                }),
+              ],
+              alignment: AlignmentType.LEFT,
             }),
           ],
         },
